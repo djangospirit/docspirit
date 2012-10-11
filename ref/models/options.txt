@@ -1,0 +1,225 @@
+==========================
+Options ``Meta`` du modèle
+==========================
+
+Cette page explique toutes les :ref:`options metadata
+<meta-options>` que vous pouvez donner à votre modèle dans sa classe interne ``class Meta``.
+
+Options ``Meta`` disponibles
+============================
+
+.. currentmodule:: django.db.models
+
+``abstract``
+------------
+
+.. attribute:: Options.abstract
+
+    Si ``abstract = True``, ce modèle sera une 
+    :ref:`classe abstraite de base <abstract-base-classes>`.
+
+``app_label``
+-------------
+
+.. attribute:: Options.app_label
+
+    Si un modèle existe en dehors du fichier standard :file:`models.py` (par exemple, si les modèles d'une application se trouvent dans un sous-module de ``myapp.models``), le modèle doit définir à quelle application il appartient::
+
+        app_label = 'myapp'
+
+``db_table``
+------------
+
+.. attribute:: Options.db_table
+
+    Le nom de la table de base de données à utiliser pour le modèle::
+
+        db_table = 'music_album'
+
+.. _table-names:
+
+Noms de tables
+~~~~~~~~~~~~~~
+
+Pour vous faire gagner du temps, Django dérive automatiquement le nom de la table de base de données à partir du nom de classe de votre modèle et de l'application qui le contient. Un nom de table d'un modèle est construit en concaténant le label application du modèle -- le nom utilisé dans :djadmin:`manage.py startapp <startapp>` -- avec le nom de classe du modèle, avec un signe souligné entre eux.
+
+Par exemple, si vous avez une application ``bookstore`` (créée avec
+``manage.py startapp bookstore``), un modèle déclaré comme ``class Book`` aura un nom de table appelé ``bookstore_book`` dans la base de données,.
+
+Pour surcharger cela, servez-vous du paramètre ``db_table`` dans la 
+``class Meta``.
+
+Si votre nom de table est un mot réservé SQL, ou s'il contient de caractères qui ne sont pas autorisés par Python pour les noms de variables -- notamment le trait d'union -- ça le fera quand même. En interne, Django entoure les noms de colonnes et de table par des guillemets.
+
+.. admonition:: Pour MySQL, utilisez des noms de tables en caractères minuscules
+
+    Il est fortement recommandé d'utiliser des minuscules pour les noms de tables lorsque vous surchargez le nom de table via ``db_table``, surtout si vous utilisez le backend MySQL. Voir :ref:`MySQL notes <mysql-notes>` pour plus d'infos.
+
+
+``db_tablespace``
+-----------------
+
+.. attribute:: Options.db_tablespace
+
+    Le nom du :doc:`database tablespace </topics/db/tablespaces>` à utiliser pour ce modèle. La valeur par défaut est le paramètre :setting:`DEFAULT_TABLESPACE`, s'il existe. Si le backend ne supporte pas tablespaces, cette option est ignorée.
+
+``get_latest_by``
+-----------------
+
+.. attribute:: Options.get_latest_by
+
+    Le nom d'un :class:`DateField` ou d'un :class:`DateTimeField` dans le modèle.
+    Spécifie le champ par défaut à utiliser dans la méthode :class:`~QuerySet.latest`
+    du :class:`Manager`'s.
+
+    Exemple::
+
+        get_latest_by = "order_date"
+
+    Voir les docs de :meth:`~django.db.models.query.QuerySet.latest` pour plus d'infos.
+
+``managed``
+-----------
+
+.. attribute:: Options.managed
+
+    Valeur par défaut : ``True``, indiquant que Django  créera les tables adéquates dans la base de données avec :djadmin:`syncdb` et les supprimera lors de la commande de gestion :djadmin:`reset`. C'est à dire, Django *gère* le cycle de vie des tables de la base de données.
+
+    Si la valeur est égale à ``False``, aucune création ou suppression de table ne sera effectuée pour ce modèle. C'est utile lorsque le modèle représente une table existante ou une vue de base de données créées par d'autres moyens. C'est la *seule* différence avec ``managed=False``. Tous les autres aspects de gestion de modèle seront exactement les mêmes. Y compris 
+
+    1. Ajout automatique d'une clé primaire au modèle si vous ne l'avez pas définie vous-même. Pour éviter tout méprise par les lecteurs ultérieurs du code, il est conseillé de spécifier toutes les colonnes de la base de données que vous modélisez dans des modèles non gérés.
+
+    2. Si un modèle avec ``managed=False`` contient un 
+       :class:`~django.db.models.ManyToManyField` qui pointe vers un autre modèle non géré, la table-jointure intermédiaire pour la relation Plusieurs-à-Plusieurs ne sera pas créée non plus. Cependant, la table-jointure entre un modèle géré et un autre non géré *sera* créée.
+       
+       Si vous souhaitez modifier ce comportement par défaut, créez la table intermédiaire en tant que modèle explicite (avec ``managed`` correctement paramétré) et utilisez l'attribut :attr:`ManyToManyField.through` pour que la relation utilise votre modèle personnalisé.
+
+    Lors des tests impliquant des modèles ayant ``managed=False``, il vous appartient de vérifier que les tables adéquates sont créées lors du paramétrage du test.
+
+    Si vous êtes intéressé par un changement de comportement d'un classe modèle au niveau Python, vous *pourriez* utiliser ``managed=False`` et créer une copie d'un modèle existant. Il y a cependant une meilleure approche pour cela : :ref:`proxy-models`.
+
+``order_with_respect_to``
+-------------------------
+
+.. attribute:: Options.order_with_respect_to
+
+    Marque l'objet comme étant "triable" sur le champ indiqué. C'est le plus souvent utilisé avec les objets liés pour permettre leur tri par rapport à un objet parent. Par exemple, si ``Answer`` est lié à un objet ``Question``, et que la question a plus d'une réponse, et que l'ordre des réponses est importante, vous pouvez faire ceci::
+
+        class Answer(models.Model):
+            question = models.ForeignKey(Question)
+            # ...
+
+            class Meta:
+                order_with_respect_to = 'question'
+
+    Lorsque ``order_with_respect_to`` est paramétré, deux méthodes supplémentaires sont fournies pour récupérer et trier les objets liés: ``get_RELATED_order()``
+    et ``set_RELATED_order()``, où ``RELATED`` est le nom du modèle en minuscules. Par exemple,
+    example, en admettant qu'un objet ``Question`` a plusieurs objets ``Answer`` liés, la liste retournée contient les clés primaires des objets ``Answer`` liés::
+
+        >>> question = Question.objects.get(id=1)
+        >>> question.get_answer_order()
+        [1, 2, 3]
+
+    L'ordre des objets ``Answer`` liés à l'objet ``Question`` peut être paramétré en passant une liste de clés primaires de ``Answer``::
+
+        >>> question.set_answer_order([3, 1, 2])
+
+    Les objets liés ont également deux méthodes, ``get_next_in_order()`` et
+    ``get_previous_in_order()``, qui peuvent être utilisées pour accéder à ces objets dans le bon ordre. En supposant que les objets ``Answer`` sont triés par ``id``::
+
+        >>> answer = Answer.objects.get(id=2)
+        >>> answer.get_next_in_order()
+        <Answer: 3>
+        >>> answer.get_previous_in_order()
+        <Answer: 1>
+
+.. admonition:: Modifications de order_with_respect_to
+
+        ``order_with_respect_to`` ajoute une colonne à la base de données, appelée ``_order``, n'oubliez pas de gérer cela si vous ajoutez ou modifiez ``order_with_respect_to``, tout comme vous le feriez pour tout autre changement de votre modèle après un premier :djadmin:`syncdb`.
+
+``ordering``
+------------
+
+.. attribute:: Options.ordering
+
+    L'ordre de tri par défaut de l'objet, à utiliser lorsqu'on obtient une liste d'objets::
+
+        ordering = ['-order_date']
+
+    C'est un tuple ou liste de chaînes. Chaque chaîne est le nom d'un champ avec un préfixe "-" facultatif, qui indique un ordre décroissant. Les champs dépourvus de ce préfixe seront triés par ordre croissant. Utiliser la chaîne "?" pour un tri aléatoire.
+
+    Par exemple, pour un tri croissant sur le champ  ``pub_date`` , faites ceci::
+
+        ordering = ['pub_date']
+
+    Pour un tri décroissant sur ``pub_date`` descending, faites ceci::
+
+        ordering = ['-pub_date']
+
+    Pour un tri décroissant par ``pub_date``, puis croissant sur ``author``, faites ceci::
+
+        ordering = ['-pub_date', 'author']
+
+    .. versionchanged:: 1.4
+       L'admin Django tient compte de tous les éléments de la liste/tuple; avant la version 1.4, seul le premier était pris en compte.
+
+``permissions``
+---------------
+
+.. attribute:: Options.permissions
+
+    Droits supplémentaires à renseigner dans la table des droits lors de la création de l'objet. Les droits pour ajouter, supprimer et modifier sont automatiquement créés pour chaque objet pour lequel il existe un ``admin``. L'exemple suivant spécifie un droit supplémentaire, ``can_deliver_pizzas``::
+
+        permissions = (("can_deliver_pizzas", "Can deliver pizzas"),)
+
+    Le droit est sous forme de liste ou de tuple de 2-tuples, au format ``(code_droit,
+    nom_du_droit_lisible)``.
+
+``proxy``
+---------
+
+.. attribute:: Options.proxy
+
+    Si ``proxy = True``, un modèle qui sous-classe un autre modèle sera considéré comme un :ref:`modèle proxy <proxy-models>`.
+
+``unique_together``
+-------------------
+
+.. attribute:: Options.unique_together
+
+    Ensemble de noms de champs qui, pris ensembles, doivent être uniques::
+
+        unique_together = (("driver", "restaurant"),)
+
+    C'est un tuple de tuples qui doivent être uniques lorsqu'ils sont pris en compte ensemble. Utilisé dans l'admin Django et comme contrainte au niveau base de données (c'est à dire, l'instruction ``UNIQUE`` est inclue dans le ``CREATE TABLE``).
+
+    Par commodité, unique_together peut être un tuple unique lorsqu'on a affaire à un seul ensemble de champs::
+
+        unique_together = ("driver", "restaurant")
+
+    Un :class:`~django.db.models.ManyToManyField` ne peut pas être inclus dans
+    unique_together. (Pour cause d'ambiguïtés) Si vous devez valider un uniqueness lié à un 
+    :class:`~django.db.models.ManyToManyField`, essayez d'utiliser un signal ou un modèle :attr:`through <ManyToManyField.through>` explicite.
+
+``verbose_name``
+----------------
+
+.. attribute:: Options.verbose_name
+
+    Un nom d'objet compréhensible par des humains, au singulier::
+
+        verbose_name = "pizza"
+
+    S'il n'est pas fourni, Django utilisera une version "munged" du nom de la classe:
+    ``CamelCase`` deviendra ``camel case``.
+
+``verbose_name_plural``
+-----------------------
+
+.. attribute:: Options.verbose_name_plural
+
+    Le nom de l'objet, au pluriel::
+
+        verbose_name_plural = "stories"
+
+    S'il n'est pas fourni, Django utilisera :attr:`~Options.verbose_name` + ``"s"``.

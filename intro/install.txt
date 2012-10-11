@@ -1,0 +1,99 @@
+Guide d'installation rapide
+===========================
+
+Avant de pouvoir utiliser Django, vous devez l'installer. Il existe un
+:doc:`complete installation guide </topics/install>` qui couvre toutes les 
+possibilités.; avec le présent guide vous effectuerez une installation simple, 
+minimale et fonctionnelle pour cette introduction.
+
+Installer Python
+----------------
+
+Comme Django est un framework web Python, il a besoin de Python. Django fonctionne 
+avec les versions Python de 2.5 à 2.7 (à cause de rétro-incompatibilités de Python 3.0, 
+Django ne fonctionne actuellement pas avec la version 3.0 de Python, reportez-vous à la :doc:`the Django FAQ
+</faq/install>` pour plus d'infos sur les versions Python compatibles et la transition 3.0), ces versions Python comporte une base de donnée légère appelée SQLite_ vous n'aurez donc pas à paramétrer une base de données dès maintenant.
+
+.. _sqlite: http://sqlite.org/
+
+Téléchargez Python sur http://www.python.org. Si vous utilisez Linux ou Mac OS X, Python est probablement déjà installé.
+
+.. admonition:: Django et Jython
+
+    Si vous utilisez Jython_ (une implémentation Python pour la plate-forme Java), 
+    il vous faudra réaliser quelques opérations supplémentaires. 
+    Reportez-vous à :doc:`/howto/jython` pour plus de détails.
+
+.. _jython: http://www.jython.org/
+
+Vous pouvez vérifier si Python est installé en tapant ``python`` à partir du shell; 
+vous devriez obtenir quelque chose comme ::
+
+    Python 2.5.1 (r251:54863, Jan 17 2008, 19:35:17)
+    [GCC 4.0.1 (Apple Inc. build 5465)] on darwin
+    Type "help", "copyright", "credits" or "license" for more information.
+    >>>
+
+Paramétrer une base de données
+------------------------------
+
+Si vous avez installé Python 2.5 ou ultérieur, vous pouvez sauter cette étape.
+
+Sinon, ou si vous préférez travailler avec une « grosse » base de données comme 
+PostgreSQL, MySQL, ou Oracle, consultez le :ref:`database installation information <database-installation>`.
+
+Supprimer d'anciennes versions de Django
+----------------------------------------
+
+Si vous mettez à jour votre installation de Django à partir d'une version précédente, 
+vous devrez :ref:`uninstall the old Django version before installing the new
+version <removing-old-versions-of-django>`.
+
+Installer Django
+----------------
+
+Trois possibilités s'offrent à vous pour installer Django facilement :
+
+* Installer une version de Django :doc:`provided by your operating system
+  distribution (*fournie avec la distribution de votre système d'exploitation*)
+  </misc/distributions>`. C'est la façon la plus rapide pour 
+  ceux dont le système d'exploitation est fourni avec Django.
+
+* :ref:`Install an official release (*installer une distribution officielle*)
+  <installing-official-release>`. C'est 
+  la meilleure approche pour les utilisateurs qui veulent un numéro 
+  de version stable et qui ne se font pas un drame d'utiliser une version 
+  de Django légèrement ancienne.
+
+* :ref:`Install the latest development version (*Installer la dernière version de développement*) <installing-development-version>`.
+  C'est la meilleure solution pour les utilisateurs qui veulent les toutes dernières et géniales fonctionnalités 
+  et pour qui exécuter un code tout frais ne fait pas peur.
+
+
+.. admonition:: Concernant la documentation, reportez-vous toujours à 
+                celle correspondant à la version de Django que vous utilisez !
+
+    Si vous suivez l'une ou l'autre des deux premières étapes, gardez un œil 
+    sur les parties de la documentation signalées **nouveau dans la version 
+    de développement**. Cette phrase signale les caractéristiques qui sont 
+    seulement disponibles dans les versions de développement de Django, 
+    et qui ne fonctionneront probablement pas dans une version officielle.
+
+Vérifier
+--------
+
+Pour s'assurer que Django est visible par Python, tapez ``python`` à partir de votre shell. 
+Et à l'invite de Python, essayez d'importer Django ::
+
+    >>> import django
+    >>> print django.get_version()
+    1.4
+
+
+C'est fait !
+------------
+
+Ça y est ! -- vous pouvez maintenant :doc:`démarrer avec le premier tutoriel </intro/tutorial01>`.
+
+
+

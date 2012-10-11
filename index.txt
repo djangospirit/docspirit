@@ -1,0 +1,296 @@
+.. _index:
+
+====================
+Documentation Django 
+====================
+
+.. admonition:: Remarque importante au sujet de DjangoSpirit !
+
+     Django est un framework Python pour écrire, à toute berzingue et en Python, des sites webs fiables et rapides...
+    
+     **Django Spirit**, lui, contient la traduction française de la documentation du framework Django. **Django Spirit** n'est, en rien, affilié de près ou de loin avec Django, les auteurs du framework Django, ou une quelconque communauté Django, où qu'elle se trouve, dans le monde ou dans l'Espace. **Django Spirit** est une *initiative privée* ;-)
+
+     **Attention ! Traduire la doc du Django Framework est un travail de longue haleine :-)** (la doc papier fait plus de 1 000 pages...), le webmestre s'est donc dit qu'il allait y aller mollo et publier les traductions au fur et à mesure de leur achèvement... 
+
+     DjangoSpirit est donc construit à partir de la doc officielle du site DjangoProject_, il contient des parties en français (les liens menant vers ces parties sont traduits en français) et des parties en anglais (dans ce cas, les liens sont en anglais, ils seront traduits en français au fur et à mesure que les pages anglaises seront traduites en français).
+
+     Construit à partir de la doc Django, bâti avec Sphinx_, cela explique les similitudes d'aspect et de structure entre DjangoSpirit et DjangoProject_... Les traductions, en revanche, sont bien le fruit original du webmestre qui a initié ce travail :-)
+
+     Bonne lecture ! 
+
+.. _DjangoProject: https://www.djangoproject.com/
+
+.. _Sphinx: http://sphinx.pocoo.org/index.html 
+
+.. rubric:: Tout ce que vous avez besoin de savoir sur Django (et même un peu plus).
+
+Getting help
+============
+
+Having trouble? We'd like to help!
+
+* Try the :doc:`FAQ <faq/index>` -- it's got answers to many common questions.
+
+* Looking for specific information? Try the :ref:`genindex`, :ref:`modindex` or
+  the :doc:`detailed table of contents <contents>`.
+
+* Search for information in the `archives of the django-users mailing list`_, or
+  `post a question`_.
+
+* Ask a question in the `#django IRC channel`_, or search the `IRC logs`_ to see
+  if it's been asked before.
+
+* Report bugs with Django in our `ticket tracker`_.
+
+.. _archives of the django-users mailing list: http://groups.google.com/group/django-users/
+.. _post a question: http://groups.google.com/group/django-users/
+.. _#django IRC channel: irc://irc.freenode.net/django
+.. _IRC logs: http://django-irc-logs.com/
+.. _ticket tracker: https://code.djangoproject.com/
+
+Premiers pas
+============
+
+Vous débutez avec Django ou en programmation ? C'est ici que ça commence !
+
+* **Début:**
+  :doc:`Aperçu <intro/overview>` |
+  :doc:`Installation <intro/install>`
+
+* **Tutos:**
+  :doc:`Partie 1 <intro/tutorial01>` |
+  :doc:`Partie 2 <intro/tutorial02>` |
+  :doc:`Partie 3 <intro/tutorial03>` |
+  :doc:`Partie 4 <intro/tutorial04>`
+
+La couche model 
+===============
+
+Django fournit une couche d'abstraction (les "models") pour structurer et manipuler les données de votre application Web. Pour en savoir davantage:
+
+* **Models:**
+  :doc:`Syntaxe des Modèles <topics/db/models>` |
+  :doc:`Types de champs <ref/models/fields>` |
+  :doc:`Options Meta <ref/models/options>`
+
+* **QuerySets:**
+  :doc:`Exécuter des requêtes <topics/db/queries>` |
+  :doc:`QuerySet method reference <ref/models/querysets>`
+
+* **Model instances:**
+  :doc:`Instance methods <ref/models/instances>` |
+  :doc:`Accessing related objects <ref/models/relations>`
+
+* **Advanced:**
+  :doc:`Managers <topics/db/managers>` |
+  :doc:`Raw SQL <topics/db/sql>` |
+  :doc:`Transactions <topics/db/transactions>` |
+  :doc:`Aggregation <topics/db/aggregation>` |
+  :doc:`Custom fields <howto/custom-model-fields>` |
+  :doc:`Multiple databases <topics/db/multi-db>`
+
+* **Other:**
+  :doc:`Supported databases <ref/databases>` |
+  :doc:`Legacy databases <howto/legacy-databases>` |
+  :doc:`Providing initial data <howto/initial-data>` |
+  :doc:`Optimize database access <topics/db/optimization>`
+
+La couche Vue
+=============
+
+Une vue est le concept Django pour encapsuler la logique de traitement des requêtes utilisateur et de leurs réponses. Tout ce que vous avez besoin de savoir sur les vues :
+
+* **The basics:**
+  :doc:`URLconfs <topics/http/urls>` |
+  :doc:`View functions <topics/http/views>` |
+  :doc:`Shortcuts <topics/http/shortcuts>` |
+  :doc:`Decorators <topics/http/decorators>`
+
+* **Reference:**
+  :doc:`Request/response objects <ref/request-response>` |
+  :doc:`TemplateResponse objects <ref/template-response>`
+
+* **File uploads:**
+  :doc:`Overview <topics/http/file-uploads>` |
+  :doc:`File objects <ref/files/file>` |
+  :doc:`Storage API <ref/files/storage>` |
+  :doc:`Managing files <topics/files>` |
+  :doc:`Custom storage <howto/custom-file-storage>`
+
+* **Class-based views:**
+  :doc:`Overview <topics/class-based-views/index>` |
+  :doc:`Built-in display views <topics/class-based-views/generic-display>` |
+  :doc:`Built-in editing views <topics/class-based-views/generic-editing>` |
+  :doc:`Using mixins <topics/class-based-views/mixins>` |
+  :doc:`API reference <ref/class-based-views/index>`
+
+* **Advanced:**
+  :doc:`Generating CSV <howto/outputting-csv>` |
+  :doc:`Generating PDF <howto/outputting-pdf>`
+
+* **Middleware:**
+  :doc:`Overview <topics/http/middleware>` |
+  :doc:`Built-in middleware classes <ref/middleware>`
+
+La couche template 
+==================
+
+La couche Template fournit une syntaxe abordable pour la mise en page des données à présenter aux utilisateurs. Apprenez comment cette syntaxe peut être utilisée par les concepteurs de thèmes et étendue par les programmeurs :
+
+* **Pour concepteurs de thèmes:**
+  :doc:`Syntax overview <topics/templates>` |
+  :doc:`Built-in tags and filters <ref/templates/builtins>` |
+  :doc:`Web design helpers <ref/contrib/webdesign>` |
+  :doc:`Humanization <ref/contrib/humanize>`
+
+* **Pour les programmeurs:**
+  :doc:`Template API <ref/templates/api>` |
+  :doc:`Custom tags and filters <howto/custom-template-tags>`
+
+Formulaires
+===========
+
+Django fournit un framework abondant pour faciliter la création des formulaires et la manipulation de leurs données.
+
+* **The basics:**
+  :doc:`Overview <topics/forms/index>` |
+  :doc:`Form API <ref/forms/api>` |
+  :doc:`Built-in fields <ref/forms/fields>` |
+  :doc:`Built-in widgets <ref/forms/widgets>`
+
+* **Advanced:**
+  :doc:`Forms for models <topics/forms/modelforms>` |
+  :doc:`Integrating media <topics/forms/media>` |
+  :doc:`Formsets <topics/forms/formsets>` |
+  :doc:`Customizing validation <ref/forms/validation>`
+
+* **Extras:**
+  :doc:`Form preview <ref/contrib/formtools/form-preview>` |
+  :doc:`Form wizard <ref/contrib/formtools/form-wizard>`
+
+Le processus de développement
+=============================
+
+Les différents composants et outils qui vous aideront à développer et teser une application Django:
+
+* **Settings:**
+  :doc:`Overview <topics/settings>` |
+  :doc:`Full list of settings <ref/settings>`
+
+* **Exceptions:**
+  :doc:`Overview <ref/exceptions>`
+
+* **django-admin.py and manage.py:**
+  :doc:`Overview <ref/django-admin>` |
+  :doc:`Adding custom commands <howto/custom-management-commands>`
+
+* **Testing:**  :doc:`Overview <topics/testing>`
+
+* **Deployment:**
+  :doc:`Overview <howto/deployment/index>` |
+  :doc:`WSGI servers <howto/deployment/wsgi/index>` |
+  :doc:`FastCGI/SCGI/AJP <howto/deployment/fastcgi>` |
+  :doc:`Apache authentication <howto/apache-auth>` |
+  :doc:`Handling static files <howto/static-files>` |
+  :doc:`Tracking code errors by email <howto/error-reporting>`
+
+L'administration
+================
+
+Tout ce que vous avez besoin de savoir sur l'interface d'administration générée automatiquement, l'une des caractéristiques les plus populaires de Django:
+
+* :doc:`Admin site <ref/contrib/admin/index>`
+* :doc:`Admin actions <ref/contrib/admin/actions>`
+* :doc:`Admin documentation generator<ref/contrib/admin/admindocs>`
+
+Sécurité
+========
+
+La sécurité est une question importante du développement d'une application Web et Django fournit de nombreux outils et mécanismes de protection:
+
+* :doc:`Security overview <topics/security>`
+* :doc:`Clickjacking protection <ref/clickjacking>`
+* :doc:`Cross Site Request Forgery protection <ref/contrib/csrf>`
+* :doc:`Cryptographic signing <topics/signing>`
+
+Internationnalisation et localisation
+=====================================
+
+Django offre un solide framework d'internationnalisation et de localisation pour vous assister dans le développement d'applications polyglottes et pour la régionnalisation:
+
+* :doc:`Internationalization <topics/i18n/index>`
+* :doc:`"Local flavor" <ref/contrib/localflavor>`
+
+Compatibilité Python
+====================
+
+Django vise à être compatible avec les différents parfums et versions de Python:
+
+* :doc:`Jython support <howto/jython>`
+* :doc:`Python 3 compatibility <topics/python3>`
+
+Framework géographique
+======================
+
+:doc:`GeoDjango <ref/contrib/gis/index>` veut être un *world-class geographic
+Web framework*. Son but est de faciliter autant que possible la construction d'applications WEB GIS et l'exploitation de la puissance des données *spatially enabled*.
+
+Outils Web application courants
+===============================
+
+Django offre de multiples outils habituellement utilisés dans le développement d'applications Web :
+
+
+* :doc:`Authentication <topics/auth>`
+* :doc:`Caching <topics/cache>`
+* :doc:`Logging <topics/logging>`
+* :doc:`Sending e-mails <topics/email>`
+* :doc:`Syndication feeds (RSS/Atom) <ref/contrib/syndication>`
+* :doc:`Comments <ref/contrib/comments/index>`, :doc:`comment moderation <ref/contrib/comments/moderation>` and :doc:`custom comments <ref/contrib/comments/custom>`
+* :doc:`Pagination <topics/pagination>`
+* :doc:`Messages framework <ref/contrib/messages>`
+* :doc:`Serialization <topics/serialization>`
+* :doc:`Sessions <topics/http/sessions>`
+* :doc:`Sitemaps <ref/contrib/sitemaps>`
+* :doc:`Static files management <ref/contrib/staticfiles>`
+* :doc:`Data validation <ref/validators>`
+
+D'autres fonctionnalités du core 
+================================
+
+Quelques autres fonctionnalités du core du framework Django:
+
+* :doc:`Conditional content processing <topics/conditional-view-processing>`
+* :doc:`Content types and generic relations <ref/contrib/contenttypes>`
+* :doc:`Databrowse <ref/contrib/databrowse>`
+* :doc:`Flatpages <ref/contrib/flatpages>`
+* :doc:`Redirects <ref/contrib/redirects>`
+* :doc:`Signals <topics/signals>`
+* :doc:`The sites framework <ref/contrib/sites>`
+* :doc:`Unicode in Django <ref/unicode>`
+
+Le projet open-source Django
+==============================
+
+Des infos sur le processus de développement du projet Django et sur la façon d'y contribuer:
+
+* **Community:**
+  :doc:`How to get involved <internals/contributing/index>` |
+  :doc:`The release process <internals/release-process>` |
+  :doc:`Team of committers <internals/committers>` |
+  :doc:`The Django source code repository <internals/git>` |
+  :doc:`Security policies <internals/security>`
+
+* **Design philosophies:**
+  :doc:`Overview <misc/design-philosophies>`
+
+* **Documentation:**
+  :doc:`About this documentation <internals/contributing/writing-documentation>`
+
+* **Third-party distributions:**
+  :doc:`Overview <misc/distributions>`
+
+* **Django over time:**
+  :doc:`API stability <misc/api-stability>` |
+  :doc:`Release notes and upgrading instructions <releases/index>` |
+  :doc:`Deprecation Timeline <internals/deprecation>`

@@ -1,0 +1,29 @@
+Débuter
+=======
+
+Nouveau venu dans Django? Ou en développement web ? Alors vous êtes au bon endroit : lisez ce qui suit pour vous mettre le pied à l'étrier et travailler rapidement
+
+.. toctree::
+   :maxdepth: 1
+    
+   overview
+   install
+   tutorial01
+   tutorial02
+   tutorial03
+   tutorial04
+   whatsnext
+   
+.. seealso::
+
+    Si vous débutez en Python_, vous voudrez peut-être savoir à quoi ressemble le langage. Django est 100% en Python, alors si vous un minimum à l'aise avec Python vous en obtiendrez bien plus de Django.
+    
+    Si vous débutez totalement en programmation, vous pourrez débutez avec cette `list of Python resources for non-programmers`_
+    
+    Si vous connaissez quelques autres langages et voulez progresser rapidement avec Python, nous recommandons `Dive Into Python`_ (également disponible en `dead-tree version`_). Si cela ne vous convient pas, il y a d'autres livres sur Python `books about Python`_.
+    
+    .. _python: http://python.org/
+    .. _list of Python resources for non-programmers: http://wiki.python.org/moin/BeginnersGuide/NonProgrammers
+    .. _dive into python: http://diveintopython.net/
+    .. _dead-tree version: http://www.amazon.com/exec/obidos/ASIN/1590593561/ref=nosim/jacobian20
+    .. _books about Python: http://wiki.python.org/moin/PythonBooks
