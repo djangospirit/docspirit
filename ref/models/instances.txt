@@ -182,10 +182,10 @@ Si un modèle a un :class:`~django.db.models.AutoField` mais que vous voulez exp
 
 Si vous renseignez manuellement les valeurs de la clé primaire automatique, assurez-vous de ne pas utiliser une vaaeur de clé primaire automatique existante ! Si vous créez un nouvel objet en lui donnant une valeur de clé primaire auto qui existe déjà dans la base, Django supposera que vous changez l'enregistrement existant, au lieu d'en créer un nouveau.
 
-Avec le blog ``'Cheddar Talk'`` précédent, cet exemple remplacera l'enregistrement antérieur de la base de données::
+Avec le billet de blog ``'Cheddar Talk'`` précédent, cet exemple remplacera l'enregistrement précédent de la base de données::
 
     b4 = Blog(id=3, name='Not Cheddar', tagline='Anything but cheese.')
-    b4.save()  # Remplace le blog antérieur avec ID=3!
+    b4.save()  # Remplace le blog précédent avec ID=3!
 
 Voir `How Django knows to UPDATE vs. INSERT`_, ci-dessous, pour la raison de ce comportement.
 
@@ -225,110 +225,81 @@ Vous avez peut-être remarqué que les objets base de données Django utilisent 
 * S'il existe, Django exécute une requête ``UPDATE``.
 * Si l'attribut clé primaire *n'est pas* initialisé, ou s'il l'est mais que l'enregistrement n'existe pas, Django exécute un ``INSERT``.
 
-Le truc ici, c'est que vous devez être attentif à ne pas spécifier de valeur de clé primaire lorsque vous sauvegardez des objets nouveaux, si vous ne pouvez pas garantir que la valeur clé-primaire est inutilisée. Pour davantage sur cette nuance, voir  `Explicitly specifying
-auto-primary-key values`_ ci-dessus et `Forcing an INSERT or UPDATE`_ ci-dessous.
+Le truc ici, c'est que vous devez être attentif à ne pas spécifier de valeur de clé primaire lorsque vous sauvegardez des objets nouveaux, si vous ne pouvez pas garantir que la valeur clé-primaire est inutilisée. Pour davantage sur cette nuance, voir  `Explicitly specifying auto-primary-key values`_ ci-dessus et `Forcing an INSERT or UPDATE`_ ci-dessous.
 
 .. _ref-models-force-insert:
 
-Forcing an INSERT or UPDATE
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Forcer un INSERT ou un UPDATE
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In some rare circumstances, it's necessary to be able to force the
-:meth:`~Model.save()` method to perform an SQL ``INSERT`` and not fall back to
-doing an ``UPDATE``. Or vice-versa: update, if possible, but not insert a new
-row. In these cases you can pass the ``force_insert=True`` or
-``force_update=True`` parameters to the :meth:`~Model.save()` method.
-Obviously, passing both parameters is an error: you cannot both insert *and*
-update at the same time!
+Il est parfois nécessaire d'obliger la méthode :meth:`~Model.save()` à effecteur un ``INSERT`` SQL et ne pas faire un ``UPDATE``. Ou vice-versa: update, si possible, mais pas d'ajout de nouvelle ligne. Dans ces cas-là vous pouvez passer les paramètres ``force_insert=True`` ou ``force_update=True`` à la méthode :meth:`~Model.save()`.
+Évidemment, passer les deux paramètres  à la fois est une erreur : vous ne pouvez pas effectuer un insert *et* un 
+update en même temps !
 
-It should be very rare that you'll need to use these parameters. Django will
-almost always do the right thing and trying to override that will lead to
-errors that are difficult to track down. This feature is for advanced use
-only.
+Les cas d'utilisation de ces paramètres devraient être assez rares. Django saura presque toujours faire la bonne action et tenter de surcharger ce comportement pourrait amener à des erreurs difficiles à pister. Cette fonctionnalité n'est là que pour des utilisations avancées.
 
-Updating attributes based on existing fields
---------------------------------------------
+Actualiser des attributs basés sur des champs existants
+-------------------------------------------------------
 
-Sometimes you'll need to perform a simple arithmetic task on a field, such
-as incrementing or decrementing the current value. The obvious way to
-achieve this is to do something like::
+Vous devrez parfois effectuer des tâches arithmétiques simpes sur un champ, comme incrementer ou décrementer la valeur en cours. La façon de procéder la plus évidente ressemble à ce qui suit::
 
     >>> product = Product.objects.get(name='Venezuelan Beaver Cheese')
     >>> product.number_sold += 1
     >>> product.save()
 
-If the old ``number_sold`` value retrieved from the database was 10, then
-the value of 11 will be written back to the database.
+Si l'ancienne valeur  ``number_sold`` récupérée dans la base de données était 10, alors la valeur 11 sera écrite à la place dans la base.
 
-This sequence has a standard update problem in that it contains a race
-condition. If another thread of execution has already saved an updated value
-after the current thread retrieved the old value, the current thread will only
-save the old value plus one, rather than the new (current) value plus one.
+Cette séquence comporte un problème update standard d'acc-s concurrentiel. Si un autre thread a sauvegardé une nouvelle valeur après que le thread en cours ait récupéré l'ancienne valeur, le thread en cours va sauvegarder son ancienne valeur plus un, au lieu de sauvegarder l'actuelle nouvelle valeur plus un.
 
-The process can be made robust and slightly faster by expressing the update
-relative to the original field value, rather than as an explicit assignment of
-a new value. Django provides :ref:`F() expressions <query-expressions>` for
-performing this kind of relative update. Using ``F()`` expressions, the
-previous example is expressed as::
+Le traitement peut être rendu plus robuste et légèrement plus rapide en exprimant l'update par rapport à la valeur orignale du champ, plutôt qu'en assignant explicitement une nouvelle valeur. Django fournit les :ref:`F() expressions <query-expressions>` pour effectuer ce type d'update. En utilisant les ``F()`` expressions, l'exemple précédent devient::
 
     >>> from django.db.models import F
     >>> product = Product.objects.get(name='Venezuelan Beaver Cheese')
     >>> product.number_sold = F('number_sold') + 1
     >>> product.save()
 
-This approach doesn't use the initial value from the database. Instead, it
-makes the database do the update based on whatever value is current at the time
-that the :meth:`~Model.save()` is executed.
+Cette approche n'utilise pas la valeur initiale de la base de données. Au lieu de cela, la base de données fait son update à partir de la valeur existante au moment ou le :meth:`~Model.save()` est exécuté.
 
-Once the object has been saved, you must reload the object in order to access
-the actual value that was applied to the updated field::
+Une fois uqe l'objet a été sauvegardé, vous devez le recharger pour accèder à la valeur réelle qui a été appliquée au champ actualisé::
 
     >>> product = Products.objects.get(pk=product.pk)
     >>> print product.number_sold
     42
 
-For more details, see the documentation on :ref:`F() expressions
-<query-expressions>` and their :ref:`use in update queries
+Pour plus de détails, voir la documentation sur :ref:`F() expressions
+<query-expressions>` et leur :ref:`use in update queries
 <topics-db-queries-update>`.
 
-Deleting objects
-================
+Effacer des objets
+==================
 
 .. method:: Model.delete([using=DEFAULT_DB_ALIAS])
 
 .. versionadded:: 1.2
    The ``using`` argument was added.
 
-Issues a SQL ``DELETE`` for the object. This only deletes the object in the
-database; the Python instance will still exist and will still have data in
-its fields.
+Émet une isntruction SQL ``DELETE`` pour l'objet. Cela ne fait qu'effacer l'objet dans la base de données; l'instance Python contienu d'exister et continue d'avoir des données dans ses champs.
 
-For more details, including how to delete objects in bulk, see
-:ref:`topics-db-queries-delete`.
+Pour d'autres infos, y compris sur la façon d'effectuer des effacements par lots, voir :ref:`topics-db-queries-delete`.
 
-If you want customized deletion behavior, you can override the ``delete()``
-method. See :ref:`overriding-model-methods` for more details.
+Si vous voulez un comportment d'effacements personnalisé, vous pouvez surcharger la méthode ``delete()``. Voir :ref:`overriding-model-methods` pour plus de détails.
 
 .. _model-instance-methods:
 
-Other model instance methods
-============================
+Autres méthodes d'instances modèles
+===================================
 
-A few object methods have special purposes.
+Quelques méthodes d'objets ont des buts spécifiques.
 
 ``__unicode__``
 ---------------
 
 .. method:: Model.__unicode__()
 
-The ``__unicode__()`` method is called whenever you call ``unicode()`` on an
-object. Django uses ``unicode(obj)`` (or the related function, :meth:`str(obj)
-<Model.__str__>`) in a number of places. Most notably, to display an object in
-the Django admin site and as the value inserted into a template when it
-displays an object. Thus, you should always return a nice, human-readable
-representation of the model from the ``__unicode__()`` method.
+La méthode ``__unicode__()`` est appelée chaque fois que vous appelez ``unicode()`` sur un objet. Django utilise  ``unicode(obj)`` (ou la fonction liée, :meth:`str(obj) <Model.__str__>`) en différents endroits. Plus particulièrement, pour afficher un objet dans la partie admin du site Django et en tant que valeur insiérée dans un template qui affiche un objet. 
+displays an object. Ainsi, vous aurez toujours une représentation belle et compréhensible du modèle avec la méthode ``__unicode__()``.
 
-For example::
+Par exemple::
 
     class Person(models.Model):
         first_name = models.CharField(max_length=50)
@@ -337,12 +308,8 @@ For example::
         def __unicode__(self):
             return u'%s %s' % (self.first_name, self.last_name)
 
-If you define a ``__unicode__()`` method on your model and not a
-:meth:`~Model.__str__()` method, Django will automatically provide you with a
-:meth:`~Model.__str__()` that calls ``__unicode__()`` and then converts the
-result correctly to a UTF-8 encoded string object. This is recommended
-development practice: define only ``__unicode__()`` and let Django take care of
-the conversion to string objects when required.
+Si vous déclarez une méthode ``__unicode__()`` dans votre modèle et pas une méthode 
+:meth:`~Model.__str__()`, Django vous fournira automatiquement un :meth:`~Model.__str__()` qui appelle ``__unicode__()`` et convertit ensuite correctement le résultat en un objet chaîne codé en UTF-8. C'est la pratique de développement conseillée : déclarez seulement ``__unicode__()`` et laissez Django s'occuper de la cnversion en objets chaîne lorsque ce sera nécessaire.
 
 ``__str__``
 -----------
