@@ -4,7 +4,7 @@ Instance Model : référence
 
 .. currentmodule:: django.db.models
 
-Ce document décrit les détails de l'API ``Model`` API. Il se base sur les modèles présentés dans les pages :doc:`Syntaxe des modèles </topics/db/models>` et :doc:`Exécuter des requêtes </topics/db/queries>`, vous devrez peut-être en prendre connaissance avant de lire cette page.
+Ce document décrit les détails de l'API ``Model``. Il se base sur les modèles présentés dans les pages :doc:`Syntaxe des modèles </topics/db/models>` et :doc:`Exécuter des requêtes </topics/db/queries>`, vous devrez peut-être en prendre connaissance avant de lire cette page.
 
 Dans ce document, nous utiliserons l':ref:`exemple modèle Weblog <queryset-model-example>` présenté dans la page :doc:`Exécuter des requêtes 
 </topics/db/queries>`.
