@@ -53,7 +53,7 @@ Les mots-clé arguments sont simplement les noms des champs définis dans votre 
 
 .. _validating-objects:
 
-Valider ds objets
+Valider des objets
 =================
 
 .. versionadded:: 1.2
