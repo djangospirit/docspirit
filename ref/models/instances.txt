@@ -4,10 +4,9 @@ Instance Model : référence
 
 .. currentmodule:: django.db.models
 
-Ce document décrit les détails de l'API ``Model`` API. Il se base sur la matière première présentée dans les pages :doc:`Syntaxe des modèles </topics/db/models>` et :doc:`Exécuter des réquêtes </topics/db/queries>`, vous devrez peut-être en prendre connaissance avant de lire cette page.
+Ce document décrit les détails de l'API ``Model`` API. Il se base sur les modèles présentés dans les pages :doc:`Syntaxe des modèles </topics/db/models>` et :doc:`Exécuter des requêtes </topics/db/queries>`, vous devrez peut-être en prendre connaissance avant de lire cette page.
 
-Dans ce document, nous utiliserons le (à traduir : modèle blog ?):ref:`example Weblog models
-<queryset-model-example>` présenté dans le (trad "database query guide" ?) :doc:`database query guide
+Dans ce document, nous utiliserons l':ref:`exemple modèle Weblog <queryset-model-example>` présenté dans la page :doc:`Exécuter des requêtes 
 </topics/db/queries>`.
 
 Créer des objets
@@ -17,12 +16,12 @@ Pour créer une nouvelle instance d'un modèle, il suffit de l'instancier, tout 
 
 .. class:: Model(**kwargs)
 
-Les mots-clé arguments sont simplement les noms des champs définis dans votre modèle. Notez qu'instancier un modèle ne touche en rien la base de données; pour qu'elle le soit, vous devez utiliser :meth:`~Model.save()`.
+Les mots-clé arguments sont simplement les noms des champs définis dans votre modèle. Notez qu'instancier un modèle n'affecte en rien la base de données; pour qu'elle le soit, vous devez utiliser :meth:`~Model.save()`.
 
 .. note::
 
-    Vous pourriez petre tenté de personnaliser le modèle en surchargeant la méthode ``__init__``.
-    Si vous le faites, prenez soin de ne pas modifier la signature d'appel car toute modification pourrait empecher le modèle d'être sauvegardé. Plutôt que de surcharger ``__init__``, tentez l'une de ces approches:
+    Vous pourriez peut-être être tenté de personnaliser le modèle en surchargeant la méthode ``__init__``. 
+    Si vous le faites, prenez soin de ne pas modifier la signature d'appel car toute modification pourrait empêcher le modèle d'être sauvegardé. Plutôt que de surcharger ``__init__``, tentez l'une de ces approches:
 
     1. Ajoutez une classmethod à la classe modèle::
 
@@ -68,7 +67,7 @@ La validation d'un modèle se fait en trois étapes:
 Ces trois étapes sont exécutées lorsque vous appelez la méthode :meth:`~Model.full_clean()` du modèle.
 
 Lorsque vous utilisez un :class:`~django.forms.ModelForm`, l'appel à :meth:`~django.forms.Form.is_valid()` effectuera les trois étapes de la validation pour tous les champs présents dans le formulaire. Consultez la doc :doc:`ModelForm
-documentation </topics/forms/modelforms>` pour plus d'informations. Vous ne devriez appeler la méthode :meth:`~Model.full_clean()` du modèle que si vous avez prévu de gérer les erreurs de validation vous-même, ou si vous avez exclue des champs du :class:`~django.forms.ModelForm` qui demande validation.
+documentation </topics/forms/modelforms>` pour plus d'informations. Vous ne devriez appeler la méthode :meth:`~Model.full_clean()` du modèle que si vous avez prévu de gérer les erreurs de validation vous-même, ou si vous avez exclu des champs du :class:`~django.forms.ModelForm` qui demande validation.
 
 .. method:: Model.full_clean(exclude=None)
 
@@ -89,9 +88,9 @@ Exemple::
         article.full_clean()
     except ValidationError, e:
         # Faire quelque chose basé sur les erreurs contenues dans e.message_dict.
-        # Les afficher à  un utilisateur, ou les gérer par le programme.
+        # Les afficher à un utilisateur, ou les gérer par le programme.
 
-L'éxécution ``full_clean()`` de la première étape nettoie chaque champ individuel.
+L'exécution ``full_clean()`` de la première étape nettoie chaque champ individuel.
 
 .. method:: Model.clean_fields(exclude=None)
 
@@ -103,7 +102,7 @@ Cette méthode doit être surchargée pour effectuer une validation personnalis�
 
 .. method:: Model.clean()
 
-Cette méthode doit être utilisée pour fournir une validation de modèler personnalisée, et, le cas échéant, pour modifier des attributs de votre modèle. Par exemple, vous pourriez l'utiliser pour fournir automatiquement une valeur à un champ, ou pour effectuer une validation qui doit accèder à plus d'un champ::
+Cette méthode doit être utilisée pour fournir une validation de modèle personnalisée, et, le cas échéant, pour modifier des attributs de votre modèle. Par exemple, vous pourriez l'utiliser pour fournir automatiquement une valeur à un champ, ou pour effectuer une validation qui doit accéder à plus d'un champ::
 
     def clean(self):
         from django.core.exceptions import ValidationError
@@ -128,14 +127,14 @@ Enfin, ``full_clean()`` vérifiera les contraintes uniques de votre modèle.
 .. method:: Model.validate_unique(exclude=None)
 
 Cette méthode est semblable à :meth:`~Model.clean_fields`, mais elle valide toutes les contraintes d'unicité de votre modèle plutôt que les valeurs d'un champ. L'argument facultatif ``exclude``
-vous permet de passer une liste de noms de champs à exclure de la validation. Une erreur :exc:`~django.core.exceptions.ValidationError` sera levée si la validation d'un des champs échoue.
+vous permet de passer une liste de noms de champs à exclure de la validation. Une erreur :exc:`~django.core.exceptions.ValidationError` est levée si la validation d'un des champs échoue.
 
 Notez que si vous passez un argument ``exclude`` à ``validate_unique()``, les contraintes 
-:attr:`~django.db.models.Options.unique_together` impliquant l'un des champs que vous auez fourni ne seront pas vérifiées.
+:attr:`~django.db.models.Options.unique_together` impliquant l'un des champs que vous aurez fourni ne seront pas vérifiées.
 
 
-Sauvarder des objets
-====================
+Sauvegarder des objets
+======================
 
 Pour sauvegarder un objet dans la base de données, appelez ``save()``:
 
@@ -148,8 +147,8 @@ Si vous voulez un comportement personnalisé lors de la sauvegarde, vous pouvez 
 
 La sauvegarde de modèle comporte quelques subtilités; voir la section ci-dessous.
 
-Auto-incrémenter les clés primaies
-----------------------------------
+Auto-incrémenter les clés primaries
+-----------------------------------
 
 Si un modèle a un :class:`~django.db.models.AutoField` — une clé primaire auto-incrémentée — alors la valeur auto-incrémentée sera calculée et sauvegardée comme attribut de votre objet lors du premier appel de ``save()``::
 
@@ -168,50 +167,50 @@ La propriété ``pk``
 
 .. attribute:: Model.pk
 
-Indépendamment du fait que vous définissiez un champ clé primaire vous-même, ou que ce soit Django qui le fasse pour vous, chaque modèle a une propriété nommée ``pk``. Elle se comporte comme un attribut normal de modèle, mais il s'agit en fait d'un alias vers l'attribut qui est le champ clé primaire du modèle. Vouspouvez lire et écrire cette valeur, tout comme vous le feriez pour n'importe quel autre attribut, et il actualisera le bon champ du modèle.
+Indépendamment du fait que ce soit vous qui définissiez un champ clé primaire, ou que ce soit Django qui le fasse pour vous, chaque modèle a une propriété nommée ``pk``. Elle se comporte comme un attribut normal de modèle, mais il s'agit en fait d'un alias vers l'attribut qui est le champ clé primaire du modèle. Vous pouvez lire et écrire cette valeur, tout comme vous le feriez pour n'importe quel autre attribut, et il actualisera le bon champ du modèle.
 
 Spécifier des valeurs auto-primary-key explicitement
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Si un modèle a un :class:`~django.db.models.AutoField` mais que vous voulez explicitement déclarer l'ID d'un nouvel objet lors de la sauvegarde, déclarez-le simplement avant la sauvegarde, plutôt que de laisser faire l'auto-assignation de l'ID::
+Si un modèle a un :class:`~django.db.models.AutoField` mais que vous voulez explicitement déclarer l'ID d'un nouvel objet lors de la sauvegarde, déclarez-le simplement avant la sauvegarde, plutôt que de laisser l'ID être auto-assignée::
 
     >>> b3 = Blog(id=3, name='Cheddar Talk', tagline='Thoughts on cheese.')
     >>> b3.id     # Renvoie 3.
     >>> b3.save()
     >>> b3.id     # Renvoie 3.
 
-Si vous renseignez manuellement les valeurs de la clé primaire automatique, assurez-vous de ne pas utiliser une vaaeur de clé primaire automatique existante ! Si vous créez un nouvel objet en lui donnant une valeur de clé primaire auto qui existe déjà dans la base, Django supposera que vous changez l'enregistrement existant, au lieu d'en créer un nouveau.
+Si vous renseignez manuellement les valeurs de la clé primaire automatique, assurez-vous de ne pas utiliser une valeur existante de clé primaire automatique ! Si vous créez un nouvel objet en lui donnant une valeur de clé primaire auto qui existe déjà dans la base, Django supposera que vous changez l'enregistrement existant, au lieu d'en créer un nouveau.
 
-Avec le billet de blog ``'Cheddar Talk'`` précédent, cet exemple remplacera l'enregistrement précédent de la base de données::
+Avec le billet de blog ``'Cheddar Talk'`` précédent, cet exemple remplacera l'enregistrement antérieur de la base de données::
 
     b4 = Blog(id=3, name='Not Cheddar', tagline='Anything but cheese.')
-    b4.save()  # Remplace le blog précédent avec ID=3!
+    b4.save()  # Remplace le blog antérieur avec ID=3!
 
-Voir `How Django knows to UPDATE vs. INSERT`_, ci-dessous, pour la raison de ce comportement.
+Voir `Comment Django sait s'il faut utiliser UPDATE ou INSERT`_, ci-dessous, pour la raison de ce comportement.
 
 Spécifier des clés primaires auto est particulièrement utile lors de sauvegardes d'objets par lots, lorsque vous êtes sûr qu'il n'y aura pas de collisions de clés primaires.
 
 Que se passe-t-il lorsque vous sauvegardez ?
 --------------------------------------------
 
-Lorsque vous sauvegardez une objet, Django effectue les tâches suivantes:
+Lorsque vous sauvegardez un objet, Django effectue les tâches suivantes:
 
-1. **Emission d'un signal de pré-sauvegarde.** Le :doc:`signal </ref/signals>`
-   :attr:`django.db.models.signals.pre_save` est émis, permettant à toute fonction écoutant ce signal d'effectuer une action personnalisée..
+1. **Émission d'un signal de pré-sauvegarde.** Le :doc:`signal </ref/signals>`
+   :attr:`django.db.models.signals.pre_save` est émis, permettant à toute fonction écoutant ce signal d'effectuer une action personnalisée.
 
-2. **Pré-traitement des données.** Chaque champ de l'objet est interrogé pour effectuer toutes les modifications automatiques de données que le champ pourrait avoir besoin d'exécuter..
+2. **Pré-traitement des données.** Chaque champ de l'objet est interrogé pour effectuer toutes les modifications automatiques de données que le champ pourrait avoir besoin d'exécuter.
 
-   La plupart des champs ne pré-traitent pas — les données du champ sont laissées telles quelles. Le pré-tracitement n'est utilisé que sur les champs qui ont des comportements spéciaux. Par exemple, si votre modèle a un :class:`~django.db.models.DateField` avec
+   La plupart des champs ne pré-traitent pas — les données du champ sont laissées telles quelles. Le pré-traitement n'est utilisé que sur les champs qui ont des comportements spéciaux. Par exemple, si votre modèle a un :class:`~django.db.models.DateField` avec
    ``auto_now=True``, la phase de de pré-traitement modifiera les données dl'objet pour s'assurer que le champ date contient la date en cours. (Notre documentation ne contient pas encore la liste des champs qui ont ce "comportement spécial")
 
-3. **Préparer les données pour la base de données.** Chaque champ est interrogé pour fournir la valeur qu'il contient en type de donnée pouvant être écrite dans la base de données.
+3. **Préparer les données pour la base de données.** Chaque champ est interrogé pour convertir la valeur qu'il contient en type de donnée pouvant être écrite dans la base de données.
 
-   La plupart des champs *n'ont pas* besoin de préparer les données. Les types de données simples, comme les entiers ou les chaînes, sont 'prêtes à être écrites' en tant qu'objet Python. Cependant, des types de connées plus complexes requièrent souvent des modifications.
+   La plupart des champs *n'ont pas* besoin de préparer les données. Les types de données simples, comme les entiers ou les chaînes, sont 'prêtes à être écrites' en tant qu'objet Python. Cependant, des types de données plus complexes requièrent souvent des modifications.
 
    Par exemple, les champs :class:`~django.db.models.DateField` utilisent un objet
    ``datetime`` Python pour stocker les données. La base de données ne stocke pas les objets ``datetime``, la valeur de champ doit donc être convertie en une chaîne date ISO conforme pour insertion dans la base de données.
 
-4. **Insérer les données dans la base de données.** les données, pré-traîtées, préparées, sont alors  converties en instruction SQL pour insertion dans la base de données.
+4. **Insérer les données dans la base de données.** les données, pré-traitées, préparées, sont alors  converties en instruction SQL pour leur insertion dans la base de données.
 
 5. **Emission d'un signal post-sauvegarde.** Le signal
    :attr:`django.db.models.signals.post_save` est émis, permettant à toute fonction écoutant ce signal d'effectuer des actions personnalisées.
@@ -225,7 +224,7 @@ Vous avez peut-être remarqué que les objets base de données Django utilisent 
 * S'il existe, Django exécute une requête ``UPDATE``.
 * Si l'attribut clé primaire *n'est pas* initialisé, ou s'il l'est mais que l'enregistrement n'existe pas, Django exécute un ``INSERT``.
 
-Le truc ici, c'est que vous devez être attentif à ne pas spécifier de valeur de clé primaire lorsque vous sauvegardez des objets nouveaux, si vous ne pouvez pas garantir que la valeur clé-primaire est inutilisée. Pour davantage sur cette nuance, voir  `Explicitly specifying auto-primary-key values`_ ci-dessus et `Forcing an INSERT or UPDATE`_ ci-dessous.
+Le truc ici, c'est que vous devez être attentif à ne pas spécifier de valeur de clé primaire, lorsque vous sauvegardez des objets nouveaux, si vous ne pouvez pas garantir que la valeur clé-primaire est inutilisée. Pour davantage sur cette nuance, voir  `Spécifier des valeurs auto-primary-key explicitement`_ ci-dessus et `Forcer un INSERT ou un UPDATE`_ ci-dessous.
 
 .. _ref-models-force-insert:
 
@@ -233,7 +232,7 @@ Forcer un INSERT ou un UPDATE
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Il est parfois nécessaire d'obliger la méthode :meth:`~Model.save()` à effecteur un ``INSERT`` SQL et ne pas faire un ``UPDATE``. Ou vice-versa: update, si possible, mais pas d'ajout de nouvelle ligne. Dans ces cas-là vous pouvez passer les paramètres ``force_insert=True`` ou ``force_update=True`` à la méthode :meth:`~Model.save()`.
-Évidemment, passer les deux paramètres  à la fois est une erreur : vous ne pouvez pas effectuer un insert *et* un 
+Évidemment, passer les deux paramètres  à la fois est une erreur : vous ne pouvez pas faire un insert *et* un 
 update en même temps !
 
 Les cas d'utilisation de ces paramètres devraient être assez rares. Django saura presque toujours faire la bonne action et tenter de surcharger ce comportement pourrait amener à des erreurs difficiles à pister. Cette fonctionnalité n'est là que pour des utilisations avancées.
@@ -241,7 +240,7 @@ Les cas d'utilisation de ces paramètres devraient être assez rares. Django sau
 Actualiser des attributs basés sur des champs existants
 -------------------------------------------------------
 
-Vous devrez parfois effectuer des tâches arithmétiques simpes sur un champ, comme incrementer ou décrementer la valeur en cours. La façon de procéder la plus évidente ressemble à ce qui suit::
+Vous devrez parfois effectuer des tâches arithmétiques simples sur un champ, comme incrémenter ou décrémenter la valeur en cours. La façon de procéder la plus évidente ressemble à ceci::
 
     >>> product = Product.objects.get(name='Venezuelan Beaver Cheese')
     >>> product.number_sold += 1
@@ -249,9 +248,9 @@ Vous devrez parfois effectuer des tâches arithmétiques simpes sur un champ, co
 
 Si l'ancienne valeur  ``number_sold`` récupérée dans la base de données était 10, alors la valeur 11 sera écrite à la place dans la base.
 
-Cette séquence comporte un problème update standard d'acc-s concurrentiel. Si un autre thread a sauvegardé une nouvelle valeur après que le thread en cours ait récupéré l'ancienne valeur, le thread en cours va sauvegarder son ancienne valeur plus un, au lieu de sauvegarder l'actuelle nouvelle valeur plus un.
+Cette séquence comporte un problème classique d'accès concurrentiels. Si un autre thread a sauvegardé une nouvelle valeur après que le thread en cours ait récupéré l'ancienne valeur, le thread en cours va sauvegarder son ancienne valeur plus un, au lieu de sauvegarder l'actuelle nouvelle valeur plus un.
 
-Le traitement peut être rendu plus robuste et légèrement plus rapide en exprimant l'update par rapport à la valeur orignale du champ, plutôt qu'en assignant explicitement une nouvelle valeur. Django fournit les :ref:`F() expressions <query-expressions>` pour effectuer ce type d'update. En utilisant les ``F()`` expressions, l'exemple précédent devient::
+Le traitement peut être rendu plus robuste et légèrement plus rapide en exprimant l'update par rapport à la valeur originale du champ, plutôt qu'en assignant explicitement une nouvelle valeur. Django fournit les :ref:`expressions F() <query-expressions>` pour effectuer ce type d'update. En utilisant les expressions ``F()``, l'exemple précédent devient::
 
     >>> from django.db.models import F
     >>> product = Product.objects.get(name='Venezuelan Beaver Cheese')
@@ -260,15 +259,13 @@ Le traitement peut être rendu plus robuste et légèrement plus rapide en expri
 
 Cette approche n'utilise pas la valeur initiale de la base de données. Au lieu de cela, la base de données fait son update à partir de la valeur existante au moment ou le :meth:`~Model.save()` est exécuté.
 
-Une fois uqe l'objet a été sauvegardé, vous devez le recharger pour accèder à la valeur réelle qui a été appliquée au champ actualisé::
+Une fois que l'objet a été sauvegardé, vous devez le recharger pour accéder à la valeur réelle qui a été appliquée au champ actualisé::
 
     >>> product = Products.objects.get(pk=product.pk)
     >>> print product.number_sold
     42
 
-Pour plus de détails, voir la documentation sur :ref:`F() expressions
-<query-expressions>` et leur :ref:`use in update queries
-<topics-db-queries-update>`.
+Pour plus de détails, voir la documentation sur :ref:`expressions F() <query-expressions>` et leur :ref:`utilisation dans les requeêtes Update <topics-db-queries-update>`.
 
 Effacer des objets
 ==================
@@ -278,11 +275,11 @@ Effacer des objets
 .. versionadded:: 1.2
    The ``using`` argument was added.
 
-Émet une isntruction SQL ``DELETE`` pour l'objet. Cela ne fait qu'effacer l'objet dans la base de données; l'instance Python contienu d'exister et continue d'avoir des données dans ses champs.
+Émet une instruction SQL ``DELETE`` pour l'objet. Cela ne fait qu'effacer l'objet dans la base de données; l'instance Python continue d'exister et continue d'avoir des données dans ses champs.
 
 Pour d'autres infos, y compris sur la façon d'effectuer des effacements par lots, voir :ref:`topics-db-queries-delete`.
 
-Si vous voulez un comportment d'effacements personnalisé, vous pouvez surcharger la méthode ``delete()``. Voir :ref:`overriding-model-methods` pour plus de détails.
+Si vous voulez un comportement d'effacements personnalisé, vous pouvez surcharger la méthode ``delete()``. Voir :ref:`overriding-model-methods` pour plus de détails.
 
 .. _model-instance-methods:
 
@@ -296,8 +293,7 @@ Quelques méthodes d'objets ont des buts spécifiques.
 
 .. method:: Model.__unicode__()
 
-La méthode ``__unicode__()`` est appelée chaque fois que vous appelez ``unicode()`` sur un objet. Django utilise  ``unicode(obj)`` (ou la fonction liée, :meth:`str(obj) <Model.__str__>`) en différents endroits. Plus particulièrement, pour afficher un objet dans la partie admin du site Django et en tant que valeur insiérée dans un template qui affiche un objet. 
-displays an object. Ainsi, vous aurez toujours une représentation belle et compréhensible du modèle avec la méthode ``__unicode__()``.
+La méthode ``__unicode__()`` est appelée chaque fois que vous appelez ``unicode()`` sur un objet. Django utilise  ``unicode(obj)`` (ou la fonction liée, :meth:`str(obj) <Model.__str__>`) en différents endroits. Plus particulièrement, pour afficher un objet dans la partie admin du site Django et en tant que valeur insérée dans un template qui affiche un objet. Ainsi, vous aurez toujours une représentation belle et compréhensible du modèle avec la méthode ``__unicode__()``.
 
 Par exemple::
 
@@ -309,27 +305,25 @@ Par exemple::
             return u'%s %s' % (self.first_name, self.last_name)
 
 Si vous déclarez une méthode ``__unicode__()`` dans votre modèle et pas une méthode 
-:meth:`~Model.__str__()`, Django vous fournira automatiquement un :meth:`~Model.__str__()` qui appelle ``__unicode__()`` et convertit ensuite correctement le résultat en un objet chaîne codé en UTF-8. C'est la pratique de développement conseillée : déclarez seulement ``__unicode__()`` et laissez Django s'occuper de la cnversion en objets chaîne lorsque ce sera nécessaire.
+:meth:`~Model.__str__()`, Django vous fournira automatiquement un :meth:`~Model.__str__()` qui appelle ``__unicode__()`` et convertit ensuite correctement le résultat en un objet chaîne codé en UTF-8. C'est la pratique de développement conseillée: déclarez seulement ``__unicode__()`` et laissez Django s'occuper de la conversion en objets chaîne lorsque ce sera nécessaire.
 
 ``__str__``
 -----------
 
 .. method:: Model.__str__()
 
-The ``__str__()`` method is called whenever you call ``str()`` on an object. The main use for this method directly inside Django is when the ``repr()`` output of a model is displayed anywhere (for example, in debugging output).
-Thus, you should return a nice, human-readable string for the object's
-``__str__()``.  It isn't required to put ``__str__()`` methods everywhere if you have sensible :meth:`~Model.__unicode__()` methods.
+La méthode ``__str__()`` est appelée chaque fois que vous appelez ``str()`` sur un objet. La principale utilisation de cette méthode dans Django est lorsque la sortie ``repr()`` d'un modèle est affichée quelque part (par exemple, dans une sortie de debuggage).
+Ainsi, vous renverrez une chaîne lisible et compréhensible pour le ``__str__()`` de l'objet. Il n'est pas obligatoire de mettre des méthodes ``__str__()`` partout si vous avez des méthodes :meth:`~Model.__unicode__()` sensibles.
 
-The previous :meth:`~Model.__unicode__()` example could be similarly written
-using ``__str__()`` like this::
+Avec  ``__str__()``, l'exemple :meth:`~Model.__unicode__()` précédent peut être écrit de façon semblable comme ceci::
 
     class Person(models.Model):
         first_name = models.CharField(max_length=50)
         last_name = models.CharField(max_length=50)
 
         def __str__(self):
-            # Note use of django.utils.encoding.smart_str() here because
-            # first_name and last_name will be unicode strings.
+            # Notez ici l'utilisation de django.utils.encoding.smart_str() car
+            # first_name et last_name seront des chaînes unicode.
             return smart_str('%s %s' % (self.first_name, self.last_name))
 
 ``get_absolute_url``
@@ -337,81 +331,59 @@ using ``__str__()`` like this::
 
 .. method:: Model.get_absolute_url()
 
-Define a ``get_absolute_url()`` method to tell Django how to calculate the
-canonical URL for an object. To callers, this method should appear to return a
-string that can be used to refer to the object over HTTP.
+Déclarez une méthode ``get_absolute_url()`` pour dire à Django comment calculer l'URL canonique d'un objet. Pour les appelants, cette méthode doit apparaître pour renvoyer une chaîne pouvant être utilisée pour faire référence à l'objet en HTTP.
 
-For example::
+Par exemple::
 
     def get_absolute_url(self):
         return "/people/%i/" % self.id
 
-(Whilst this code is correct and simple, it may not be the most portable way to
-write this kind of method. The :func:`permalink() decorator <permalink>`,
-documented below, is usually the best approach and you should read that section
-before diving into code implementation.)
+(bien que ce code soit correct et simple, ce n'est pas la façon la plus portable d'écrire ce type de méthode. Le :func:`permalink() decorator <permalink>`, documenté ci-dessous, est habituellement la meilleure approche et vous devriez lire cette section avant de vous plonger dans l'implementation de code).
 
-One place Django uses ``get_absolute_url()`` is in the admin app. If an object
-defines this method, the object-editing page will have a "View on site" link
-that will jump you directly to the object's public view, as given by
-``get_absolute_url()``.
+Un endroit où Django utilise ``get_absolute_url()`` est dans l'application admin. Si un objet déclare cette méthode, la page d'édition de l'objet aura un lien "View on site" qui vous aménera directement à la vue publique de l'objet, donné par ``get_absolute_url()``.
 
-Similarly, a couple of other bits of Django, such as the :doc:`syndication feed
-framework </ref/contrib/syndication>`, use ``get_absolute_url()`` when it is
-defined. If it makes sense for your model's instances to each have a unique
-URL, you should define ``get_absolute_url()``.
+De la même façon, d'autres parties de Django, telles que le :doc:`syndication feed
+framework </ref/contrib/syndication>`, utilise ``get_absolute_url()`` lorsqu'il est déclaré. S'il est pertinent que chacune de vos instances de modèles ait une URL unique, vous devriez déclarer ``get_absolute_url()``.
 
-It's good practice to use ``get_absolute_url()`` in templates, instead of
-hard-coding your objects' URLs. For example, this template code is bad::
+Utiliser ``get_absolute_url()`` dans les templates est une bonne pratique, plutôt que de coder en dur vos URL d'objets. Par exemple, ce code de template est mauvais::
 
-    <!-- BAD template code. Avoid! -->
+    <!-- MAUVAIS code de template. À éviter ! -->
     <a href="/people/{{ object.id }}/">{{ object.name }}</a>
 
-This template code is much better::
+Ce code de template est bien meilleur::
 
     <a href="{{ object.get_absolute_url }}">{{ object.name }}</a>
 
-The logic here is that if you change the URL structure of your objects, even
-for something simple such as correcting a spelling error, you don't want to
-have to track down every place that the URL might be created. Specify it once,
-in ``get_absolute_url()`` and have all your other code call that one place.
+Ici, la logique est que si vous changez la structure URL de vos objets, même pour une raison aussi simple que la correction d'une faute de frappe, vous ne voulez pas avoir à chercher tous les endroits dans lesquels l'URL peut être créée. Déclarez-la une seule fois, dans ``get_absolute_url()`` et faites que votre code appelle ce seul endroit.
 
 .. note::
-    The string you return from ``get_absolute_url()`` **must** contain only
-    ASCII characters (required by the URI specfication, :rfc:`2396`) and be
-    URL-encoded, if necessary.
+    La chaîne que vous renvoyez avec ``get_absolute_url()`` **ne doit contenir que**
+    des caractères ASCII (requis par la spécification URI, :rfc:`2396`) et doit être 
+    URL-encoded, si nécessaire.
 
-    Code and templates calling ``get_absolute_url()`` should be able to use the
-    result directly without any further processing. You may wish to use the
-    ``django.utils.encoding.iri_to_uri()`` function to help with this if you
-    are using unicode strings containing characters outside the ASCII range at
-    all.
+    Le code et les templates appelant ``get_absolute_url()`` doivent pouvoir utiliser 
+    le résultat directement sans traitements supplémentaires. Vous pouvez utilisez la fonction
+    ``django.utils.encoding.iri_to_uri()`` pour vous assister si vous utiliser des chaînes unicode 
+    contenant des caractères hors de la plage ASCII.
 
-The ``permalink`` decorator
+Le décorateur ``permalink`` 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The way we wrote ``get_absolute_url()`` above is a slightly violation of the
-DRY principle: the URL for this object is defined both in the URLconf file and
-in the model.
+Notre écriture du ``get_absolute_url()`` précédent est une légère violation du principe DRY: l'URL de cet objet est déclarée à la fois dans le fichier URLconf et dans le modèle.
 
-You can decouple your models from the URLconf using the ``permalink`` decorator:
+Vous pouvez découpler vos modèles de l'URLconf en utilisant le décorateur ``permalink``:
 
 .. function:: permalink()
 
-This decorator takes the name of a URL pattern (either a view name or a URL
-pattern name) and a list of position or keyword arguments and uses the URLconf
-patterns to construct the correct, full URL. It returns a string for the
-correct URL, with all parameters substituted in the correct positions.
+Le décorateur prend le nom d'un motif d'URL (que ce soit un nom de vue ou un nom de motif URL) et une liste de positions ou d'arguments mots-clé, et utilise le motif URLconf pour construire l'URL complète et correcte. Il renvoie une chaîne pour l'URL correcte, avec tous les paramètres remplacés aux bons endroits.
 
-The ``permalink`` decorator is a Python-level equivalent to the :ttag:`url` template tag and a high-level wrapper for the :func:`django.core.urlresolvers.reverse()` function.
+Le décorateur ``permalink`` est un équivalent de niveau Python à la balise de template :ttag:`url` et un wrapper de haut-niveau pour la fonction :func:`django.core.urlresolvers.reverse()`.
 
-An example should make it clear how to use ``permalink()``. Suppose your URLconf
-contains a line such as::
+Un exemple éclaircira l'utilisation de ``permalink()``. Supposons que votre URLconf contienne une ligne comme::
 
     (r'^people/(\d+)/$', 'people.views.details'),
 
-...your model could have a :meth:`~django.db.models.Model.get_absolute_url()`
-method that looked like this::
+...votre modèle aura une méthode :meth:`~django.db.models.Model.get_absolute_url()` ressemblant à ceci::
 
     from django.db import models
 
@@ -419,11 +391,11 @@ method that looked like this::
     def get_absolute_url(self):
         return ('people.views.details', [str(self.id)])
 
-Similarly, if you had a URLconf entry that looked like::
+De la même façon, si vous avez une entrée URLconf qui ressemble à ::
 
     (r'/archive/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/$', archive_view)
 
-...you could reference this using ``permalink()`` as follows::
+...vous pouvez la référencer en utilisant ``permalink()`` comme ceci::
 
     @models.permalink
     def get_absolute_url(self):
@@ -432,28 +404,18 @@ Similarly, if you had a URLconf entry that looked like::
             'month': self.created.strftime('%m'),
             'day': self.created.strftime('%d')})
 
-Notice that we specify an empty sequence for the second parameter in this case,
-because we only want to pass keyword parameters, not positional ones.
+Notez que, dans cet exemple, nous avons spécifié une séquence vide en deuxième paramètre car nous ne voulons passer que des paramètres mots-clés, pas des positionnels.
 
-In this way, you're associating the model's absolute path with the view that is
-used to display it, without repeating the view's URL information anywhere. You
-can still use the :meth:`~django.db.models.Model.get_absolute_url()` method in
-templates, as before.
+De cette façon, vous associez le path absolu du modèle avec la vue utilisée pour l'afficher, sans répéter l'info de l'URL de la vue où que ce soit. Vous pouvez toujours utiliser la méthode :meth:`~django.db.models.Model.get_absolute_url()` dans les templates, comme avant.
 
-In some cases, such as the use of generic views or the re-use of custom views
-for multiple models, specifying the view function may confuse the reverse URL
-matcher (because multiple patterns point to the same view). For that case,
-Django has :ref:`named URL patterns <naming-url-patterns>`. Using a named URL
-pattern, it's possible to give a name to a pattern, and then reference the name
-rather than the view function. A named URL pattern is defined by replacing the
-pattern tuple by a call to the ``url`` function)::
+Dans quelques cas, par exemple dans l'utilisation des vues génériques ou dans la réutilisation des vues personnalisées pour différents modèles, spécifier la fonction view peut troubler la correspondance inverse d'URL (*reverse URL
+matcher*) (parce que différents motifs pointent sur la même vue). Pour cette situation, Django a :ref:`named URL patterns <naming-url-patterns>`. En utilisant un motif d'URL nommé, il est possible de donner un nom à un motif, et référencer ensuite le nom plutôt que la fonction view. Un motif d'URL nommé est déclaré en remplaçant le tuple motif par un appel à la fonction ``url``::
 
     from django.conf.urls import patterns, url, include
 
     url(r'^people/(\d+)/$', 'blog_views.generic_detail', name='people_view'),
 
-...and then using that name to perform the reverse URL resolution instead
-of the view name::
+...et on utilise ensuite ce nom au lieu du nom de la view, pour effectuer la résolution URL inverse::
 
     from django.db import models
 
@@ -461,22 +423,18 @@ of the view name::
     def get_absolute_url(self):
         return ('people_view', [str(self.id)])
 
-More details on named URL patterns are in the :doc:`URL dispatch documentation
-</topics/http/urls>`.
+Plus de détails sur les motifs d'URL nommés se trouvent dans :doc:`URL dispatch documentation </topics/http/urls>`.
 
-Extra instance methods
-======================
+Méthodes d'instances supplémentaires
+====================================
 
-In addition to :meth:`~Model.save()`, :meth:`~Model.delete()`, a model object
-might have some of the following methods:
+En plus de :meth:`~Model.save()`, :meth:`~Model.delete()`, un objet modèle peut avoir quelques-unes des méthodes suivantes:
 
 .. method:: Model.get_FOO_display()
 
-For every field that has :attr:`~django.db.models.Field.choices` set, the
-object will have a ``get_FOO_display()`` method, where ``FOO`` is the name of
-the field. This method returns the "human-readable" value of the field.
+Pour chaque champ ayant :attr:`~django.db.models.Field.choices` paramétré, l'objet aura une méthode ``get_FOO_display()``, où ``FOO`` est le nom du champ. Cette méthode renverra la valeur du champ "humainement lisible".
 
-For example::
+Par exemple::
 
         from django.db import models
 
@@ -501,16 +459,11 @@ For example::
 .. method:: Model.get_next_by_FOO(\**kwargs)
 .. method:: Model.get_previous_by_FOO(\**kwargs)
 
-For every :class:`~django.db.models.DateField` and
-:class:`~django.db.models.DateTimeField` that does not have :attr:`null=True
-<django.db.models.Field.null>`, the object will have ``get_next_by_FOO()`` and
-``get_previous_by_FOO()`` methods, where ``FOO`` is the name of the field. This
-returns the next and previous object with respect to the date field, raising
-a :exc:`~django.db.DoesNotExist` exception when appropriate.
+Pour chaque :class:`~django.db.models.DateField` et
+:class:`~django.db.models.DateTimeField` qui n'ont pas :attr:`null=True
+<django.db.models.Field.null>`, l'objet aura des méthodes ``get_next_by_FOO()`` et
+``get_previous_by_FOO()``, où ``FOO`` est le nom du champ. Elles retournent l'objet suivant et précédent par rapport au champ date, levant une exception :exc:`~django.db.DoesNotExist` le cas échéant.
 
-Both methods accept optional keyword arguments, which should be in the format
-described in :ref:`Field lookups <field-lookups>`.
+Les deux méthodes acceptent de arguments mot-clés facultatifs, qui doivent être au format décrit dans :ref:`Field lookups <field-lookups>`.
 
-Note that in the case of identical date values, these methods will use the
-primary key as a tie-breaker. This guarantees that no records are skipped or
-duplicated. That also means you cannot use those methods on unsaved objects.
+Notez qu'en cas de valeurs date identiques, ces méthodes utiliseront la clé primaire en départage. Cela garantit qu'aucun enregistrement n'est sauté ou dupliqué. Cela veut dire aussi que vous ne pouvez pas utiliser ces méthodes sur des objets non sauvegardés.
