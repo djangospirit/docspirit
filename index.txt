@@ -78,7 +78,7 @@ Django fournit une couche d'abstraction (les "models") pour structurer et manipu
   :doc:`QuerySet method reference <ref/models/querysets>`
 
 * **Model instances:**
-  :doc:`Instance methods <ref/models/instances>` |
+  :doc:`Méthodes d'instances <ref/models/instances>` |
   :doc:`Accessing related objects <ref/models/relations>`
 
 * **Advanced:**
