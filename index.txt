@@ -125,7 +125,7 @@ Une vue est le concept Django pour encapsuler la logique de traitement des requ�
   :doc:`API reference <ref/class-based-views/index>`
 
 * **Advanced:**
-  :doc:`Generating CSV <howto/outputting-csv>` |
+  :doc:`Générer du CSV <howto/outputting-csv>` |
   :doc:`Generating PDF <howto/outputting-pdf>`
 
 * **Middleware:**
