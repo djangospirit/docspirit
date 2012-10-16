@@ -4,69 +4,50 @@ URL dispatcher
 
 .. module:: django.core.urlresolvers
 
-A clean, elegant URL scheme is an important detail in a high-quality Web
-application. Django lets you design URLs however you want, with no framework
-limitations.
+Un système d'URLs propre, élégant, est un aspect important dans une application Web de qualité. Django vous permet de concevoir vos URL de la façon qui vous convient le mieux, sans limitations dues au framework.
 
-There's no ``.php`` or ``.cgi`` required, and certainly none of that
-``0,2097,1-1-1928,00`` nonsense.
+Il n'y a pas d'obligation d'insérer ``.php`` ou ``.cgi`` dans l'URL, et encore moins ce type d'absurdités :
+``0,2097,1-1-1928,00``.
 
-See `Cool URIs don't change`_, by World Wide Web creator Tim Berners-Lee, for
-excellent arguments on why URLs should be clean and usable.
+Consultez `Cool URIs don't change`_, par Tim Berners-Lee, le créateur du World Wide Web, pour une excellente argumentation expliquant pourquoi les URLs doivent être propres et utilisables.
 
 .. _Cool URIs don't change: http://www.w3.org/Provider/Style/URI
 
-Overview
-========
+Vue d'ensemble
+==============
 
-To design URLs for an app, you create a Python module informally called a
-**URLconf** (URL configuration). This module is pure Python code and
-is a simple mapping between URL patterns (as simple regular expressions) to
-Python callback functions (your views).
+Pour créer les URLs d'une application, vous créez un module Python simplement appelé
+**URLconf** (URL configuration). Ce module n'est rien d'autre que du code Python pur et il s'agit d'un simple mappage de motifs d'URL sous forme d'expressions rationnelles (*URL patterns*) vers des fonctions callback Python (vos vues).
 
-This mapping can be as short or as long as needed. It can reference other
-mappings. And, because it's pure Python code, it can be constructed
-dynamically.
+Ce mappage est aussi bref ou aussi long que nécessaire. Il peut se référer à d'autres mappages. Et, parce qu'il s'agit de code Python pur, il peut être construit dynamiquement.
 
 .. versionadded:: 1.4
-    Django also allows to translate URLs according to the active language.
-    This process is described in the
+    Django permet également la traduction d'URL en fonction de la langue active.
+    Le processus est décrit dans 
     :ref:`internationalization docs <url-internationalization>`.
 
 .. _how-django-processes-a-request:
 
-How Django processes a request
-==============================
+Comment une requête est traitée par Django
+==========================================
 
-When a user requests a page from your Django-powered site, this is the
-algorithm the system follows to determine which Python code to execute:
+Lorsqu'un utilisateur demande une page, voici l'algorithme suivi par le système pour déterminer quel code Python exécuter:
 
-1. Django determines the root URLconf module to use. Ordinarily,
-   this is the value of the :setting:`ROOT_URLCONF` setting, but if the incoming
-   ``HttpRequest`` object has an attribute called ``urlconf`` (set by
-   middleware :ref:`request processing <request-middleware>`), its value
-   will be used in place of the :setting:`ROOT_URLCONF` setting.
+1. Django détermine le module URLconf racine à utiliser. D'ordinaire, c'est la valeur du paramètre :setting:`ROOT_URLCONF` , mais si l'objet ``HttpRequest`` entrant a un attribut appelé ``urlconf`` (paramétré par le
+   middleware :ref:`request processing <request-middleware>`), sa valeur sera utilisée à la place du paramètre :setting:`ROOT_URLCONF`.
 
-2. Django loads that Python module and looks for the variable
-   ``urlpatterns``. This should be a Python list, in the format returned by
-   the function :func:`django.conf.urls.patterns`.
+2. Django charge ce module Python et cherche la variable ``urlpatterns``. Il s'agit d'une liste Python, au format retourné par la fonction :func:`django.conf.urls.patterns`.
 
-3. Django runs through each URL pattern, in order, and stops at the first
-   one that matches the requested URL.
+3. Django parcourt chaque motif URL, dans l'ordre, et s'arrête au premier qui correspond à l'URL demandée.
 
-4. Once one of the regexes matches, Django imports and calls the given
-   view, which is a simple Python function. The view gets passed an
-   :class:`~django.http.HttpRequest` as its first argument and any values
-   captured in the regex as remaining arguments.
+4. Dès que l'une des expressions rationnelles correspond, Django importe et appelle la vue indiquée, qui est une simple fonction Python. La vue reçoit un :class:`~django.http.HttpRequest` en premier argument et toutes valeurs capturées par l'expression rationnelle en arguments suivants.
 
-5. If no regex matches, or if an exception is raised during any
-   point in this process, Django invokes an appropriate
-   error-handling view. See `Error handling`_ below.
+5. Si aucune expression rationnelle ne correspond, ou si une exception est levée à un moment donné de ce traitement, Django invoque une vue error-handling appropriée. Voir `Error handling`_ ci-dessous.
 
-Example
+Exemple
 =======
 
-Here's a sample URLconf::
+Voici un échantillon d'URLconf::
 
     from django.conf.urls import patterns, url, include
 
@@ -79,36 +60,26 @@ Here's a sample URLconf::
 
 Notes:
 
-* To capture a value from the URL, just put parenthesis around it.
+* Pour capturer une valeur de l'URL, mettez-la simplement entre parenthèses.
 
-* There's no need to add a leading slash, because every URL has that. For
-  example, it's ``^articles``, not ``^/articles``.
+* Il n'est pas nécessaire d'ajouter le slash de début, parce que chaque URL en a. Par exemple, c'est ``^articles``, pas ``^/articles``.
 
-* The ``'r'`` in front of each regular expression string is optional but
-  recommended. It tells Python that a string is "raw" -- that nothing in
-  the string should be escaped. See `Dive Into Python's explanation`_.
+* Le ``'r'`` au début de chaque expression rationnelle est facultatif mais conseillé. Il dit à Python qu'une chaîne est "brute" ("raw") -- que rien dans la chaîne ne doit être échappé. Voir `Dive Into Python`_.
 
-Example requests:
+Exemple de requêtes:
 
-* A request to ``/articles/2005/03/`` would match the third entry in the
-  list. Django would call the function
+* Une requête vers ``/articles/2005/03/`` correspondra à la troisième entrée de la liste. Django appellera la fonction
   ``news.views.month_archive(request, '2005', '03')``.
 
-* ``/articles/2005/3/`` would not match any URL patterns, because the
-  third entry in the list requires two digits for the month.
+* ``/articles/2005/3/`` ne correspondra à aucun des motifs d'URL, parce que la troisième entrée de la liste requiert 2 chiffres pour le mois.
 
-* ``/articles/2003/`` would match the first pattern in the list, not the
-  second one, because the patterns are tested in order, and the first one
-  is the first test to pass. Feel free to exploit the ordering to insert
-  special cases like this.
+* ``/articles/2003/`` correspondra au premier motif de la liste, pas au second, parce que les motifs sont testés dans l'ordre, et le premier est le premier à réussier le test. N'hésitez pas à exploiter l'ordre pour insérer des cas particuliers comme celui-ci.
 
-* ``/articles/2003`` would not match any of these patterns, because each
-  pattern requires that the URL end with a slash.
+* ``/articles/2003`` ne correspondra à aucun de ces motifs, parce que chaque motif exige que l'URL se termine par un slash.
 
-* ``/articles/2003/03/03/`` would match the final pattern. Django would call
-  the function ``news.views.article_detail(request, '2003', '03', '03')``.
+* ``/articles/2003/03/03/`` correspondra au dernier motif. Django appellera la fonction ``news.views.article_detail(request, '2003', '03', '03')``.
 
-.. _Dive Into Python's explanation: http://diveintopython.net/regular_expressions/street_addresses.html#re.matching.2.3
+.. _Dive Into Python: http://diveintopython.adrahon.org/regular_expressions/street_addresses.html
 
 Named groups
 ============
