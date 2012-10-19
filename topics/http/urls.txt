@@ -81,20 +81,14 @@ Exemple de requêtes:
 
 .. _Dive Into Python: http://diveintopython.adrahon.org/regular_expressions/street_addresses.html
 
-Named groups
-============
+Groupes nommés
+==============
 
-The above example used simple, *non-named* regular-expression groups (via
-parenthesis) to capture bits of the URL and pass them as *positional* arguments
-to a view. In more advanced usage, it's possible to use *named*
-regular-expression groups to capture URL bits and pass them as *keyword*
-arguments to a view.
+Pour capturer les parties de l'URL et les passer en arguments positionnels à une vue, l'exemple précédent utilise des groupes d'expressions rationnelles simples, *non nommées* (via des parenthèses). Dans un usage plus avancé, il est possible d'utiliser des goupes d'expressions rationnelles *nommés* pour capturer des parties d'URL et les passer en tant qu'arguments *mots-clé* à une vue.
 
-In Python regular expressions, the syntax for named regular-expression groups
-is ``(?P<name>pattern)``, where ``name`` is the name of the group and
-``pattern`` is some pattern to match.
+Dans les expressions rationnellles Python, la syntaxe pour les groupes nommés d'expressions rationnelles est ``(?P<name>pattern)``, où ``name`` est le nom du groupe et ``pattern`` est le motif à rechercher.
 
-Here's the above example URLconf, rewritten to use named groups::
+Voicie le précédent exemple URLconf, ré-écrit pour utiliser les groupes nommés::
 
     urlpatterns = patterns('',
         (r'^articles/2003/$', 'news.views.special_case_2003'),
@@ -103,96 +97,73 @@ Here's the above example URLconf, rewritten to use named groups::
         (r'^articles/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/$', 'news.views.article_detail'),
     )
 
-This accomplishes exactly the same thing as the previous example, with one
-subtle difference: The captured values are passed to view functions as keyword
-arguments rather than positional arguments. For example:
+Ce code exécute exactement la même chose que l'exemple précédent, avec une différence subtile: les valeurs capturées sont passées aux fonctions vues comme arguments mots-clés plutôt que comme arguments positionnels. Par exemple:
 
-* A request to ``/articles/2005/03/`` would call the function
-  ``news.views.month_archive(request, year='2005', month='03')``, instead
-  of ``news.views.month_archive(request, '2005', '03')``.
+* Une requête vers ``/articles/2005/03/`` appellera la fonction 
+  ``news.views.month_archive(request, year='2005', month='03')``, au lieu de ``news.views.month_archive(request, '2005', '03')``.
 
-* A request to ``/articles/2003/03/03/`` would call the function
+* Une requête vers ``/articles/2003/03/03/`` appellera la fonction 
   ``news.views.article_detail(request, year='2003', month='03', day='03')``.
 
-In practice, this means your URLconfs are slightly more explicit and less prone
-to argument-order bugs -- and you can reorder the arguments in your views'
-function definitions. Of course, these benefits come at the cost of brevity;
-some developers find the named-group syntax ugly and too verbose.
+En pratique, cela veut dire que vos URLconfs sont légèrement plus explicites et moins sujets à des bugs relatifs à l'ordre des arguments -- et vous pouvez reordonner les arguments dans vos déclarations de fonctions vue. Bien sûr, ces avantages se font aux dépens de la concision; certains développeurs trouvent la syntaxe groupes nommées laide et trop bavarde.
 
-The matching/grouping algorithm
--------------------------------
+L'algorithme correspondance/grouping
+------------------------------------
 
-Here's the algorithm the URLconf parser follows, with respect to named groups
-vs. non-named groups in a regular expression:
+Voici l'algorithme que le parser URLconfsuit, par rapport aux groupes nommés vs groupes non nommés d'une expression rationnelle:
 
-If there are any named arguments, it will use those, ignoring non-named arguments.
-Otherwise, it will pass all non-named arguments as positional arguments.
+S'il trouve des arguments nommés, il les utilisera et ignorera les arguments non nommés. Sinon, il passera tous les arguments non nommés en tant qu'arguments positionnels.
 
-In both cases, it will pass any extra keyword arguments as keyword arguments.
-See "Passing extra options to view functions" below.
+Dans les deux cas, il passera tout argument mot-clé supplémentaire comme argument mot-clé. Voir  In both cases, it will pass any extra keyword arguments as keyword arguments.
+Voir "Passer des options supplémentaires aux fonctions vue" ci-dessous.
 
-What the URLconf searches against
-=================================
+Ce que URLconf recherche
+========================
 
-The URLconf searches against the requested URL, as a normal Python string. This
-does not include GET or POST parameters, or the domain name.
+URLconf fait sa recherche sur l'URL demandée, en tant que chaîne Python normale. Cela n'inclut pas les paramètres GET ou POST, ou le nom de domaine.
 
-For example, in a request to ``http://www.example.com/myapp/``, the URLconf
-will look for ``myapp/``.
+Par exemple, s ``http://www.example.com/myapp/``, URLconf cherchera ``myapp/``.
 
-In a request to ``http://www.example.com/myapp/?page=3``, the URLconf will look
-for ``myapp/``.
+Sur une requête pour ``http://www.example.com/myapp/?page=3``, URLconf cherchera ``myapp/``.
 
-The URLconf doesn't look at the request method. In other words, all request
-methods -- ``POST``, ``GET``, ``HEAD``, etc. -- will be routed to the same
-function for the same URL.
+URLconf ne regarde pas la méthode de requête. En d'autres termes, toutes les méthodes de requêtes -- ``POST``, ``GET``, ``HEAD``, etc. -- de la même URL seront dirigées vers la même fonction.
 
-Syntax of the urlpatterns variable
+Syntaxe de la variable urlpatterns
 ==================================
 
-``urlpatterns`` should be a Python list, in the format returned by the function
-:func:`django.conf.urls.patterns`. Always use ``patterns()`` to create
-the ``urlpatterns`` variable.
+``urlpatterns`` doit être une liste Python, au format retourné par la fonction :func:`django.conf.urls.patterns`. Utilisez toujours ``patterns()`` pour créer la variable ``urlpatterns``.
 
-``django.conf.urls`` utility functions
-======================================
+Fonctions utilitraires ``django.conf.urls``
+===========================================
 
 .. module:: django.conf.urls
 
 .. deprecated:: 1.4
-    Starting with Django 1.4 functions ``patterns``, ``url``, ``include`` plus
-    the ``handler*`` symbols described below live in the ``django.conf.urls``
-    module.
+    A partir de  Django 1.4 les fonctions ``patterns``, ``url``, ``include`` et les symboles ``handler*`` décrits ci-dessous se trouvent dans le module ``django.conf.urls``.
 
-    Until Django 1.3 they were located in ``django.conf.urls.defaults``. You
-    still can import them from there but it will be removed in Django 1.6.
+    Jusqu'à Django 1.3 ils étaient situés dans ``django.conf.urls.defaults``. Vous pouvez encore les importer depuis ce module mais ils disparaîtront dans Django 1.6.
 
 patterns
 --------
 
 .. function:: patterns(prefix, pattern_description, ...)
 
-A function that takes a prefix, and an arbitrary number of URL patterns, and
-returns a list of URL patterns in the format Django needs.
+Une fonction qui prend un prefix et un nombre quelconque de motifs d'URL, et retourne une liste de de motifs d'URL dans un format requis par Django.
 
-The first argument to ``patterns()`` is a string ``prefix``. See
-`The view prefix`_ below.
+Le premier argument de ``patterns()`` est une chaîne ``prefix``. Voir 
+`Le préfixe de vue`_ plus loin.
 
-The remaining arguments should be tuples in this format::
+Les arguments restants doivent être des tuples dans ce format::
 
     (regular expression, Python callback function [, optional dictionary [, optional name]])
 
-...where ``optional dictionary`` and ``optional name`` are optional. (See
-`Passing extra options to view functions`_ below.)
+...où ``optional dictionary`` et ``optional name`` sont optionnels. (Voir
+`Passer des options supplémentaires aux fonctions vue`_ ci-dessous.)
 
 .. note::
-    Because `patterns()` is a function call, it accepts a maximum of 255
-    arguments (URL patterns, in this case). This is a limit for all Python
-    function calls. This is rarely a problem in practice, because you'll
-    typically structure your URL patterns modularly by using `include()`
-    sections. However, on the off-chance you do hit the 255-argument limit,
-    realize that `patterns()` returns a Python list, so you can split up the
-    construction of the list.
+    Parce que `patterns()` est un appel de fonction, il accepte un maximum de 255
+    arguments (des motifs d'URL dans le cas présent). C'est une limitation des appels de fonction Python. 
+    En pratique, c'est rarement un problème parce que vous structurerez vos motifs d'URL modulairement en utilisant des sections  `include()`. Cependant, si par miracle vous atteignez la limite des 255 arguments, sachez que `patterns()` renvoie une liste Python, vous pouvez donc divisier la construction de la liste.
 
     ::
 
@@ -203,73 +174,61 @@ The remaining arguments should be tuples in this format::
             ...
             )
 
-    Python lists have unlimited size, so there's no limit to how many URL
-    patterns you can construct. The only limit is that you can only create 254
-    at a time (the 255th argument is the initial prefix argument).
+    Les listes Python ont une taille illmitée, il n'y a donc pas de limite au nombre de motifs d'URL que vous pouvez construire. LA seule limite est que vous ne pouvez en créer que 254 à la fois (le 255e argument est l'argument prefixe initial).
 
 url
 ---
 
 .. function:: url(regex, view, kwargs=None, name=None, prefix='')
 
-You can use the ``url()`` function, instead of a tuple, as an argument to
-``patterns()``. This is convenient if you want to specify a name without the
-optional extra arguments dictionary. For example::
+Vous pouvez utiliser la fonction ``url()``, au lieu d'un tuple, en tant qu'argument pour
+``patterns()``. C'est pratique si vous voulez spécifier un nom sans ledictionnaire d'arguments supplémentaires optionnels. Par exemple::
 
     urlpatterns = patterns('',
         url(r'^index/$', index_view, name="main-view"),
         ...
     )
 
-This function takes five arguments, most of which are optional::
+Cette fonction prend cinq arguments, la plupart sont optionnels::
 
     url(regex, view, kwargs=None, name=None, prefix='')
 
-See `Naming URL patterns`_ for why the ``name`` parameter is useful.
+Voir `Nommer les motifs d'URL`_ pour savoir pourquoi le paramètre ``name`` est utile.
 
-The ``prefix`` parameter has the same meaning as the first argument to
-``patterns()`` and is only relevant when you're passing a string as the
-``view`` parameter.
+Le paramètre ``prefix`` a le même sens que le premier argument pour
+``patterns()`` et il n'est pertinent que lorsque vous passez une chaîne comme paramètre ``view``.
 
 include
 -------
 
 .. function:: include(<module or pattern_list>)
 
-A function that takes a full Python import path to another URLconf module that
-should be "included" in this place.
+Une fonction qui prend un chemin d'import Python entier vers un autre module URLconf qui doit être "inclus" à cet endroit.
 
-:func:`include` also accepts as an argument an iterable that returns URL
+:func:`include` accepte également comme argument un itérable qui renvoie URL
 patterns.
 
-See `Including other URLconfs`_ below.
+Voir `Inclure d'autres URLconfs`_ ci-dessous.
 
-Error handling
-==============
+Gestion des erreurs
+===================
 
-When Django can't find a regex matching the requested URL, or when an
-exception is raised, Django will invoke an error-handling view. The
-views to use for these cases are specified by three variables which can
-be set in your root URLconf. Setting these variables in any other
-URLconf will have no effect.
+Lorsque Django ne peut trouver une regex correspondant à l'URL demandée, ou lorsque une exception est levée, Django invoquera une vue gestionjnaire d'erreur. Les vues à utiliser dans ces cas-là sont spécifiées par trois variables qui peuvent être initialisées dans votre URLconf racine. Initialiser ces variables dans n'importe quel autre URLconf sera sans effet.
 
-See the documentation on :ref:`customizing error views
-<customizing-error-views>` for more details.
+Voir la documentation sur :ref:`customizing error views
+<customizing-error-views>` pour plus de détails.
 
 handler403
 ----------
 
 .. data:: handler403
 
-A callable, or a string representing the full Python import path to the view
-that should be called if the user doesn't have the permissions required to
-access a resource.
+Un appelable, ou une chaîne représentant le chemin d'import Python complet sur la vue devant être appelée si l'utilisateur n'a pas les droits requis pour accèder à une ressource.
 
-By default, this is ``'django.views.defaults.permission_denied'``. That default
-value should suffice.
+Par défaut, il s'agit de ``'django.views.defaults.permission_denied'``. Cette valeur par défaut devrait faire l'affaire.
 
-See the documentation about :ref:`the 403 (HTTP Forbidden) view
-<http_forbidden_view>` for more information.
+Voir la documentation sur :ref:`the 403 (HTTP Forbidden) view
+<http_forbidden_view>` plus pour d'informations.
 
 .. versionadded:: 1.4
     ``handler403`` is new in Django 1.4.
@@ -279,44 +238,36 @@ handler404
 
 .. data:: handler404
 
-A callable, or a string representing the full Python import path to the view
-that should be called if none of the URL patterns match.
+Un appelable, ou une chaîne représentant le chemin d'import Python complet sur la vue devant être appelée si aucun des motifs URL ne correspond.
 
-By default, this is ``'django.views.defaults.page_not_found'``. That default
-value should suffice.
+Par défaut, il s'agit de ``'django.views.defaults.page_not_found'``. Cette valeur par défaut devrait faire l'affaire.
 
 .. versionchanged:: 1.2
-    Previous versions of Django only accepted strings representing import paths.
+    Les précédentes versions de Django n'acceptaient que des chaînes représentant les chemins d'import.
 
 handler500
 ----------
 
 .. data:: handler500
 
-A callable, or a string representing the full Python import path to the view
-that should be called in case of server errors. Server errors happen when you
-have runtime errors in view code.
+Un appelable, ou une chaîne représentant le chemin d'import Python complet sur la vue devant être appelée en cas d'erreurs serveurs. Les erreurs serveurs se produisent lorsque vous avez des erreurs d'exécution dans le code vue.
 
-By default, this is ``'django.views.defaults.server_error'``. That default
-value should suffice.
+Par défaut, il s'agit de ``'django.views.defaults.server_error'``. Cette valeur par défaut devrait faire l'affaire.
 
 .. versionchanged:: 1.2
-    Previous versions of Django only accepted strings representing import paths.
+    Les précédentes versions de Django n'acceptaient que des chaînes représentant les chemins d'import.
 
-Notes on capturing text in URLs
-===============================
 
-Each captured argument is sent to the view as a plain Python string, regardless
-of what sort of match the regular expression makes. For example, in this
-URLconf line::
+Notes sur la capture de texte dans les URLs
+===========================================
+
+Chaque argument capturé est envoyé à la vue en tant que texte Python simple, indépendamment du type de corespondance que font les expressions rationnelles. Par exemple, dans cette ligne URLconf::
 
     (r'^articles/(?P<year>\d{4})/$', 'news.views.year_archive'),
 
-...the ``year`` argument to ``news.views.year_archive()`` will be a string, not
-an integer, even though the ``\d{4}`` will only match integer strings.
+...l'argument ``year`` pour ``news.views.year_archive()`` sera une chaîne, pas un entier, même si ``\d{4}`` ne correspondra qu'à des entiers sous forme de chaîne.
 
-A convenient trick is to specify default parameters for your views' arguments.
-Here's an example URLconf and view::
+Un truc commode est de spécifier les paramètrespar défaut pour vos arguments de vues. Voici un exemple URLconf et vue::
 
     # URLconf
     urlpatterns = patterns('',
@@ -328,25 +279,20 @@ Here's an example URLconf and view::
     def page(request, num="1"):
         # Output the appropriate page of blog entries, according to num.
 
-In the above example, both URL patterns point to the same view --
-``blog.views.page`` -- but the first pattern doesn't capture anything from the
-URL. If the first pattern matches, the ``page()`` function will use its
-default argument for ``num``, ``"1"``. If the second pattern matches,
-``page()`` will use whatever ``num`` value was captured by the regex.
+Dans cet exemple, les deux motifs URL pointent vers la même vue --
+``blog.views.page`` -- mais le premier motif ne capture rien de l'URL. Si le premier motif correspond, la fonction ``page()`` utilisera son argument par défaut pour ``num``, ``"1"``. Si le deuxième motif correspond, ``page()`` utilisera n'importe quel valeur ``num`` capturée par l'expression rationnelle.
 
 Performance
 ===========
 
-Each regular expression in a ``urlpatterns`` is compiled the first time it's
-accessed. This makes the system blazingly fast.
+Chaque expression rationnelle d'un ``urlpatterns`` est compilé lors de son premier accès. Cela rend le système furieusement rapide.
 
-The view prefix
-===============
+Le préfixe de vue
+=================
 
-You can specify a common prefix in your ``patterns()`` call, to cut down on
-code duplication.
+Vous pouvez spécifier un prefix commun à votre appel de ``patterns()``, pour réduire la duplication de code.
 
-Here's the example URLconf from the :doc:`Django overview </intro/overview>`::
+Voici l'exemple URLconf de :doc:`Django overview </intro/overview>`::
 
     from django.conf.urls import patterns, url, include
 
@@ -356,12 +302,10 @@ Here's the example URLconf from the :doc:`Django overview </intro/overview>`::
         (r'^articles/(\d{4})/(\d{2})/(\d+)/$', 'news.views.article_detail'),
     )
 
-In this example, each view has a common prefix -- ``'news.views'``.
-Instead of typing that out for each entry in ``urlpatterns``, you can use the
-first argument to the ``patterns()`` function to specify a prefix to apply to
-each view function.
+Dans cet exemple, chaque vue a un préfixe commun -- ``'news.views'``.
+Au lieu de le retaper pour chaque entrée dans  ``urlpatterns``, vous pouvez utiliser le premier argument de la fonction ``patterns()`` pour spécifier un préfixe à appliquer à chaque fonction vue.
 
-With this in mind, the above example can be written more concisely as::
+Avec cela, l'xemple précédent pourra s'écrire de manière plus concise::
 
     from django.conf.urls import patterns, url, include
 
@@ -371,18 +315,14 @@ With this in mind, the above example can be written more concisely as::
         (r'^articles/(\d{4})/(\d{2})/(\d+)/$', 'article_detail'),
     )
 
-Note that you don't put a trailing dot (``"."``) in the prefix. Django puts
-that in automatically.
+Notez que vous ne mettez pas de point final (``"."``) au préfixe. Django le fait automatiquement.
 
-Multiple view prefixes
-----------------------
+Préfixes de vues multiples
+--------------------------
 
-In practice, you'll probably end up mixing and matching views to the point
-where the views in your ``urlpatterns`` won't have a common prefix. However,
-you can still take advantage of the view prefix shortcut to remove duplication.
-Just add multiple ``patterns()`` objects together, like this:
+En pratique, vous finirez probablement par mélanger les vues au point qu'elles n'auront pas de préfixe commun dans votre ``urlpatterns``. Vous pouvez cependant continuer à tirer partie du raccourci par le préfixe pour les vues pour éviter la duplication de code. Ajoutez simplement plusieurs objets ``patterns()`` ensemble, comme ceci:
 
-Old::
+Avant::
 
     from django.conf.urls import patterns, url, include
 
@@ -392,7 +332,7 @@ Old::
         (r'^tag/(?P<tag>\w+)/$', 'weblog.views.tag'),
     )
 
-New::
+Après::
 
     from django.conf.urls import patterns, url, include
 
@@ -405,10 +345,10 @@ New::
         (r'^tag/(?P<tag>\w+)/$', 'tag'),
     )
 
-Including other URLconfs
-========================
+Inclure d'autres URLconfs
+=========================
 
-At any point, your ``urlpatterns`` can "include" other URLconf modules. This
+À tout moment, votre ``urlpatterns`` peut "inclure" d'autres modules URLconf. This
 essentially "roots" a set of URLs below other ones.
 
 For example, here's an excerpt of the URLconf for the `Django Web site`_
@@ -530,8 +470,8 @@ Once you have defined namespaced URLs, you can reverse them. For details on
 reversing namespaced urls, see the documentation on :ref:`reversing namespaced
 URLs <topics-http-reversing-url-namespaces>`.
 
-Passing extra options to view functions
-=======================================
+Passer des options supplémentaires aux fonctions vue
+====================================================
 
 URLconfs have a hook that lets you pass extra arguments to your view functions,
 as a Python dictionary.
@@ -646,8 +586,8 @@ the view prefix (as explained in "The view prefix" above) will have no effect.
 
 .. _naming-url-patterns:
 
-Naming URL patterns
-===================
+Nommer les motifs d'URL
+======================
 
 It's fairly common to use the same view function in multiple URL patterns in
 your URLconf. For example, these two URL patterns both point to the ``archive``
@@ -805,7 +745,7 @@ arguments to use in the URL matching. For example::
     def myview(request):
         return HttpResponseRedirect(reverse('arch-summary', args=[1945]))
 
-.. _URL pattern name: `Naming URL patterns`_
+.. _URL pattern name: `Nommer les motifs d'URL`_
 
 The ``reverse()`` function can reverse a large variety of regular expression
 patterns for URLs, but not every possible one. The main restriction at the
