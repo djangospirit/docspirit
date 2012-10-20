@@ -305,7 +305,7 @@ Voici l'exemple URLconf de :doc:`Django overview </intro/overview>`::
 Dans cet exemple, chaque vue a un préfixe commun -- ``'news.views'``.
 Au lieu de le retaper pour chaque entrée dans  ``urlpatterns``, vous pouvez utiliser le premier argument de la fonction ``patterns()`` pour spécifier un préfixe à appliquer à chaque fonction vue.
 
-Avec cela, l'xemple précédent pourra s'écrire de manière plus concise::
+Avec cela, l'exemple précédent s'écrira de manière plus concise::
 
     from django.conf.urls import patterns, url, include
 
@@ -348,11 +348,10 @@ Après::
 Inclure d'autres URLconfs
 =========================
 
-À tout moment, votre ``urlpatterns`` peut "inclure" d'autres modules URLconf. This
-essentially "roots" a set of URLs below other ones.
+À tout moment, votre ``urlpatterns`` peut "inclure" d'autres modules URLconf. *This
+essentially "roots" a set of URLs below other ones*.
 
-For example, here's an excerpt of the URLconf for the `Django Web site`_
-itself. It includes a number of other URLconfs::
+Par exemple, voici un extrait de l'URLconf du `Django Web site`_. Il inclut un certain nombre d'autres URLconfs::
 
     from django.conf.urls import patterns, url, include
 
@@ -365,15 +364,11 @@ itself. It includes a number of other URLconfs::
         # ... snip ...
     )
 
-Note that the regular expressions in this example don't have a ``$``
-(end-of-string match character) but do include a trailing slash. Whenever
-Django encounters ``include()``, it chops off whatever part of the URL matched
-up to that point and sends the remaining string to the included URLconf for
-further processing.
+Notez que les expressions rationnelles de cet exemple n'ont pas de  ``$``
+(caractère de fin de ligne ) mais incluent un slash de fin. Chaque fois que 
+Django rencontre ``include()``, il coupe les parties de l'URL qui correspondaient à ce stade et envoie la chaîne restante à l'URLconf inclue pour la suite du traitement.
 
-Another possibility is to include additional URL patterns not by specifying the
-URLconf Python module defining them as the `include`_ argument but by using
-directly the pattern list as returned by `patterns`_ instead. For example::
+Une autre possibilité est d'inclure les motifs d'URL supplémentaires non pas en spécifiant le module Python URLconf qui les définit en argument pour `include`_ mais en utilisant directement la liste de motifs telle qu'elle est renvoyée par `patterns`_. Par exemple::
 
     from django.conf.urls import patterns, url, include
 
@@ -388,124 +383,98 @@ directly the pattern list as returned by `patterns`_ instead. For example::
         (r'^credit/', include(extra_patterns)),
     )
 
-This approach can be seen in use when you deploy an instance of the Django
-Admin application. The Django Admin is deployed as instances of a
-:class:`~django.contrib.admin.AdminSite`; each
-:class:`~django.contrib.admin.AdminSite` instance has an attribute ``urls``
-that returns the url patterns available to that instance. It is this attribute
-that you ``include()`` into your projects ``urlpatterns`` when you deploy the
-admin instance.
+L'utilisation de cette approche peut être vue lorsque vous déployez une instance de l'application Django
+Admin. The Django Admin est déployée en tant qu'instance de :class:`~django.contrib.admin.AdminSite`; chaque instance
+:class:`~django.contrib.admin.AdminSite` a un attribut ``urls`` qui renvoie le motif d'url disponible pour cette instance. C'est cet attribut que vous ``include()`` dans vos projets ``urlpatterns`` lorsque vous déployez l'instance admin.
 
 .. _`Django Web site`: https://www.djangoproject.com/
 
-Captured parameters
+Paramètres capturés
 -------------------
 
-An included URLconf receives any captured parameters from parent URLconfs, so
-the following example is valid::
+Un URLconf inclus reçoit n'importe quel paramètre capturé des URLconfs parents, aussi, l'exemple suivant est valable::
 
-    # In settings/urls/main.py
+    # Dans settings/urls/main.py
     urlpatterns = patterns('',
         (r'^(?P<username>\w+)/blog/', include('foo.urls.blog')),
     )
 
-    # In foo/urls/blog.py
+    # Dans foo/urls/blog.py
     urlpatterns = patterns('foo.views',
         (r'^$', 'blog.index'),
         (r'^archive/$', 'blog.archive'),
     )
 
-In the above example, the captured ``"username"`` variable is passed to the
-included URLconf, as expected.
+Dans cet exemple, la variable capturée ``"username"`` est passée à l'URLconf inclus, comme attendu.
 
 .. _topics-http-defining-url-namespaces:
 
-Defining URL namespaces
------------------------
+Déclarer des namespaces URL
+---------------------------
 
-When you need to deploy multiple instances of a single application, it can be
-helpful to be able to differentiate between instances. This is especially
-important when using :ref:`named URL patterns <naming-url-patterns>`, since
-multiple instances of a single application will share named URLs. Namespaces
-provide a way to tell these named URLs apart.
+Lorsque vous devez déployer de multiples instances d'une seule application, il peut être pratique de pouvoir en différencier les instances. C'est particulièrement important avec l'utilisation de :ref:`named URL patterns <naming-url-patterns>`, puisque de multiples instances d'une même application partageront les URLs nommées. Les espaces de noms fournissent un moyen de désigner ces URLs nommés à part.
 
-A URL namespace comes in two parts, both of which are strings:
+Un espace de nom URL est composé de deux parties, toutes deux étant des chaînes:
 
-* An **application namespace**. This describes the name of the application
-  that is being deployed. Every instance of a single application will have
-  the same application namespace. For example, Django's admin application
-  has the somewhat predictable application namespace of ``admin``.
+* Un **espace de nom application**. Il décrit le nom de  l'application déployée.
+  Chaque instance d'une même application aura le même espace de nom application.
+  Par exemple, l'application admin de Django a l'espace de nom prévisible ``admin``.
 
-* An **instance namespace**. This identifies a specific instance of an
-  application. Instance namespaces should be unique across your entire
-  project. However, an instance namespace can be the same as the
-  application namespace. This is used to specify a default instance of an
-  application. For example, the default Django Admin instance has an
-  instance namespace of ``admin``.
+* Un **espace de nom instance**. Il identifie l'instance spécifique d'une application.
+  Les espaces de nom Instance doivent être unique dans tout votre projet. 
+  Toutefois, un espace de nom instance peut être le même que l'espace de nom application. 
+  Cela  sert à désigner l'instance par défaut d'une application. 
+  Par exemple, l'instance par défaut de l'application Admin Django a un espace de nom ``admin``.
 
-URL Namespaces can be specified in two ways.
+Les espaces de nom URL peuvent être déclarés de deux façons.
 
-Firstly, you can provide the application and instance namespace as arguments
-to ``include()`` when you construct your URL patterns. For example,::
+En premier lieu, vous pouvez fournir les espaces de nom application et instances en argument à ``include()`` lorsque vous construisez vos motifs d'URL. Par exemple::
 
     (r'^help/', include('apps.help.urls', namespace='foo', app_name='bar')),
 
-This will include the URLs defined in ``apps.help.urls`` into the application
-namespace ``bar``, with the instance namespace ``foo``.
+Cela inclut les URLs déclarées dans ``apps.help.urls`` à l'intérieur de l'espace de nom application ``bar``, avec l'espace de nom instance ``foo``.
 
-Secondly, you can include an object that contains embedded namespace data. If
-you ``include()`` a ``patterns`` object, that object will be added to the
-global namespace. However, you can also ``include()`` an object that contains
-a 3-tuple containing::
+Deuxièmement, vous pouvez inclure un objet qui contient des données espaces de nom embarquées. Si vous ``include()`` un objet ``patterns``, cet objet sera ajouté à l'espace de nom global. Vous pouvez cependant aussi ``include()`` un objet qui contient un 3-tuple qui contiennent::
 
     (<patterns object>, <application namespace>, <instance namespace>)
 
-This will include the nominated URL patterns into the given application and
-instance namespace. For example, the ``urls`` attribute of Django's
-:class:`~django.contrib.admin.AdminSite` object returns a 3-tuple that contains
-all the patterns in an admin site, plus the name of the admin instance, and the
-application namespace ``admin``.
+Cela incluera les motifs d'URL désignés à l'intérieur de l'application donnée et l'espace de nom instance. Par exemple, l'attribut ``urls`` de l'objet :class:`~django.contrib.admin.AdminSite` de Django retourne un 3-tuple qui contient tous les motifs d'un site admin, plus le nom de l'instance admin, et l'espace de nom application ``admin``.
 
-Once you have defined namespaced URLs, you can reverse them. For details on
+Une fois que les espaces de nom URL sont déclarées, vous pouvez les Once you have defined namespaced URLs, you can reverse them. For details on
 reversing namespaced urls, see the documentation on :ref:`reversing namespaced
 URLs <topics-http-reversing-url-namespaces>`.
 
 Passer des options supplémentaires aux fonctions vue
 ====================================================
 
-URLconfs have a hook that lets you pass extra arguments to your view functions,
-as a Python dictionary.
+Les URLconfs ont un hook qui vous permet de passer des arguments supplémentaires à vos fonctions vues, via un dictionnaire Python.
 
-Any URLconf tuple can have an optional third element, which should be a
-dictionary of extra keyword arguments to pass to the view function.
+Chaque tuple URLconf peut avoir un troisième élément optionnel, qui doit être un dictionnaire d'arguments mot-clé à passer à la fonction vue.
 
-For example::
+Par exemple::
 
     urlpatterns = patterns('blog.views',
         (r'^blog/(?P<year>\d{4})/$', 'year_archive', {'foo': 'bar'}),
     )
 
-In this example, for a request to ``/blog/2005/``, Django will call the
-``blog.views.year_archive()`` view, passing it these keyword arguments::
+Dans cet exemple, pour une requête vers ``/blog/2005/``, Django appelera la vue
+``blog.views.year_archive()``, en lui passant ces arguments mot-clé::
 
     year='2005', foo='bar'
 
-This technique is used in :doc:`generic views </ref/generic-views>` and in the
-:doc:`syndication framework </ref/contrib/syndication>` to pass metadata and
-options to views.
+Cette technique est utilisée dans :doc:`generic views </ref/generic-views>` et dans le
+:doc:`syndication framework </ref/contrib/syndication>` pour passer des metadata et des options aux vues.
 
-.. admonition:: Dealing with conflicts
+.. admonition:: Gérer les conflits
 
-    It's possible to have a URL pattern which captures named keyword arguments,
-    and also passes arguments with the same names in its dictionary of extra
-    arguments. When this happens, the arguments in the dictionary will be used
-    instead of the arguments captured in the URL.
+    Il est possible d'avoir un motif d'URL qui capture les arguments mot-clé nommés,
+    et passe également des arguments avec les même noms dans ses dictionnaires d'arguments supplémentaires. 
+    Quand cela arrive, les arguments dans le dictionnaire seront utilisés à la place des arguments capturés dans l'URL.
 
-Passing extra options to ``include()``
---------------------------------------
+Passer des options supplémentaires à ``include()``
+--------------------------------------------------
 
-Similarly, you can pass extra options to ``include()``. When you pass extra
-options to ``include()``, *each* line in the included URLconf will be passed
+De même, vous pouvez passer des options supplémentaires à ``include()``. Lorsque vous le faites, *chaque* ligne de l'URLconf inclus sera in the included URLconf will be passed
 the extra options.
 
 For example, these two URLconf sets are functionally identical:
