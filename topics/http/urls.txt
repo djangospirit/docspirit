@@ -474,12 +474,11 @@ Cette technique est utilisée dans :doc:`generic views </ref/generic-views>` et 
 Passer des options supplémentaires à ``include()``
 --------------------------------------------------
 
-De même, vous pouvez passer des options supplémentaires à ``include()``. Lorsque vous le faites, *chaque* ligne de l'URLconf inclus sera in the included URLconf will be passed
-the extra options.
+De même, vous pouvez passer des options supplémentaires à ``include()``. Lorsque vous le faites, *chaque* ligne de l'URLconf inclus recevra les options supplèmentaires.
 
-For example, these two URLconf sets are functionally identical:
+Par exemple, ces deux paramètrages URLconf sont fonctionnellement identiques:
 
-Set one::
+Paramètrage n° 1::
 
     # main.py
     urlpatterns = patterns('',
@@ -492,7 +491,7 @@ Set one::
         (r'^about/$', 'mysite.views.about'),
     )
 
-Set two::
+Paramètrage n° 2::
 
     # main.py
     urlpatterns = patterns('',
@@ -505,19 +504,14 @@ Set two::
         (r'^about/$', 'mysite.views.about', {'blogid': 3}),
     )
 
-Note that extra options will *always* be passed to *every* line in the included
-URLconf, regardless of whether the line's view actually accepts those options
-as valid. For this reason, this technique is only useful if you're certain that
-every view in the included URLconf accepts the extra options you're passing.
+Notez que les options supplèmentaires seront *toujours* passées à *chaque* ligne de l'URLconf inclus, sans tenir compte du fait que la vue ligne accepte réellement ces options comme valides. Pour cette raison, cette technique n'est utile que si vous êtes certains que chacune des vues de l'URLconf accepte les options supplèmentaires que vous passez.
 
-Passing callable objects instead of strings
-===========================================
+Passer des objets appelables au lieu de chaînes
+===============================================
 
-Some developers find it more natural to pass the actual Python function object
-rather than a string containing the path to its module. This alternative is
-supported -- you can pass any callable object as the view.
+Quelques développeurs trouvent plus naturel de passer la vraie fonction objet Python plutôt qu'une chaîne contenant le chemin vers son module. Cette possibilité est prise en charge -- vous pouvez passez n'importe quel objet appelable en tant que vue.
 
-For example, given this URLconf in "string" notation::
+Par exemple, en passant cette URLconf en notation "chaîne"::
 
     urlpatterns = patterns('',
         (r'^archive/$', 'mysite.views.archive'),
@@ -525,8 +519,7 @@ For example, given this URLconf in "string" notation::
         (r'^contact/$', 'mysite.views.contact'),
     )
 
-You can accomplish the same thing by passing objects rather than strings. Just
-be sure to import the objects::
+Vous pouvez faire la même chose en passant des objets plutôt que des chaînes. Assurez-vous simplement d'importer les objets::
 
     from mysite.views import archive, about, contact
 
@@ -536,9 +529,7 @@ be sure to import the objects::
         (r'^contact/$', contact),
     )
 
-The following example is functionally identical. It's just a bit more compact
-because it imports the module that contains the views, rather than importing
-each view individually::
+L'exemple suivant est fonctionnellement identique. Il est juste un peu plus compact car il importe le module qui contient les vues, au lieu d'importer chaque vue individuellement::
 
     from mysite import views
 
@@ -548,109 +539,74 @@ each view individually::
         (r'^contact/$', views.contact),
     )
 
-The style you use is up to you.
+Vous êtes libre d'utiliser le style que vous préférez.
 
-Note that if you use this technique -- passing objects rather than strings --
-the view prefix (as explained in "The view prefix" above) will have no effect.
+Notez que si vous utilisez cette technique -- passer des objets plutôt que des chaînes --
+le préfixe vue (expliqué dans "The view prefix" ci-dessus) n'aura pas d'effet.
 
 .. _naming-url-patterns:
 
 Nommer les motifs d'URL
-======================
+=======================
 
-It's fairly common to use the same view function in multiple URL patterns in
-your URLconf. For example, these two URL patterns both point to the ``archive``
-view::
+Il est assez courant d'utiliser la même fonction vue dans plusieurs motifs URL de votre URLconf. Par exemple, ces deux motifs URL pointent les deux vers la vue ``archive``::
 
     urlpatterns = patterns('',
         (r'^archive/(\d{4})/$', archive),
         (r'^archive-summary/(\d{4})/$', archive, {'summary': True}),
     )
 
-This is completely valid, but it leads to problems when you try to do reverse
-URL matching (through the ``permalink()`` decorator or the :ttag:`url` template
-tag). Continuing this example, if you wanted to retrieve the URL for the
-``archive`` view, Django's reverse URL matcher would get confused, because *two*
-URL patterns point at that view.
+C'est totalement valide mais aménera à des problèmes lorsque vous tenterez d'inverser la correspondance d'URL (via le décorateur ``permalink()`` ou le tag de template :ttag:`url`). Avec cet exemple, si vous voulez récupérer l'URL de la vue ``archive``, Django sera désorienté parce que *deux* motifs d'URL pointent sur cette vue.
 
-To solve this problem, Django supports **named URL patterns**. That is, you can
-give a name to a URL pattern in order to distinguish it from other patterns
-using the same view and parameters. Then, you can use this name in reverse URL
-matching.
+Pour résoudre la question, Django prend en charge les **motifs d'URL nommés**. Vous donnez un nom à un motif d'URL pour le differencier d'autres motifs utilisant la même vue et les mêmes paramètres. Ensuite, vous utiliserez ce nom dans la recherche inverse d'URL.
 
-Here's the above example, rewritten to use named URL patterns::
+Voici l'exemple précédent, réécrit pour utiliser les motifs d'URL nommés::
 
     urlpatterns = patterns('',
         url(r'^archive/(\d{4})/$', archive, name="full-archive"),
         url(r'^archive-summary/(\d{4})/$', archive, {'summary': True}, "arch-summary"),
     )
 
-With these names in place (``full-archive`` and ``arch-summary``), you can
-target each pattern individually by using its name:
+Avec ces noms (``full-archive`` et ``arch-summary``), vous pouvez cibler chaque motif individuellement en utilisant son nom:
 
 .. code-block:: html+django
 
     {% url arch-summary 1945 %}
     {% url full-archive 2007 %}
 
-Even though both URL patterns refer to the ``archive`` view here, using the
-``name`` parameter to ``url()`` allows you to tell them apart in templates.
+Même si ici les deux motifs d'URL se réfèrent à la vue ``archive``, utiliser le paramètre
+``nom`` dans ``url()`` vous permet de les différencier dans les templates.
 
-The string used for the URL name can contain any characters you like. You are
-not restricted to valid Python names.
+La chaîne utilisée pour le nom d'URL contient n'importe quel caractère. Vous n'êtes pas restreint aus nom Python valides.
 
 .. note::
 
-    When you name your URL patterns, make sure you use names that are unlikely
-    to clash with any other application's choice of names. If you call your URL
-    pattern ``comment``, and another application does the same thing, there's
-    no guarantee which URL will be inserted into your template when you use
-    this name.
+    Lorsque vous nommez vos motifs d'URL, assurez-vous d'utiliser un nom qui ne risque pas de se téléscoper avec des noms utilisés par d'autres applications. Si vous appelez votre motif d'URL ``comment``, et qu'une autre application fait la même chose, il n'y a aucune garantie sur l'URL qui sera insérée dans votre template lorsque vous utiliserez ce nom.
 
-    Putting a prefix on your URL names, perhaps derived from the application
-    name, will decrease the chances of collision. We recommend something like
-    ``myapp-comment`` instead of ``comment``.
+    Ajouter un préfixe à vos noms d'URL, qui pourraît être dérivé du nom de l'application, diminuera les risques de collisions. Nous conseillons quelque chose comme ``myapp-comment`` plutôt que ``comment``.
 
 .. _topics-http-reversing-url-namespaces:
 
 URL namespaces
 --------------
 
-Namespaced URLs are specified using the ``:`` operator. For example, the main
-index page of the admin application is referenced using ``admin:index``. This
-indicates a namespace of ``admin``, and a named URL of ``index``.
+Les espaces de nommage d'URLs sont spécifiés en utilisant l'opérateur ``:``. Par exemple, la page index principale de l'application admin est référencée en utilisant ``admin:index``. Cela désigne l'espace de nom ``admin``, et l'URL nommée ``index``.
 
-Namespaces can also be nested. The named URL ``foo:bar:whiz`` would look for
-a pattern named ``whiz`` in the namespace ``bar`` that is itself defined within
-the top-level namespace ``foo``.
+Les espaces de noms peuvent également être imbriqués. L'URL nommée ``foo:bar:whiz`` cherchera un nom de motif ``whiz`` dans l'espace de nom ``bar`` qui est lui-même déclaré dans l'espace de nom  ``foo`` de premier niveau.
 
-When given a namespaced URL (e.g. ``myapp:index``) to resolve, Django splits
-the fully qualified name into parts, and then tries the following lookup:
+Avec un espace de nom URL donné à résoudre (par exemple, ``myapp:index``), Django divisera le nom qualifié complet en plusieurs parties, et esaiera les recherches suivantes:
 
-1. First, Django looks for a matching application namespace (in this
-   example, ``myapp``). This will yield a list of instances of that
-   application.
+1. D'abord, Django cherchera un espace de nom d'une application (``myapp`` dans cet exemple). Cela fournira une liste d'instances de cette application.
 
-2. If there is a *current* application defined, Django finds and returns
-   the URL resolver for that instance. The *current* application can be
-   specified as an attribute on the template context - applications that
-   expect to have multiple deployments should set the ``current_app``
-   attribute on any ``Context`` or ``RequestContext`` that is used to
-   render a template.
+2. S'il y a une application *en cours* déclarée, Django cherchera et renverra le résolveur d'URL pour cette instance. L'application *en cours* peut être déclarée en tant qu'attribut du contexte de template - les applications susceptibles d'avoir de multiples déploiements devraient paramètrer l'attribut ``current_app`` sur tout ``Context`` ou ``RequestContext`` qui est utilisé pour rendre un template.
 
-   The current application can also be specified manually as an argument
-   to the :func:`reverse()` function.
+   L'application en cours peut aussi être manuellement spécifiée en tant qu'argument de la fonction :func:`reverse()`.
 
-3. If there is no current application. Django looks for a default
-   application instance. The default application instance is the instance
-   that has an instance namespace matching the application namespace (in
-   this example, an instance of the ``myapp`` called ``myapp``).
+3. S'il n'y a pas d'application en cours. Django cherche une instance d'application par défaut. L'instance d'application par défaut est l'instance qui a une instance d'espace de nom correspondant à l'espace de nom de l'application (dans cet exemple, une instance de ``myapp`` appelée ``myapp``).
 
-4. If there is no default application instance, Django will pick the last
-   deployed instance of the application, whatever its instance name may be.
+4. S'il n'y a pas d'insatace d'application par défaut, Django choisira la dernière instace d'application déployée, quel que soit le nom de cette instance.
 
-5. If the provided namespace doesn't match an application namespace in
-   step 1, Django will attempt a direct lookup of the namespace as an
+5. Si l'espace de nom fourni ne correspond pas à un espace de nom d'application du point 1, Django essaiera une recherche directe will attempt a direct lookup of the namespace as an
    instance namespace.
 
 If there are nested namespaces, these steps are repeated for each part of the
