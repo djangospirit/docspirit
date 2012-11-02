@@ -1,51 +1,48 @@
-============================
-The Django template language
-============================
+================================
+Le langage de template de Django
+================================
 
-.. admonition:: About this document
+.. admonition:: A propos de ce document
 
-    This document explains the language syntax of the Django template system. If
-    you're looking for a more technical perspective on how it works and how to
-    extend it, see :doc:`/ref/templates/api`.
+    Ce document explique la syntaxe du langage de système de mise en page de Django. Si
+    vous recherchez une approche plus technique sur son fonctionnement et sur son extension,
+    voyez :doc:`/ref/templates/api`.
 
-Django's template language is designed to strike a balance between power and
-ease. It's designed to feel comfortable to those used to working with HTML. If
-you have any exposure to other text-based template languages, such as Smarty_
-or CheetahTemplate_, you should feel right at home with Django's templates.
+Le langage de mise en page de Django est conçu pour allier puissance et facilité d'utilisation. Il est conçu pour que les personnes habituées à travailler avec le HTML se sentent à l'aise. Si vous avez déjà utilisé d'autres langages de mise en page, comme Smarty_
+ou CheetahTemplate_, vous devriez vous sentir comme à la maison avec les templates Django.
 
-.. admonition:: Philosophy
+.. admonition:: Philosophie
 
-    If you have a background in programming, or if you're used to languages
-    like PHP which mix programming code directly into HTML, you'll want to
-    bear in mind that the Django template system is not simply Python embedded
-    into HTML. This is by design: the template system is meant to express
-    presentation, not program logic.
+    Si vous avez une formation en programmation, ou si vous êtes habitué à des 
+    lagages comme PHP qui mélangent directement du code-source à du HTML, vous
+    devez garder à l'esprit que le système de mise en page de Django n'est pas
+    simplement du Python incorporé à du HTML. C'est intentionnel : le système 
+    de template est destiné à exprimer la présentation, pas la logique du programme.
 
-    The Django template system provides tags which function similarly to some
-    programming constructs -- an :ttag:`if` tag for boolean tests, a :ttag:`for`
-    tag for looping, etc. -- but these are not simply executed as the
-    corresponding Python code, and the template system will not execute
-    arbitrary Python expressions. Only the tags, filters and syntax listed below
-    are supported by default (although you can add :doc:`your own extensions
-    </howto/custom-template-tags>` to the template language as needed).
+    Le système de template de Django fournit des balises (*tags*) quifonctionnent
+    de manière similaire à certaines constructions de programmation -- une balise 
+    :ttag:`if` pour les tests booléens, une balise :ttag:`for` pour les boucles, etc.
+    -- mais ils ne sont pas simplement exécutés comme le code Python correspondant, 
+    et le système de template n'exécutera pas des expressions Python arbitraires. 
+    Seuls les balises, les filtres et la syntaxe énumérés ci-dessous sont prises 
+    en charge par défaut (bien que vous puissiez ajouter :doc:`your own extensions
+    </howto/custom-template-tags>` au langage de template si nécessaire).
 
 .. _`The Django template language: For Python programmers`: ../templates_python/
 .. _Smarty: http://smarty.php.net/
 .. _CheetahTemplate: http://www.cheetahtemplate.org/
 
-Templates
-=========
+Templates (maquettes, gabarits de mise en page)
+===============================================
 
 .. highlightlang:: html+django
 
-A template is simply a text file. It can generate any text-based format (HTML,
+Un template est simplement un fichier texte. Il peut produire n'importe quel format de texte (HTML,
 XML, CSV, etc.).
 
-A template contains **variables**, which get replaced with values when the
-template is evaluated, and **tags**, which control the logic of the template.
+Un template contient des **variables**, qui sont remplacées par des valeurs lorsque le template est évalué, et des **tags** (balises), qui contrôlent la logique de la mise en page.
 
-Below is a minimal template that illustrates a few basics. Each element will be
-explained later in this document.::
+Voici une mise en page minimaliste qui illustre quelques notions de base. Chaque élément sera expliqué plus loin dans ce document.::
 
     {% extends "base_generic.html" %}
 
@@ -64,54 +61,50 @@ explained later in this document.::
     {% endfor %}
     {% endblock %}
 
-.. admonition:: Philosophy
+.. admonition:: Philosophie
 
-    Why use a text-based template instead of an XML-based one (like Zope's
-    TAL)? We wanted Django's template language to be usable for more than
-    just XML/HTML templates. At World Online, we use it for emails,
-    JavaScript and CSV. You can use the template language for any text-based
-    format.
+    Pourquoi utiliser une mise en page à base texte au lieu d'un mise en page à base d'XML (comme TAL de Zope)? Nous voulions que le langage de mise en page de Django soit utilisable pour quelque chose de plus que des maquettes XML/HTML. À World Online, nous l'utilisons pour les e-mails, JavaScript et CSV. Vous pouvez utiliser le langage de template pour n'importe quel format basé sur du texte.
 
-    Oh, and one more thing: Making humans edit XML is sadistic!
+    Oh, il y a aussi cela : demander à des humains qu'ils éditent du XML est sadique !
 
 Variables
 =========
 
-Variables look like this: ``{{ variable }}``. When the template engine
-encounters a variable, it evaluates that variable and replaces it with the
-result. Variable names consist of any combination of alphanumeric characters
-and the underscore (``"_"``). The dot (``"."``) also appears in variable
-sections, although that has a special meaning, as indicated below.
-Importantly, *you cannot have spaces or punctuation characters in variable
-names.*
+Les variables ressemble à ça: ``{{ variable }}``. Lorsque le moteur de template rencontre une variable, il l'évalue et la remplace par le résultat de cette évaluation. Les noms de variables consistent en une combinaison de caractères alphanumériques et de l'underscore (``"_"``). Le point (``"."``) apparaît également dans les variables, bien qu'il ait une signification spéciale, comme nous le verrons plus tard.
+**Important**, *vous ne pouvez pas avoir d'espaces ou des caractères de ponctuation dans les noms de variables.*
 
-Use a dot (``.``) to access attributes of a variable.
+Utilisez un point (``.``) pour accèder aux attributs d'une variable.
 
-.. admonition:: Behind the scenes
+.. admonition:: En coulisses
 
-    Technically, when the template system encounters a dot, it tries the
-    following lookups, in this order:
+    Techniquement, lorsque le système de template trouve un point, il essaie les recherches suivantes, dans cet ordre:
 
-    * Dictionary lookup
-    * Attribute lookup
-    * Method call
-    * List-index lookup
+    * Recherche dans le dictionnaire
+    * Recherche dans les attributs
+    * Appel de méthode
+    * Recherche List-index lookup
+    
+    Cela peut causer des comportement innatendus avec les objets qui surchargent les recherches Dictionnaire. 
+    Par exemple, voyons le code suivant qui essaie de boucler sur un ``collections.defaultdict``::
 
-In the above example, ``{{ section.title }}`` will be replaced with the
-``title`` attribute of the ``section`` object.
+      {% for k, v in defaultdict.iteritems %}
+         Ici, faire quelque chose avec k et v...
+      {% endfor %}
 
-If you use a variable that doesn't exist, the template system will insert
-the value of the :setting:`TEMPLATE_STRING_IF_INVALID` setting, which is set
-to ``''`` (the empty string) by default.
+    Comme les recherches Dictionnaire ont lieu en premier, ce comportement se plante et fournit une valeur par défaut au lieu de la méthode ``iteritems()`` attendue. Dans ce cas, pensez à convertir d'abord en un dictionnaire.
+	
 
-Filters
+Dans l'exemple précédent, ``{{ section.title }}`` sera remplacé par l'attribut ``title`` de l'objet ``section``.
+
+Si vous utilisez une variable qui n'existe pas, le système de template insérera la valeur du paramètre :setting:`TEMPLATE_STRING_IF_INVALID`, qui est initialisé à ``''`` (chaîne vide) par défaut.
+
+Filtres
 =======
 
-You can modify variables for display by using **filters**.
+Vous pouvez modifier les variables à afficher en utilisant des **filtres**.
 
-Filters look like this: ``{{ name|lower }}``. This displays the value of the
-``{{ name }}`` variable after being filtered through the :tfilter:`lower`
-filter, which converts text to lowercase. Use a pipe (``|``) to apply a filter.
+Les filtres ressemblent à ça : ``{{ name|lower }}``. Cela affiche la valeur de la variable 
+``{{ name }}`` après filtrage via le filtre :tfilter:`lower`, qui convertit le texte en minuscules. Utilisez un pipe (``|``) pour appliquer un filtre.
 
 Filters can be "chained." The output of one filter is applied to the next.
 ``{{ text|escape|linebreaks }}`` is a common idiom for escaping text contents,
