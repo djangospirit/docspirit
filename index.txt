@@ -101,7 +101,7 @@ La couche Vue
 Une vue est le concept Django pour encapsuler la logique de traitement des requêtes utilisateur et de leurs réponses. Tout ce que vous avez besoin de savoir sur les vues :
 
 * **Les bases:**
-  :doc:`URLconfs <topics/http/urls>` |
+  :doc:`URLconfs (Répartiteur d'URls) <topics/http/urls>` |
   :doc:`View functions <topics/http/views>` |
   :doc:`Shortcuts <topics/http/shortcuts>` |
   :doc:`Decorators <topics/http/decorators>`
