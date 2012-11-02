@@ -106,79 +106,64 @@ Vous pouvez modifier les variables à afficher en utilisant des **filtres**.
 Les filtres ressemblent à ça : ``{{ name|lower }}``. Cela affiche la valeur de la variable 
 ``{{ name }}`` après filtrage via le filtre :tfilter:`lower`, qui convertit le texte en minuscules. Utilisez un pipe (``|``) pour appliquer un filtre.
 
-Filters can be "chained." The output of one filter is applied to the next.
-``{{ text|escape|linebreaks }}`` is a common idiom for escaping text contents,
-then converting line breaks to ``<p>`` tags.
+les filtres peuvent être "enchaînés". La sortie d'un filtre est appliqué au suivant.
+``{{ text|escape|linebreaks }}`` est une tournure habituelle pour échapper des contenus texte, puis pour convertir les fins de ligne en balises ``<p>``.
 
-Some filters take arguments. A filter argument looks like this: ``{{
-bio|truncatewords:30 }}``. This will display the first 30 words of the ``bio``
-variable.
+Certains filtres prennent des arguments. Un argument de filtre ressemble à ça: ``{{bio|truncatewords:30 }}``. Cela affiche les 30 premiers mots de la variable ``bio``.
 
-Filter arguments that contain spaces must be quoted; for example, to join a
-list with commas and spaced you'd use ``{{ list|join:", " }}``.
+Les arguments de filtre qui contiennent des espaces doivent être mis entre guillemets; par exemple, pour lier une liste avec des virgules et des espaces vous utiliserez ``{{ list|join:", " }}``.
 
-Django provides about thirty built-in template filters. You can read all about
-them in the :ref:`built-in filter reference <ref-templates-builtins-filters>`.
-To give you a taste of what's available, here are some of the more commonly
-used template filters:
+Django fournit environ une trentaine de filtres de mise en page intégrés. Vous lirez tout à leur sujet dans :ref:`built-in filter reference <ref-templates-builtins-filters>`.
+
+Pour vous donner un parfum de ce qui est disponible, en voici quelques uns, parmi ceux les plus utilisés:
 
 :tfilter:`default`
-    If a variable is false or empty, use given default. Otherwise, use the
-    value of the variable
+    Si une variable est fausse ou vide, utiliser la valeur par défaut indiquée. Sinon, utiliser la valeur de la variable.
 
-    For example::
+    Par exemple::
 
-        {{ value|default:"nothing" }}
+        {{ value|default:"rien" }}
 
-    If ``value`` isn't provided or is empty, the above will display
-    "``nothing``".
+    Si ``value`` n'est pas fourni ou vide, ce qui précède affichera 
+    "``rien``".
 
 :tfilter:`length`
-    Returns the length of the value. This works for both strings and lists;
-    for example::
+    Renvoie la longueur de la valeur. Cela marche avec les chaînes et les listes;
+    par exemple::
 
         {{ value|length }}
 
-    If ``value`` is ``['a', 'b', 'c', 'd']``, the output will be ``4``.
+    Si ``value`` est ``['a', 'b', 'c', 'd']``, la sortie sera ``4``.
 
 :tfilter:`striptags`
-    Strips all [X]HTML tags. For example::
+    Enlève toutes les balises [X]HTML. Par exemple::
 
         {{ value|striptags }}
 
-    If ``value`` is ``"<b>Joel</b> <button>is</button> a
-    <span>slug</span>"``, the output will be ``"Joel is a slug"``.
+    Si ``value`` est ``"<b>Joel</b> <button>is</button> a
+    <span>slug</span>"``, la sortie sera ``"Joel is a slug"``.
 
-Again, these are just a few examples; see the :ref:`built-in filter reference
-<ref-templates-builtins-filters>` for the complete list.
+À nouveau, ce ne sont que quelques exemples; voir  :ref:`built-in filter reference
+<ref-templates-builtins-filters>` pour la liste complète.
 
-You can also create your own custom template filters; see
-:doc:`/howto/custom-template-tags`.
+Vous pouvez aussi créer vos propres filtres de mise en page personnalisées; voir :doc:`/howto/custom-template-tags`.
 
 .. seealso::
 
-    Django's admin interface can include a complete reference of all template
-    tags and filters available for a given site. See
-    :doc:`/ref/contrib/admin/admindocs`.
+    L'interface administration de Django peut inclure une référence complète de toutes les balises de mise en page et des filtres d'un sitge donné. Voir :doc:`/ref/contrib/admin/admindocs`.
 
-Tags
-====
+Balises (Tags)
+==============
 
-Tags look like this: ``{% tag %}``. Tags are more complex than variables: Some
-create text in the output, some control flow by performing loops or logic, and
-some load external information into the template to be used by later variables.
+Les balises ressemblent à ça : ``{% tag %}``. Les balises sont plus complexes que les variables : certaines créent du texte dans la sortie, d'autres contrôlent les flux en exécutant des boucles ou des tests booléens, et d'autres encore chargent des données externes dans le template pour qu'elles soient utilisées plus tard par des variables.
 
-Some tags require beginning and ending tags (i.e. ``{% tag %} ... tag contents
+Certaines balises requièrent un marquage de début et de fin (c'est à dire ``{% tag %} ... tag contents
 ... {% endtag %}``).
 
-Django ships with about two dozen built-in template tags. You can read all about
-them in the :ref:`built-in tag reference <ref-templates-builtins-tags>`. To give
-you a taste of what's available, here are some of the more commonly used
-tags:
+Django est livré avec environ deux douzaines de balises intégrées. Vous pouvez tout lire à leur sujet dans :ref:`built-in tag reference <ref-templates-builtins-tags>`. Pour vous donner un parfum de ce qui est disponible, en voici quelques unes, parmi celles les plus utilisées:
 
 :ttag:`for`
-    Loop over each item in an array.  For example, to display a list of athletes
-    provided in ``athlete_list``::
+    Boucle sur chaque élément d'un tableau. Par exemple, pour afficher une liste des athlètes fournis dans ``athlete_list``::
 
         <ul>
         {% for athlete in athlete_list %}
@@ -187,8 +172,7 @@ tags:
         </ul>
 
 :ttag:`if` and ``else``
-    Evaluates a variable, and if that variable is "true" the contents of the
-    block are displayed::
+    Évalue une variable, et si elle est "true" le contenu du bloc sera affiché::
 
         {% if athlete_list %}
             Number of athletes: {{ athlete_list|length }}
@@ -196,64 +180,54 @@ tags:
             No athletes.
         {% endif %}
 
-    In the above, if ``athlete_list`` is not empty, the number of athletes
-    will be displayed by the ``{{ athlete_list|length }}`` variable.
+    Dans ce code, si ``athlete_list`` n'est pas vide, le nombre d'athlètes sera affiché par la variable ``{{ athlete_list|length }}``.
 
-    You can also use filters and various operators in the :ttag:`if` tag::
+    Vous pouvez aussi utiliser des filtres et différents opérateurs dans la balise :ttag:`if`::
 
         {% if athlete_list|length > 1 %}
-           Team: {% for athlete in athlete_list %} ... {% endfor %}
+           Équipe: {% for athlete in athlete_list %} ... {% endfor %}
         {% else %}
-           Athlete: {{ athlete_list.0.name }}
+           Athlète: {{ athlete_list.0.name }}
         {% endif %}
 
 :ttag:`block` and :ttag:`extends`
-    Set up `template inheritance`_ (see below), a powerful way
-    of cutting down on "boilerplate" in templates.
+    Paramètre l'`Héritage de mise en page`_ (voir ci-dessous), un puissant moyen pour réduire le texte passe-partout dans les mises en page.
 
-Again, the above is only a selection of the whole list; see the :ref:`built-in
-tag reference <ref-templates-builtins-tags>` for the complete list.
+À nouveau ce qui précède n'est qu'une petite sélection; voir :ref:`built-in tag reference <ref-templates-builtins-tags>` pour la liste complète.
 
-You can also create your own custom template tags; see
-:doc:`/howto/custom-template-tags`.
+Vous pouvez aussi créer vos propres balises de mise en page personnalisées; voir :doc:`/howto/custom-template-tags`.
 
 .. seealso::
 
-    Django's admin interface can include a complete reference of all template
-    tags and filters available for a given site. See
-    :doc:`/ref/contrib/admin/admindocs`.
+    L'interface administration de Django peut inclure une référence complète de toutes les balises de mise en page et des filtres d'un sitge donné. Voir :doc:`/ref/contrib/admin/admindocs`.
 
-Comments
-========
 
-To comment-out part of a line in a template, use the comment syntax: ``{# #}``.
+Commentaires
+============
 
-For example, this template would render as ``'hello'``::
+Pour mettre une ligne du template en commentaire, utilisez la syntaxe: ``{# #}``.
+
+Par exemple, cette mise en page produira ``'hello'``::
 
     {# greeting #}hello
 
-A comment can contain any template code, invalid or not. For example::
+Un commentaire peut contenir n'importe quel code de template, valide ou pas. Par exemple ::
 
     {# {% if foo %}bar{% else %} #}
 
-This syntax can only be used for single-line comments (no newlines are permitted
-between the ``{#`` and ``#}`` delimiters). If you need to comment out a
-multiline portion of the template, see the :ttag:`comment` tag.
+Cette syntaxe ne peut être utilisée que pour des commentaires tenant sur une seule ligne (pas de retour à la ligne d'autorisé entre les délimiteurs ``{#`` et ``#}`` ). Si vous avez besoin de mettre en commentaire plusieurs lignes du template, voir la balise :ttag:`comment`.
 
 .. _template-inheritance:
 
-Template inheritance
-====================
+Héritage de mise en page
+========================
 
-The most powerful -- and thus the most complex -- part of Django's template
-engine is template inheritance. Template inheritance allows you to build a base
-"skeleton" template that contains all the common elements of your site and
-defines **blocks** that child templates can override.
+La partie la plus puissante -- et aussi la plus complexe -- du moteur de template de Django est l'héritage de template. L'héritage de mise en page vous permet de construire un squelette de "base" qui contient tous les élements communs de votre site et qui définit des **blocs** que les mises en page *enfant* pourront surcharger.
 
-It's easiest to understand template inheritance by starting with an example::
+L'héritage de mise en page est plus simple à comprendre avec un exemple::
 
     <!DOCTYPE html>
-    <html lang="en">
+    <html lang="fr">
     <head>
         <link rel="stylesheet" href="style.css" />
         <title>{% block title %}My amazing site{% endblock %}</title>
@@ -275,15 +249,11 @@ It's easiest to understand template inheritance by starting with an example::
     </body>
     </html>
 
-This template, which we'll call ``base.html``, defines a simple HTML skeleton
-document that you might use for a simple two-column page. It's the job of
-"child" templates to fill the empty blocks with content.
+Cette mise en page, que nous appelerons ``base.html``, définit un simple squelette HTML qui pourra être utilisé pour une mise en page sur deux colonnes. Le boulot qui consiste à remplir les blocs vides avec du contenu appartient aux templates "enfants".
 
-In this example, the :ttag:`block` tag defines three blocks that child
-templates can fill in. All the :ttag:`block` tag does is to tell the template
-engine that a child template may override those portions of the template.
+Dans cet exemple, la balise :ttag:`block` déclare trois blocs que les templates enfants pourront remplir. Tout ce que fait la balise :ttag:`block` est de dire au moteur de template qu'un template enfant peut surcharger ces parties du template.
 
-A child template might look like this::
+Un template enfant peut ressembler à ceci::
 
     {% extends "base.html" %}
 
@@ -296,14 +266,9 @@ A child template might look like this::
     {% endfor %}
     {% endblock %}
 
-The :ttag:`extends` tag is the key here. It tells the template engine that
-this template "extends" another template. When the template system evaluates
-this template, first it locates the parent -- in this case, "base.html".
+Ici, la clé est la balise :ttag:`extends`. Elle dit au moteur de template que ce template en "étend" un autre. Lorsque le système de template évalue ce template-ci, il localise d'abord le parent -- c'est à dire : "base.html" dans le cas présent.
 
-At that point, the template engine will notice the three :ttag:`block` tags
-in ``base.html`` and replace those blocks with the contents of the child
-template. Depending on the value of ``blog_entries``, the output might look
-like::
+À ce stade, le moteur de template repérera les trois balises :ttag:`block` de ``base.html`` et remplacera ces blocs par le contenu du template enfant. Selon la valeur de ``blog_entries``, la sortie ressemblera à ::
 
     <!DOCTYPE html>
     <html lang="en">
@@ -330,73 +295,47 @@ like::
     </body>
     </html>
 
-Note that since the child template didn't define the ``sidebar`` block, the
-value from the parent template is used instead. Content within a ``{% block %}``
-tag in a parent template is always used as a fallback.
+Notez que puisque le template enfant ne définit pas le bloc ``sidebar``, la valeur du template parent sera utilisée. Le contenu d'une balise ``{% block %}`` d'un template parent est toujours utilisée en dernier recours.
 
-You can use as many levels of inheritance as needed. One common way of using
-inheritance is the following three-level approach:
+Vous pouvez utiliser autant de niveaux d'héritage que vous le souhaitez. Une façon habituelle de procéder est l'approche trois-niveaux suivante:
 
-* Create a ``base.html`` template that holds the main look-and-feel of your
-  site.
-* Create a ``base_SECTIONNAME.html`` template for each "section" of your
-  site. For example, ``base_news.html``, ``base_sports.html``. These
-  templates all extend ``base.html`` and include section-specific
-  styles/design.
-* Create individual templates for each type of page, such as a news
-  article or blog entry. These templates extend the appropriate section
-  template.
+* Créez un template ``base.html`` qui détiendra le look-and-feel principal de votre site.
+* Créez un template ``base_SECTIONNAME.html`` pour chaque "section" de votre site.
+  Par exemple, ``base_news.html``, ``base_sports.html``. Ces templates étendent tous 
+  ``base.html`` et contiennent les styles et design spécifiques à la section.
+* Créez des templates individuels pour chaque type de page, comme un article d'actualité ou une entrée de blog. Ces templates étendront la section adéquate du template.
 
-This approach maximizes code reuse and makes it easy to add items to shared
-content areas, such as section-wide navigation.
+Cette approche maximize la réutilisation du code et facilite l'ajout d'élèments dans les sections partagées, comme une section de navigation.
 
-Here are some tips for working with inheritance:
+Voici quelques astuces pour travailler avec l'héritage:
 
-* If you use :ttag:`{% extends %}<extends>` in a template, it must be the first template
-  tag in that template. Template inheritance won't work, otherwise.
+* Si vous utilisez :ttag:`{% extends %}<extends>` dans un template, ce doit être la première balise du template. Sinon l'héritage ne marchera pas.
 
-* More :ttag:`{% block %}<block>` tags in your base templates are better. Remember,
-  child templates don't have to define all parent blocks, so you can fill
-  in reasonable defaults in a number of blocks, then only define the ones
-  you need later. It's better to have more hooks than fewer hooks.
+* Davantage de balises :ttag:`{% block %}<block>` dans votre templates de base est mieux. Rappelez-vous,
+  les templates enfants n'ont pas à définir tous les blocs parents, vous pouvez donc renseigner raisonnablement des valeurs par défaut dans différents blocs, puis ne définir que ceux dont vous aurez besoin plus tard. Il vaut mieux avoir davantage de hooks que pas assez.
 
-* If you find yourself duplicating content in a number of templates, it
-  probably means you should move that content to a ``{% block %}`` in a
-  parent template.
+* Si vous vous retrouvez à dupliquer du contenu dans différents templates, cela veut probablement dire que vous devriez déplacer ce contenu vers un ``{% block %}`` du template parent.
 
-* If you need to get the content of the block from the parent template,
-  the ``{{ block.super }}`` variable will do the trick. This is useful
-  if you want to add to the contents of a parent block instead of
-  completely overriding it. Data inserted using ``{{ block.super }}`` will
-  not be automatically escaped (see the `next section`_), since it was
-  already escaped, if necessary, in the parent template.
+* Si vous avez besoin du contenu d'un bloc du template parent, la variable ``{{ block.super }}`` vous le fournira. 
+  C'est utile si vous voulez ajouter du contenu à celui du bloc parent au lieu de le remplacer complètement. Les données insérées en utilisant``{{ block.super }}`` ne seront pas échapées automatiquement (voir `section suivante`_), puisqu'elles auront déjà été échappées, si besoin, dans le template parent.
 
-* For extra readability, you can optionally give a *name* to your
-  ``{% endblock %}`` tag. For example::
+* Pour une meilleure lisibilité, vous pouvez donner un *nom* à votre balise ``{% endblock %}``. Par exemple::
 
       {% block content %}
       ...
       {% endblock content %}
 
-  In larger templates, this technique helps you see which ``{% block %}``
-  tags are being closed.
+  Dans les grands templates, cette technique vous aide à voir quelles balises ``{% block %}`` sont fermées.
 
-Finally, note that you can't define multiple :ttag:`block` tags with the same
-name in the same template. This limitation exists because a block tag works in
-"both" directions. That is, a block tag doesn't just provide a hole to fill --
-it also defines the content that fills the hole in the *parent*. If there were
-two similarly-named :ttag:`block` tags in a template, that template's parent
-wouldn't know which one of the blocks' content to use.
+Pour finir, sachez que vous ne pouvez pas déclarer plusieurs balises :ttag:`block` avec le même nom dans le même template. Cette limitation éxiste parce qu'une blaise bloc fonctionne dans "les deux" sens. C'est à dire qu'une balise de bloc ne fournit pas seulement un emplacement à remplir -- elle déclare aussi le contenu qui remplit l'emplacement *dans* le parent. S'il y avait deux balises de :ttag:`block` avec le même nom dans un template, ce template parent ne saurait pas quelcontenu de bloc utiliser.
 
-.. _next section: #automatic-html-escaping
+.. _section suivante: #automatic-html-escaping
 .. _automatic-html-escaping:
 
-Automatic HTML escaping
-=======================
+Échappement HTML automatique
+============================
 
-When generating HTML from templates, there's always a risk that a variable will
-include characters that affect the resulting HTML. For example, consider this
-template fragment::
+Lorsque l'on génère du HTML à partir des templates, il y a toujours le risque qu'une variable comporte des caractères qui affecteraient le code HTML résultant. Par exemple, étudions ce morceau de template::
 
     Hello, {{ name }}.
 
