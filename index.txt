@@ -152,8 +152,8 @@ Formulaires
 
 Django fournit un framework abondant pour faciliter la création des formulaires et la manipulation de leurs données.
 
-* **The basics:**
-  :doc:`Overview <topics/forms/index>` |
+* **Les bases:**
+  :doc:`Aperçu <topics/forms/index>` |
   :doc:`Form API <ref/forms/api>` |
   :doc:`Built-in fields <ref/forms/fields>` |
   :doc:`Built-in widgets <ref/forms/widgets>`
