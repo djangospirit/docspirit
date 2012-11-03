@@ -4,29 +4,30 @@ Le langage de template de Django
 
 .. admonition:: A propos de ce document
 
-    Ce document explique la syntaxe du langage de système de mise en page de Django. Si
+    Ce document explique la syntaxe du système de mise en page de Django. Si
     vous recherchez une approche plus technique sur son fonctionnement et sur son extension,
     voyez :doc:`/ref/templates/api`.
 
 Le langage de mise en page de Django est conçu pour allier puissance et facilité d'utilisation. Il est conçu pour que les personnes habituées à travailler avec le HTML se sentent à l'aise. Si vous avez déjà utilisé d'autres langages de mise en page, comme Smarty_
-ou CheetahTemplate_, vous devriez vous sentir comme à la maison avec les templates Django.
+ou CheetahTemplate_, vous devriez vous sentir comme chez vous avec les templates Django.
 
 .. admonition:: Philosophie
 
     Si vous avez une formation en programmation, ou si vous êtes habitué à des 
-    lagages comme PHP qui mélangent directement du code-source à du HTML, vous
-    devez garder à l'esprit que le système de mise en page de Django n'est pas
+    langages comme PHP qui mélangent directement du code-source PHP à du HTML, vous
+    devez avoir à l'esprit que le système de mise en page de Django n'est pas
     simplement du Python incorporé à du HTML. C'est intentionnel : le système 
-    de template est destiné à exprimer la présentation, pas la logique du programme.
+    de template est là pour présenter et mettre en forme les données, pas pour
+    exposer la logique du programme.
 
-    Le système de template de Django fournit des balises (*tags*) quifonctionnent
+    Le système de template de Django fournit des balises (*tags*) qui fonctionnent
     de manière similaire à certaines constructions de programmation -- une balise 
     :ttag:`if` pour les tests booléens, une balise :ttag:`for` pour les boucles, etc.
-    -- mais ils ne sont pas simplement exécutés comme le code Python correspondant, 
+    -- mais elles ne sont pas simplement exécutées comme le code Python équivalent, 
     et le système de template n'exécutera pas des expressions Python arbitraires. 
     Seuls les balises, les filtres et la syntaxe énumérés ci-dessous sont prises 
     en charge par défaut (bien que vous puissiez ajouter :doc:`your own extensions
-    </howto/custom-template-tags>` au langage de template si nécessaire).
+    </howto/custom-template-tags>` au langage de template, si nécessaire).
 
 .. _`The Django template language: For Python programmers`: ../templates_python/
 .. _Smarty: http://smarty.php.net/
@@ -42,7 +43,7 @@ XML, CSV, etc.).
 
 Un template contient des **variables**, qui sont remplacées par des valeurs lorsque le template est évalué, et des **tags** (balises), qui contrôlent la logique de la mise en page.
 
-Voici une mise en page minimaliste qui illustre quelques notions de base. Chaque élément sera expliqué plus loin dans ce document.::
+Voici une mise en page minimaliste qui illustre quelques notions de base. Chaque élément sera expliqué plus loin dans ce document::
 
     {% extends "base_generic.html" %}
 
@@ -63,29 +64,31 @@ Voici une mise en page minimaliste qui illustre quelques notions de base. Chaque
 
 .. admonition:: Philosophie
 
-    Pourquoi utiliser une mise en page à base texte au lieu d'un mise en page à base d'XML (comme TAL de Zope)? Nous voulions que le langage de mise en page de Django soit utilisable pour quelque chose de plus que des maquettes XML/HTML. À World Online, nous l'utilisons pour les e-mails, JavaScript et CSV. Vous pouvez utiliser le langage de template pour n'importe quel format basé sur du texte.
+    Pourquoi utiliser une mise en page à base texte au lieu d'un mise en page à base d'XML (comme TAL de Zope) ? Nous voulions que le langage de mise en page de Django soit utilisable pour quelque chose de plus que des maquettes XML/HTML. À World Online, nous l'utilisons pour les e-mails, du JavaScript et du CSV. Vous pouvez utiliser le langage de template pour n'importe quel format basé sur du texte.
 
-    Oh, il y a aussi cela : demander à des humains qu'ils éditent du XML est sadique !
+    Ah, et il y a ça aussi : demander à des humains qu'ils éditent du XML est quelque peu sadique !
 
 Variables
 =========
 
-Les variables ressemble à ça: ``{{ variable }}``. Lorsque le moteur de template rencontre une variable, il l'évalue et la remplace par le résultat de cette évaluation. Les noms de variables consistent en une combinaison de caractères alphanumériques et de l'underscore (``"_"``). Le point (``"."``) apparaît également dans les variables, bien qu'il ait une signification spéciale, comme nous le verrons plus tard.
+Une variable ressemble à ça: ``{{ variable }}``. Lorsque le moteur de template rencontre une variable, il l'évalue et la remplace par le résultat de cette évaluation. 
+
+Les noms des variables consistent en une combinaison de caractères alphanumériques et de l'underscore (``"_"``). Le point (``"."``) apparaît également dans les variables, bien qu'il ait une signification spéciale, comme nous le verrons plus tard.
 **Important**, *vous ne pouvez pas avoir d'espaces ou des caractères de ponctuation dans les noms de variables.*
 
-Utilisez un point (``.``) pour accèder aux attributs d'une variable.
+Utilisez un point (``.``) pour accéder aux attributs d'une variable.
 
-.. admonition:: En coulisses
+.. admonition:: En coulisse
 
-    Techniquement, lorsque le système de template trouve un point, il essaie les recherches suivantes, dans cet ordre:
+    Techniquement, lorsque le système de template trouve un point, il tente les recherches suivantes, dans cet ordre:
 
     * Recherche dans le dictionnaire
     * Recherche dans les attributs
     * Appel de méthode
-    * Recherche List-index lookup
+    * Recherche List-index 
     
-    Cela peut causer des comportement innatendus avec les objets qui surchargent les recherches Dictionnaire. 
-    Par exemple, voyons le code suivant qui essaie de boucler sur un ``collections.defaultdict``::
+    Cela peut causer des comportement inattendus avec les objets qui surchargent les recherches Dictionnaire. 
+    Par exemple, voyons le code suivant qui essaie de boucler sur ``collections.defaultdict``::
 
       {% for k, v in defaultdict.iteritems %}
          Ici, faire quelque chose avec k et v...
@@ -96,7 +99,7 @@ Utilisez un point (``.``) pour accèder aux attributs d'une variable.
 
 Dans l'exemple précédent, ``{{ section.title }}`` sera remplacé par l'attribut ``title`` de l'objet ``section``.
 
-Si vous utilisez une variable qui n'existe pas, le système de template insérera la valeur du paramètre :setting:`TEMPLATE_STRING_IF_INVALID`, qui est initialisé à ``''`` (chaîne vide) par défaut.
+Si vous utilisez une variable qui n'existe pas, le système de template insérera à la place la valeur du paramètre :setting:`TEMPLATE_STRING_IF_INVALID`, qui est initialisé à ``''`` (chaîne vide) par défaut.
 
 Filtres
 =======
@@ -106,16 +109,16 @@ Vous pouvez modifier les variables à afficher en utilisant des **filtres**.
 Les filtres ressemblent à ça : ``{{ name|lower }}``. Cela affiche la valeur de la variable 
 ``{{ name }}`` après filtrage via le filtre :tfilter:`lower`, qui convertit le texte en minuscules. Utilisez un pipe (``|``) pour appliquer un filtre.
 
-les filtres peuvent être "enchaînés". La sortie d'un filtre est appliqué au suivant.
-``{{ text|escape|linebreaks }}`` est une tournure habituelle pour échapper des contenus texte, puis pour convertir les fins de ligne en balises ``<p>``.
+Les filtres peuvent être "enchaînés". La sortie d'un filtre est appliquée au suivant.
+``{{ text|escape|linebreaks }}`` est une tournure habituelle pour échapper des contenus texte, puis pour convertir les retours à la ligne en balises ``<p>``.
 
-Certains filtres prennent des arguments. Un argument de filtre ressemble à ça: ``{{bio|truncatewords:30 }}``. Cela affiche les 30 premiers mots de la variable ``bio``.
+Certains filtres prennent des arguments. Un argument de filtre ressemble à ça: ``{{bio|truncatewords:30 }}``. Ce filtre affiche les 30 premiers mots de la variable ``bio``.
 
 Les arguments de filtre qui contiennent des espaces doivent être mis entre guillemets; par exemple, pour lier une liste avec des virgules et des espaces vous utiliserez ``{{ list|join:", " }}``.
 
 Django fournit environ une trentaine de filtres de mise en page intégrés. Vous lirez tout à leur sujet dans :ref:`built-in filter reference <ref-templates-builtins-filters>`.
 
-Pour vous donner un parfum de ce qui est disponible, en voici quelques uns, parmi ceux les plus utilisés:
+Pour vous donner un parfum de ce qui est disponible, en voici quelques-uns, parmi les plus utilisés:
 
 :tfilter:`default`
     Si une variable est fausse ou vide, utiliser la valeur par défaut indiquée. Sinon, utiliser la valeur de la variable.
@@ -124,7 +127,7 @@ Pour vous donner un parfum de ce qui est disponible, en voici quelques uns, parm
 
         {{ value|default:"rien" }}
 
-    Si ``value`` n'est pas fourni ou vide, ce qui précède affichera 
+    Si ``value`` n'est pas fourni ou est vide, ce qui précède affichera 
     "``rien``".
 
 :tfilter:`length`
@@ -150,7 +153,7 @@ Vous pouvez aussi créer vos propres filtres de mise en page personnalisées; vo
 
 .. seealso::
 
-    L'interface administration de Django peut inclure une référence complète de toutes les balises de mise en page et des filtres d'un sitge donné. Voir :doc:`/ref/contrib/admin/admindocs`.
+    L'interface administration de Django peut inclure une référence complète de toutes les balises de mise en page et des filtres d'un site donné. Voir :doc:`/ref/contrib/admin/admindocs`.
 
 Balises (Tags)
 ==============
@@ -160,7 +163,7 @@ Les balises ressemblent à ça : ``{% tag %}``. Les balises sont plus complexes 
 Certaines balises requièrent un marquage de début et de fin (c'est à dire ``{% tag %} ... tag contents
 ... {% endtag %}``).
 
-Django est livré avec environ deux douzaines de balises intégrées. Vous pouvez tout lire à leur sujet dans :ref:`built-in tag reference <ref-templates-builtins-tags>`. Pour vous donner un parfum de ce qui est disponible, en voici quelques unes, parmi celles les plus utilisées:
+Django est livré avec environ deux douzaines de balises intégrées. Vous pouvez tout lire à leur sujet dans :ref:`built-in tag reference <ref-templates-builtins-tags>`. Pour vous donner un parfum de ce qui est disponible, en voici quelques-unes, parmi les plus utilisées:
 
 :ttag:`for`
     Boucle sur chaque élément d'un tableau. Par exemple, pour afficher une liste des athlètes fournis dans ``athlete_list``::
@@ -199,13 +202,13 @@ Vous pouvez aussi créer vos propres balises de mise en page personnalisées; vo
 
 .. seealso::
 
-    L'interface administration de Django peut inclure une référence complète de toutes les balises de mise en page et des filtres d'un sitge donné. Voir :doc:`/ref/contrib/admin/admindocs`.
+    L'interface administration de Django peut inclure une référence complète de toutes les balises de mise en page et des filtres d'un site donné. Voir :doc:`/ref/contrib/admin/admindocs`.
 
 
 Commentaires
 ============
 
-Pour mettre une ligne du template en commentaire, utilisez la syntaxe: ``{# #}``.
+Pour mettre une ligne du template en commentaire, utilisez cette syntaxe: ``{# #}``.
 
 Par exemple, cette mise en page produira ``'hello'``::
 
@@ -222,7 +225,7 @@ Cette syntaxe ne peut être utilisée que pour des commentaires tenant sur une s
 Héritage de mise en page
 ========================
 
-La partie la plus puissante -- et aussi la plus complexe -- du moteur de template de Django est l'héritage de template. L'héritage de mise en page vous permet de construire un squelette de "base" qui contient tous les élements communs de votre site et qui définit des **blocs** que les mises en page *enfant* pourront surcharger.
+La partie la plus puissante -- et aussi la plus complexe -- du moteur de template de Django est l'héritage de template. L'héritage de mise en page vous permet de construire un squelette de "base" qui contient tous les éléments communs de votre site et qui définit des **blocs** que les mises en page *enfant* pourront surcharger.
 
 L'héritage de mise en page est plus simple à comprendre avec un exemple::
 
@@ -249,7 +252,7 @@ L'héritage de mise en page est plus simple à comprendre avec un exemple::
     </body>
     </html>
 
-Cette mise en page, que nous appelerons ``base.html``, définit un simple squelette HTML qui pourra être utilisé pour une mise en page sur deux colonnes. Le boulot qui consiste à remplir les blocs vides avec du contenu appartient aux templates "enfants".
+Cette mise en page, que nous appellerons ``base.html``, définit un simple squelette HTML qui pourra être utilisé pour une mise en page sur deux colonnes. Le boulot qui consiste à remplir les blocs vides avec du contenu appartient aux templates "enfants".
 
 Dans cet exemple, la balise :ttag:`block` déclare trois blocs que les templates enfants pourront remplir. Tout ce que fait la balise :ttag:`block` est de dire au moteur de template qu'un template enfant peut surcharger ces parties du template.
 
@@ -266,7 +269,7 @@ Un template enfant peut ressembler à ceci::
     {% endfor %}
     {% endblock %}
 
-Ici, la clé est la balise :ttag:`extends`. Elle dit au moteur de template que ce template en "étend" un autre. Lorsque le système de template évalue ce template-ci, il localise d'abord le parent -- c'est à dire : "base.html" dans le cas présent.
+Ici, la clé est la balise :ttag:`extends`. Elle dit au moteur de template que ce template en "étend" un autre. Lorsque le système de template évalue ce template enfant, il localise d'abord le parent -- c'est à dire : "base.html" dans le cas présent.
 
 À ce stade, le moteur de template repérera les trois balises :ttag:`block` de ``base.html`` et remplacera ces blocs par le contenu du template enfant. Selon la valeur de ``blog_entries``, la sortie ressemblera à ::
 
@@ -295,7 +298,7 @@ Ici, la clé est la balise :ttag:`extends`. Elle dit au moteur de template que c
     </body>
     </html>
 
-Notez que puisque le template enfant ne définit pas le bloc ``sidebar``, la valeur du template parent sera utilisée. Le contenu d'une balise ``{% block %}`` d'un template parent est toujours utilisée en dernier recours.
+Notez que puisque le template enfant ne définit pas le bloc ``sidebar``, la valeur du template parent sera utilisée. Le contenu d'une balise ``{% block %}`` d'un template parent est toujours utilisé en "solution de repli".
 
 Vous pouvez utiliser autant de niveaux d'héritage que vous le souhaitez. Une façon habituelle de procéder est l'approche trois-niveaux suivante:
 
@@ -305,19 +308,19 @@ Vous pouvez utiliser autant de niveaux d'héritage que vous le souhaitez. Une fa
   ``base.html`` et contiennent les styles et design spécifiques à la section.
 * Créez des templates individuels pour chaque type de page, comme un article d'actualité ou une entrée de blog. Ces templates étendront la section adéquate du template.
 
-Cette approche maximize la réutilisation du code et facilite l'ajout d'élèments dans les sections partagées, comme une section de navigation.
+Cette approche maximise la réutilisation du code et facilite l'ajout d'éléments dans les sections partagées, comme la section de navigation.
 
 Voici quelques astuces pour travailler avec l'héritage:
 
 * Si vous utilisez :ttag:`{% extends %}<extends>` dans un template, ce doit être la première balise du template. Sinon l'héritage ne marchera pas.
 
 * Davantage de balises :ttag:`{% block %}<block>` dans votre templates de base est mieux. Rappelez-vous,
-  les templates enfants n'ont pas à définir tous les blocs parents, vous pouvez donc renseigner raisonnablement des valeurs par défaut dans différents blocs, puis ne définir que ceux dont vous aurez besoin plus tard. Il vaut mieux avoir davantage de hooks que pas assez.
+  les templates enfants n'ont pas à définir tous les blocs parents, vous pouvez donc raisonnablement renseigner des valeurs par défaut dans différents blocs, puis ne définir que ceux dont vous aurez besoin plus tard. Il vaut mieux avoir davantage de hooks que pas assez.
 
 * Si vous vous retrouvez à dupliquer du contenu dans différents templates, cela veut probablement dire que vous devriez déplacer ce contenu vers un ``{% block %}`` du template parent.
 
 * Si vous avez besoin du contenu d'un bloc du template parent, la variable ``{{ block.super }}`` vous le fournira. 
-  C'est utile si vous voulez ajouter du contenu à celui du bloc parent au lieu de le remplacer complètement. Les données insérées en utilisant``{{ block.super }}`` ne seront pas échapées automatiquement (voir `section suivante`_), puisqu'elles auront déjà été échappées, si besoin, dans le template parent.
+  C'est utile si vous voulez ajouter du contenu à celui du bloc parent au lieu de le remplacer complètement. Les données insérées en utilisant``{{ block.super }}`` ne seront pas échappées automatiquement (voir `section suivante`_), puisqu'elles auront déjà été échappées, si besoin, dans le template parent.
 
 * Pour une meilleure lisibilité, vous pouvez donner un *nom* à votre balise ``{% endblock %}``. Par exemple::
 
@@ -325,9 +328,9 @@ Voici quelques astuces pour travailler avec l'héritage:
       ...
       {% endblock content %}
 
-  Dans les grands templates, cette technique vous aide à voir quelles balises ``{% block %}`` sont fermées.
+  Dans les grands templates, cette technique vous aide à voir quelles balises ``{% block %}`` on ferme.
 
-Pour finir, sachez que vous ne pouvez pas déclarer plusieurs balises :ttag:`block` avec le même nom dans le même template. Cette limitation éxiste parce qu'une blaise bloc fonctionne dans "les deux" sens. C'est à dire qu'une balise de bloc ne fournit pas seulement un emplacement à remplir -- elle déclare aussi le contenu qui remplit l'emplacement *dans* le parent. S'il y avait deux balises de :ttag:`block` avec le même nom dans un template, ce template parent ne saurait pas quelcontenu de bloc utiliser.
+Pour finir, sachez que vous ne pouvez pas déclarer plusieurs balises :ttag:`block` avec le même nom dans le même template. Cette limitation existe parce qu'une balise bloc fonctionne dans "les deux" sens. C'est à dire qu'une balise de bloc ne fournit pas seulement un emplacement à remplir -- elle déclare aussi le contenu qui remplit l'emplacement *dans* le parent. S'il y avait deux balises de :ttag:`block` avec le même nom dans un template, ce template parent ne saurait pas quel contenu de bloc utiliser.
 
 .. _section suivante: #automatic-html-escaping
 .. _automatic-html-escaping:
@@ -361,19 +364,19 @@ Cela donnerait un template comme celui-ci::
 
 ...qui, à son tour, afficherait tout le reste de la page en gras !
 
-A l'évidence, il ne faut surtout pas faire aveuglèment confiance aux données fournies par les utilisateurs et les afficher telles quelles dans vos pages Web, parce qu'un utilisateur maveillant pourrait utiliser ce genre de faille pour de mauvais desseins. Ce type d'exploitation de sécurité s'appelle attaque `Cross Site Scripting`_ (XSS).
+A l'évidence, il ne faut surtout pas faire aveuglément confiance aux données fournies par les utilisateurs et les afficher telles quelles dans vos pages Web, parce qu'un utilisateur malveillant pourrait utiliser ce genre de faille pour de mauvais desseins. Ce type d'exploitation de sécurité s'appelle attaque `Cross Site Scripting`_ (XSS).
 
 Pour éviter ce problème, vous avez deux possibilités:
 
-* Un, vous pouvez vous assurer de passer chaque variable suspecte dans le filtre 
+* Un, vous vous assurez de passer chaque variable suspecte dans le filtre 
   :tfilter:`escape` (documenté ci-dessous), qui convertit chaque caractère HTML 
-  potentiellement nuisible en caractères innofensifs. C'était la solution par défaut
+  potentiellement nuisible en caractères inoffensif. C'était la solution par défaut
   adoptée par Django dans ses premières années, mais le problème c'est qu'elle 
-  mettait sur *vous*, développeur / auteur de template, la charge de tout échapper.
-  Il est alors facile d'oublier d'échapper des données.
+  faisait reposer sur *vous*, développeur / auteur de template, la charge de tout échapper.
+  Et il est facile d'oublier d'échapper des données.
 
 * Deux, vous pouvez tirer parti de l'échappement HTML automatique de Django. Le reste
-  de cette section explique le fonctionnement de l'échappement automatique.
+  de cette section explique son fonctionnement.
 
 Par défaut dans Django, chaque template échappe automatiquement les sorties de chaque balise variable. En particulier, ces cinq caractères sont échappés:
 
@@ -387,54 +390,49 @@ Par défaut dans Django, chaque template échappe automatiquement les sorties de
 
 .. _Cross Site Scripting: http://fr.wikipedia.org/wiki/Cross-site_scripting
 
-Comment le désactiver
----------------------
+Comment désactiver l'échappement automatique
+--------------------------------------------
 
 Si vous ne voulez pas que les données soient automatiquement échappées, que ce soit par site, par template ou par variable, vous pouvez désactiver l'option de différentes façons.
 
-Pourquoi voudriez-vous désactiver l'option ? Parce que, parfois, les variables template contiennent des données dont vous voulez qu'elles soient rendues sous forme d'HTML brut, auquel cas vous ne voulez pas que leur contenu soit échappé. Par exemple, vous stockez un blob d'HTML dans votre base de données et voulez le lier directement à votre template. Ou vous utilisez le système de template de Django pour produire du texte qui *n'est pas* HTML -- comme un e-mail, par exemple.
+Pourquoi voudriez-vous désactiver l'option ? Parce que, parfois, les variables template contiennent des données dont vous voulez qu'elles soient rendues sous forme d'HTML brut, auquel cas vous ne voulez pas que leur contenu soit échappé. Par exemple, vous stockez un blob d'HTML dans votre base de données et vous voulez le lier directement à votre template. Ou vous utilisez le système de template de Django pour produire du texte qui *n'est pas* HTML -- comme un e-mail, par exemple.
 
 Par variables individuelles
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Pour désactiver l'auto-échappement pour une variable seule, utilisez le filtre :tfilter:`safe`::
 
-    Ceci sera echappé: {{ data }}
+    Ceci sera échappé: {{ data }}
     Ceci ne sera pas echappé: {{ data|safe }}
 
-Mémorisez *safe* comme abbréviation de *safe from further escaping* ou *peut être sans problèmes interprété comme du HTML*. Dans cet exemple, si ``data`` contient ``'<b>'``, la sortie sera::
+Mémorisez *safe* comme abréviation de *safe from further escaping* ou *peut être sans problèmes interprété comme du HTML*. Dans cet exemple, si ``data`` contient ``'<b>'``, la sortie sera::
 
-    Ceci sera echappé: &lt;b&gt;
-    Ceci ne sera pas echappé: <b>
+    Ceci sera échappé: &lt;b&gt;
+    Ceci ne sera pas échappé: <b>
 
 Par blocs de templates
 ~~~~~~~~~~~~~~~~~~~~~~
 
-To control auto-escaping for a template, wrap the template (or just a
-particular section of the template) in the :ttag:`autoescape` tag, like so::
+Pour contrôler l'auto-échappement sur un template, encadrez le template (ou juste une partie du template) par la balise :ttag:`autoescape` , comme ceci::
 
     {% autoescape off %}
         Hello {{ name }}
     {% endautoescape %}
 
-The :ttag:`autoescape` tag takes either ``on`` or ``off`` as its argument. At
-times, you might want to force auto-escaping when it would otherwise be
-disabled. Here is an example template::
+La balise :ttag:`autoescape` prend soit ``on`` soit ``off`` comme argument. Parfois, vous voudrez forcer l'auto-échappement alors qu'il serait autrement désactivé. Voici un exemple::
 
-    Auto-escaping is on by default. Hello {{ name }}
+    L'auto-échappement est activé par défaut. Hello {{ name }}
 
     {% autoescape off %}
-        This will not be auto-escaped: {{ data }}.
+        Ici, ça ne sera pas auto-échappé: {{ data }}.
 
-        Nor this: {{ other_data }}
+        Ni ceci: {{ other_data }}
         {% autoescape on %}
-            Auto-escaping applies again: {{ name }}
+            L'auto-échappement s'applique à nouveau: {{ name }}
         {% endautoescape %}
     {% endautoescape %}
 
-The auto-escaping tag passes its effect onto templates that extend the
-current one as well as templates included via the :ttag:`include` tag,
-just like all block tags. For example::
+La balise d'auto-échappement est effective sur les templates qui étendent le template en cours comme sur les templates inclus via la balise :ttag:`include`, comme avec toutes les balises de bloc. Par exemple::
 
     # base.html
 
@@ -451,9 +449,7 @@ just like all block tags. For example::
     {% block title %}This & that{% endblock %}
     {% block content %}{{ greeting }}{% endblock %}
 
-Because auto-escaping is turned off in the base template, it will also be
-turned off in the child template, resulting in the following rendered
-HTML when the ``greeting`` variable contains the string ``<b>Hello!</b>``::
+Comme l'auto-échappement est désactivé dans le template de base, il l'est aussi dans le template enfant, ce qui donnera le code HTML suivant où la variable ``greeting`` contient la chaîne ``<b>Hello!</b>``::
 
     <h1>This & that</h1>
     <b>Hello!</b>
@@ -461,117 +457,89 @@ HTML when the ``greeting`` variable contains the string ``<b>Hello!</b>``::
 Notes
 -----
 
-Generally, template authors don't need to worry about auto-escaping very much.
-Developers on the Python side (people writing views and custom filters) need to
-think about the cases in which data shouldn't be escaped, and mark data
-appropriately, so things Just Work in the template.
+En général, les auteurs de template n'ont pas vraiment à se préoccuper de l'auto-échappement. 
 
-If you're creating a template that might be used in situations where you're
-not sure whether auto-escaping is enabled, then add an :tfilter:`escape` filter
-to any variable that needs escaping. When auto-escaping is on, there's no
-danger of the :tfilter:`escape` filter *double-escaping* data -- the
-:tfilter:`escape` filter does not affect auto-escaped variables.
+Côté Python, les développeurs (ceux qui écrivent les vues et les filtres personnalisés) doivent penser aux cas pour lesquels les données ne doivent pas être échappées, et identifier les données convenablement, pour que les choses aillent bien dans le template.
+
+Si vous créez un template qui peut être utilisé dans des situations pour lesquelles vous ne savez pas si l'auto-échappement est activé, ajoutez le filtre :tfilter:`escape` à chaque variable qui a besoin d'être échappée. Lorsque l'auto-échappement est activé, il n'y a pas de risque que le filtre :tfilter:`escape`  *double-échappe* les données -- le filtre :tfilter:`escape` n'affecte pas les variables auto-échappées.
 
 .. _string-literals-and-automatic-escaping:
 
-String literals and automatic escaping
---------------------------------------
+Chaînes littérales et échappement automatique
+---------------------------------------------
 
-As we mentioned earlier, filter arguments can be strings::
+Comme indiqué précédemment, les arguments de filtres peuvent être des chaînes::
 
     {{ data|default:"This is a string literal." }}
 
-All string literals are inserted **without** any automatic escaping into the
-template -- they act as if they were all passed through the :tfilter:`safe`
-filter. The reasoning behind this is that the template author is in control of
-what goes into the string literal, so they can make sure the text is correctly
-escaped when the template is written.
+Toutes les chaînes littérales sont insérées dans le template **sans aucun** échappement automatique -- elles agissent comme si elles étaient toutes passées à travers le filtre :tfilter:`safe`. Le raisonnement derrière tout ça est que l'auteur du template contrôle ce qui se trouve dans la chaîne littérale, il peut donc être sûr que le texte est correctement échappé lorsque le template est écrit.
 
-This means you would write ::
+Ce qui veut dire que vous écrirez::
 
     {{ data|default:"3 &lt; 2" }}
 
-...rather than ::
+...plutôt que::
 
-    {{ data|default:"3 < 2" }}  <-- Bad! Don't do this.
+    {{ data|default:"3 < 2" }}  <-- Pas bien ! À ne pas faire.
 
-This doesn't affect what happens to data coming from the variable itself.
-The variable's contents are still automatically escaped, if necessary, because
-they're beyond the control of the template author.
+Cela n'affecte pas ce qui arrive aux données venant des variables elles-même. Les contenus des variables sont toujours automatiquement échappées, si besoin, car ils ne peuvent être contrôlés par l'auteur du template.
 
 .. _template-accessing-methods:
 
-Accessing method calls
-======================
+Accèder aux appels de méthodes
+==============================
 
-Most method calls attached to objects are also available from within templates.
-This means that templates have access to much more than just class attributes
-(like field names) and variables passed in from views. For example, the Django
-ORM provides the :ref:`"entry_set"<topics-db-queries-related>` syntax for
-finding a collection of objects related on a foreign key. Therefore, given
-a model called "comment" with a foreign key relationship to a model called
-"task" you can loop through all comments attached to a given task like this::
+Beaucoup d'appels de méthode attachés aux objets sont également accessibles à partir des templates.
+Cela veut dire que les templates accèdent à plus de choses que les seuls attributs de classe (comme les noms de champs) et variables passée à partir des vues. 
+
+Par exemple, l'ORM Django fournit la syntaxe :ref:`"entry_set"<topics-db-queries-related>` pour trouver une collection d'objets liés à une clé étrangère. En conséquence, avec un modèle donné appelé "comment", qui a une relation clé étrangère avec un modèle appelé "task", vous pouvez parcourir tous les commentaires attachés à une classe donnée via une boucle, comme ceci::
 
     {% for comment in task.comment_set.all %}
         {{ comment }}
     {% endfor %}
 
-Similarly, :doc:`QuerySets</ref/models/querysets>` provide a ``count()`` method
-to count the number of objects they contain. Therefore, you can obtain a count
-of all comments related to the current task with::
+De même, :doc:`QuerySets</ref/models/querysets>` fournit une méthode ``count()`` pour compter le nombre d'objets qu'elle contient. Ainsi, vous pouvez obtenir un décompte de tous les commentaires liés à la tâche en cours avec::
 
     {{ task.comment_set.all.count }}
 
-And of course you can easily access methods you've explicitly defined on your
-own models::
+Et bien entendu, vous accédez facilement aux méthodes que vous avez explicitement déclarées dans vos propres modèles::
 
-    # In model
+    # Dans le modèle
     class Task(models.Model):
         def foo(self):
             return "bar"
 
-    # In template
+    # Dans le template
     {{ task.foo }}
 
-Because Django intentionally limits the amount of logic processing available
-in the template language, it is not possible to pass arguments to method calls
-accessed from within templates. Data should be calculated in views, then passed
-to templates for display.
+Étant donné que Django limite intentionnellement la part de traitement logique dans le langage de template, il n'est pas possible de passer des arguments aux appels de méthodes effectués depuis les templates. Les données doivent être calculées dans les vues, puis passées aux templates pour affichage.
 
 .. _loading-custom-template-libraries:
 
-Custom tag and filter libraries
-===============================
+Balise personnalisée et bibliothèque de filtres
+===============================================
 
-Certain applications provide custom tag and filter libraries. To access them in
-a template, use the :ttag:`load` tag::
+Certaines applications fournissent des balises personnalisées et des bibliothèques de filtres. Pour y accéder depuis un template, utilisez la balise :ttag:`load`::
 
     {% load comments %}
 
     {% comment_form for blogs.entries entry.id with is_public yes %}
 
-In the above, the :ttag:`load` tag loads the ``comments`` tag library, which then
-makes the ``comment_form`` tag available for use. Consult the documentation
-area in your admin to find the list of custom libraries in your installation.
+Dans cet exemple, la balise :ttag:`load` charge la bibliothèque de balises ``comments``, qui rend alors la balise ``comment_form`` disponible pour utilisation. Consultez la zone documentation de votre administration pour trouver la liste des bibliothèques personnalisées de votre installation.
 
-The :ttag:`load` tag can take multiple library names, separated by spaces.
-Example::
+La balise :ttag:`load` accepte plusieurs noms de bibliothèques, séparés par des espaces.
+Exemple::
 
     {% load comments i18n %}
 
-See :doc:`/howto/custom-template-tags` for information on writing your own custom
-template libraries.
+Voir :doc:`/howto/custom-template-tags` pour des informations sur l'écriture de vos propres bibliothèques de template.
 
-Custom libraries and template inheritance
------------------------------------------
+Bibliothèques personnalisées et héritage de template
+----------------------------------------------------
 
-When you load a custom tag or filter library, the tags/filters are only made
-available to the current template -- not any parent or child templates along
-the template-inheritance path.
+Lorsque vous chargez une bibliothèque de balises ou de filtres personnalisée, les balises/filtres ne sont disponibles que pour le template en cours -- pas pour les templates parents ou enfant de la lignée.
 
-For example, if a template ``foo.html`` has ``{% load comments %}``, a child
-template (e.g., one that has ``{% extends "foo.html" %}``) will *not* have
-access to the comments template tags and filters. The child template is
-responsible for its own ``{% load comments %}``.
+Par exemple, si un template ``foo.html`` a ``{% load comments %}``, un 
+template enfant (par exemple, un qui a ``{% extends "foo.html" %}``) *n'aura pas* accès aux balises et filtres de ``comments``. Le template enfant est responsable de son propre ``{% load comments %}``.
 
-This is a feature for the sake of maintainability and sanity.
+C'est une caractéristique ayant pour but de faciliter la maintenance et l'équilibre mental.
