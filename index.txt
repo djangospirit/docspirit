@@ -138,7 +138,7 @@ La couche template
 La couche Template fournit une syntaxe abordable pour la mise en page des données à présenter aux utilisateurs. Apprenez comment cette syntaxe peut être utilisée par les concepteurs de thèmes et étendue par les programmeurs :
 
 * **Pour concepteurs de thèmes:**
-  :doc:`Syntax overview <topics/templates>` |
+  :doc:`Le langage de template de Django : aperçu de la syntaxe <topics/templates>` |
   :doc:`Built-in tags and filters <ref/templates/builtins>` |
   :doc:`Web design helpers <ref/contrib/webdesign>` |
   :doc:`Humanization <ref/contrib/humanize>`
