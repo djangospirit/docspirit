@@ -516,10 +516,10 @@ Et bien entendu, vous accédez facilement aux méthodes que vous avez explicitem
 
 .. _loading-custom-template-libraries:
 
-Balise personnalisée et bibliothèque de filtres
-===============================================
+Bibliothèques de balises et de filtres personnalisés
+====================================================
 
-Certaines applications fournissent des balises personnalisées et des bibliothèques de filtres. Pour y accéder depuis un template, utilisez la balise :ttag:`load`::
+Certaines applications fournissent des bibliothèques de balises et de filtres personnalisés. Pour y accéder depuis un template, utilisez la balise :ttag:`load`::
 
     {% load comments %}
 
@@ -540,6 +540,7 @@ Bibliothèques personnalisées et héritage de template
 Lorsque vous chargez une bibliothèque de balises ou de filtres personnalisée, les balises/filtres ne sont disponibles que pour le template en cours -- pas pour les templates parents ou enfant de la lignée.
 
 Par exemple, si un template ``foo.html`` a ``{% load comments %}``, un 
-template enfant (par exemple, un qui a ``{% extends "foo.html" %}``) *n'aura pas* accès aux balises et filtres de ``comments``. Le template enfant est responsable de son propre ``{% load comments %}``.
+template enfant (c'est à dire qui a ``{% extends "foo.html" %}``) *n'aura pas* accès aux balises et filtres de ``comments``. Le template enfant est responsable de son propre ``{% load comments %}``.
 
-C'est une caractéristique ayant pour but de faciliter la maintenance et l'équilibre mental.
+C'est une caractéristique qui a pour but de faciliter la maintenance et l'équilibre mental.
+
