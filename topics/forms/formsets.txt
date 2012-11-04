@@ -3,24 +3,19 @@
 Formsets
 ========
 
-A formset is a layer of abstraction to working with multiple forms on the same
-page. It can be best compared to a data grid. Let's say you have the following
-form::
+Un formset est une couche d'abstraction pour travailler avec plusieurs formulaires sur la même page. On peut opportunément le comparer à une grille de données (data grid). Supposons que vous ayez le formulaire suivant::
 
     >>> from django import forms
     >>> class ArticleForm(forms.Form):
     ...     title = forms.CharField()
     ...     pub_date = forms.DateField()
 
-You might want to allow the user to create several articles at once. To create
-a formset out of an ``ArticleForm`` you would do::
+Vous voudrez sans doute que l'utilisateur puisse créer plusieurs articles à la fois. Pour créer un formset à partir d'un ``ArticleForm`` vous ferez::
 
     >>> from django.forms.formsets import formset_factory
     >>> ArticleFormSet = formset_factory(ArticleForm)
 
-You now have created a formset named ``ArticleFormSet``. The formset gives you
-the ability to iterate over the forms in the formset and display them as you
-would with a regular form::
+Vous venez de créer un formset nommé ``ArticleFormSet``. Le formset vous donne la capacité de parcourir les formulaires du formset et de les afficher comme vous le feriez avec un formulaire ordinaire::
 
     >>> formset = ArticleFormSet()
     >>> for form in formset:
@@ -28,41 +23,28 @@ would with a regular form::
     <tr><th><label for="id_form-0-title">Title:</label></th><td><input type="text" name="form-0-title" id="id_form-0-title" /></td></tr>
     <tr><th><label for="id_form-0-pub_date">Pub date:</label></th><td><input type="text" name="form-0-pub_date" id="id_form-0-pub_date" /></td></tr>
 
-As you can see it only displayed one empty form. The number of empty forms
-that is displayed is controlled by the ``extra`` parameter. By default,
-``formset_factory`` defines one extra form; the following example will
-display two blank forms::
+Comme vous pouvez le constater, il n'y a qu'un seul formulaire vide d'affiché. Le nombre de formulaires vides à afficher est contrôlé par le paramètre ``extra``. Par défaut, ``formset_factory`` déclare un formulaire supplémentaire; l'exemple suivant affichera deux formulaires vierges::
 
     >>> ArticleFormSet = formset_factory(ArticleForm, extra=2)
 
 .. versionchanged:: 1.3
 
-Prior to Django 1.3, formset instances were not iterable. To render
-the formset you iterated over the ``forms`` attribute::
+Avant Django 1.3, les instances formset n'étaient pas itérables. Pour produire le formset, vous itériez à travers l'attribut ``forms``::
 
     >>> formset = ArticleFormSet()
     >>> for form in formset.forms:
     ...     print form.as_table()
 
-Iterating over ``formset.forms`` will render the forms in the order
-they were created. The default formset iterator also renders the forms
-in this order, but you can change this order by providing an alternate
-implementation for the :meth:`__iter__()` method.
+Itérer à travers ``formset.forms`` produira les formulaires dans l'ordre de leur création. L'itérateur de formset par défaut produit également les formulaires dans cet ordre, mais vous pouvez le modifier en fournissant une implémentation alternative de la méthode :meth:`__iter__()`.
 
-Formsets can also be indexed into, which returns the corresponding form. If you
-override ``__iter__``, you will need to also override ``__getitem__`` to have
-matching behavior.
+Les formsets peuvent également être appelés par indexes, ce qui renverra le formulaire correspondant. Si vous surchargez ``__iter__``, vous devrez aussi surcharger ``__getitem__`` pour avoir le même comportement.
 
 .. _formsets-initial-data:
 
-Using initial data with a formset
----------------------------------
+Utiliser des données initiales dans un formset
+----------------------------------------------
 
-Initial data is what drives the main usability of a formset. As shown above
-you can define the number of extra forms. What this means is that you are
-telling the formset how many additional forms to show in addition to the
-number of forms it generates from the initial data. Lets take a look at an
-example::
+Les données initiales sont ce qui motivent la principale utilisation d'un formset. Comme indiqué précédemment, vous pouvez définir le nombre de formulaires supplémentaires. Ce que cela veut dire, c'est que vous dites au formset combien il y a de formulaires supplémentaires à afficher en plus des formulaires qu'il a généré à partir des données initiales. Voyons cet exemple::
 
     >>> ArticleFormSet = formset_factory(ArticleForm, extra=2)
     >>> formset = ArticleFormSet(initial=[
@@ -79,21 +61,18 @@ example::
     <tr><th><label for="id_form-2-title">Title:</label></th><td><input type="text" name="form-2-title" id="id_form-2-title" /></td></tr>
     <tr><th><label for="id_form-2-pub_date">Pub date:</label></th><td><input type="text" name="form-2-pub_date" id="id_form-2-pub_date" /></td></tr>
 
-There are now a total of three forms showing above. One for the initial data
-that was passed in and two extra forms. Also note that we are passing in a
-list of dictionaries as the initial data.
+Il y a maintenant un total de trois formulaires. Un pour les données initiales passées et deux formulaires supplémentaires. Notez également que nous avons passé un dictionnaire comme données initiales.
 
 .. seealso::
 
-    :ref:`Creating formsets from models with model formsets <model-formsets>`.
+    :ref:`Créer des formsets à partir de modèles avec model formsets <model-formsets>`.
 
 .. _formsets-max-num:
 
-Limiting the maximum number of forms
-------------------------------------
+Limiter le nombre maximum de formulaires
+----------------------------------------
 
-The ``max_num`` parameter to ``formset_factory`` gives you the ability to
-limit the maximum number of empty forms the formset will display::
+Le paramètre ``max_num`` de ``formset_factory`` vous permet d'indiquer le nombre maximum de formulaires vides que le formset affichera::
 
     >>> ArticleFormSet = formset_factory(ArticleForm, extra=2, max_num=1)
     >>> formset = ArticleFormset()
@@ -104,20 +83,14 @@ limit the maximum number of empty forms the formset will display::
 
 .. versionchanged:: 1.2
 
-If the value of ``max_num`` is greater than the number of existing
-objects, up to ``extra`` additional blank forms will be added to the formset,
-so long as the total number of forms does not exceed ``max_num``.
+Si la valeur de ``max_num`` est supérieur au nombre d'objets existant, des formulaires vierges seront ajoutés au formset à concurrence de la valeur ``extra``, sans que le nombre total de formulaires excède ``max_num``.
 
-A ``max_num`` value of ``None`` (the default) puts no limit on the number of
-forms displayed. Please note that the default value of ``max_num`` was changed
-from ``0`` to ``None`` in version 1.2 to allow ``0`` as a valid value.
+Une valeur ``max_num`` à ``None`` (la valeur par défaut) enlève toute limite au nombre de formulaires affichés. Notez que la valeur par défaut de ``max_num`` a été changé de ``0`` à ``None`` dans la version 1.2 pour permettre ``0`` comme valeur valide.
 
-Formset validation
-------------------
+Validation du Formset 
+---------------------
 
-Validation with a formset is almost identical to a regular ``Form``. There is
-an ``is_valid`` method on the formset to provide a convenient way to validate
-all forms in the formset::
+La validation d'un formset est pratiquement identique à celle d'un ``Form`` ordinaire. Une méthode ``is_valid`` du formset fournit un moyen pratique pour valider tous les formulaires du formset::
 
     >>> ArticleFormSet = formset_factory(ArticleForm)
     >>> data = {
@@ -129,9 +102,13 @@ all forms in the formset::
     >>> formset.is_valid()
     True
 
-We passed in no data to the formset which is resulting in a valid form. The
+*We passed in no data to the formset which is resulting in a valid form. The
 formset is smart enough to ignore extra forms that were not changed. If we
-provide an invalid article::
+provide an invalid article*
+
+donne ceci ? :
+
+Nous n'avons pas passé de données au formset, ce qui aboutit à un formulaire valide. Le formset est assez intelligent pour ignorer les formulaires supplémentaires qui n'ont pas été modifiés. Si nous fournissons un article invalide::
 
     >>> data = {
     ...     'form-TOTAL_FORMS': u'2',
@@ -148,12 +125,9 @@ provide an invalid article::
     >>> formset.errors
     [{}, {'pub_date': [u'This field is required.']}]
 
-As we can see, ``formset.errors`` is a list whose entries correspond to the
-forms in the formset. Validation was performed for each of the two forms, and
-the expected error message appears for the second item.
+Comme vous pouvez le voir, ``formset.errors`` est une liste dont les entrées correspondent aux formulaires du formset. La validation a été effectuée pour chacun des deux formulaires, et le message d'erreur attendu apparaît pour le deuxième élément.
 
-We can also check if form data differs from the initial data (i.e. the form was
-sent without any data)::
+Nous pouvons aussi vérifier si les données du formulaire diffèrent des données initiales (c'est à dire si le formulaire a été envoyé sans aucune donnée)::
 
     >>> data = {
     ...     'form-TOTAL_FORMS': u'1',
@@ -168,15 +142,12 @@ sent without any data)::
 
 .. _understanding-the-managementform:
 
-Understanding the ManagementForm
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Comprendre ManagementForm
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You may have noticed the additional data (``form-TOTAL_FORMS``,
-``form-INITIAL_FORMS`` and ``form-MAX_NUM_FORMS``) that was required
-in the formset's data above. This data is required for the
-``ManagementForm``. This form is used by the formset to manage the
-collection of forms contained in the formset. If you don't provide
-this management data, an exception will be raised::
+Vous aurez remarqué les données additionnelles (``form-TOTAL_FORMS``,
+``form-INITIAL_FORMS`` et ``form-MAX_NUM_FORMS``) requises dans les données des formsets précédent. Ces données sont requises pour le 
+``ManagementForm``. Ce formulaire est utilisé par le formset pour gérer la collection de formulaires contenus dans le formset. Si vous ne fournissez pas ces données de gestionnaire, une exception sera levée::
 
     >>> data = {
     ...     'form-0-title': u'Test',
@@ -187,41 +158,29 @@ this management data, an exception will be raised::
     ...
     django.forms.util.ValidationError: [u'ManagementForm data is missing or has been tampered with']
 
-It is used to keep track of how many form instances are being displayed. If
-you are adding new forms via JavaScript, you should increment the count fields
-in this form as well.
+Il est utilisé pour garder une trace du nombre d'instances en cours d'affichage. Si vous ajoutez de nouveaux formulaires via JavaScript, vous devriez aussi incrémenter le champ décompte de ce formulaire.
 
-The management form is available as an attribute of the formset
-itself. When rendering a formset in a template, you can include all
-the management data by rendering ``{{ my_formset.management_form }}``
-(substituting the name of your formset as appropriate).
+Le formulaire *management* est disponible en tant qu'attribut du formset lui-même. Lorsqu'un formset est mis en forme dans un template, vous pouvez inclure toutes les données de gestion avec``{{ my_formset.management_form }}`` (en substituant le nom de votre  formset).
 
-``total_form_count`` and ``initial_form_count``
+``total_form_count`` et ``initial_form_count``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-``BaseFormSet`` has a couple of methods that are closely related to the
-``ManagementForm``, ``total_form_count`` and ``initial_form_count``.
+``BaseFormSet`` a quelques méthodes étroitement liées à ``ManagementForm``, ``total_form_count`` et ``initial_form_count``.
 
-``total_form_count`` returns the total number of forms in this formset.
-``initial_form_count`` returns the number of forms in the formset that were
-pre-filled, and is also used to determine how many forms are required. You
-will probably never need to override either of these methods, so please be
-sure you understand what they do before doing so.
+``total_form_count`` renvoie le nombre total de formulaires dans ce formset.
+``initial_form_count`` renvoie le nombre de formulaires dans le formset qui ont été pré-remplis, et il est également utilisé pour déterminer combien de formulaires sont requis. Vous n'aurez probablement jamais besoin de surcharger ces méthodes, alors si vous le faites, soyez sûrs de comprendre ce que vous faites.
 
 .. versionadded:: 1.2
 
 ``empty_form``
 ~~~~~~~~~~~~~~
 
-``BaseFormSet`` provides an additional attribute ``empty_form`` which returns
-a form instance with a prefix of ``__prefix__`` for easier use in dynamic
-forms with JavaScript.
+``BaseFormSet`` fournit un attribut additionnel ``empty_form`` qui renvoie une instance de formulaire avec un préfixe  ``__prefix__`` pour faciliter l'utilisation de formulaires dynamiques avec JavaScript.
 
-Custom formset validation
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Validation de formset personnalisé
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A formset has a ``clean`` method similar to the one on a ``Form`` class. This
-is where you define your own validation that works at the formset level::
+Un formset a une méthode ``clean`` semblable à celle de la classe ``Form``. C'est là que vous définissez votre propre validation qui travaille au niveau du formset::
 
     >>> from django.forms.formsets import BaseFormSet
 
@@ -257,25 +216,19 @@ is where you define your own validation that works at the formset level::
     >>> formset.non_form_errors()
     [u'Articles in a set must have distinct titles.']
 
-The formset ``clean`` method is called after all the ``Form.clean`` methods
-have been called. The errors will be found using the ``non_form_errors()``
-method on the formset.
+La méthode de formset ``clean`` est appelée après que toutes les méthodes ``Form.clean`` aient été appelées. Les erreurs peuvent être trouvées en utilisant ma méthode  ``non_form_errors()`` du formset.
 
-Dealing with ordering and deletion of forms
--------------------------------------------
+Traiter le tri et la suppression de formulaires
+-----------------------------------------------
 
-Common use cases with a formset is dealing with ordering and deletion of the
-form instances. This has been dealt with for you. The ``formset_factory``
-provides two optional parameters ``can_order`` and ``can_delete`` that will do
-the extra work of adding the extra fields and providing simpler ways of
-getting to that data.
+Une situation courante avec le formset est le tri et la suppression des instances de formulaires. On s'en occupe pour vous. Le ``formset_factory`` fournit deux paramètres facultatifs ``can_order`` et ``can_delete`` qui s'occupent d'ajouter les champs supplémentaires et fournir un moyen d'accès simple à ces données.
 
 ``can_order``
 ~~~~~~~~~~~~~
 
 Default: ``False``
 
-Lets you create a formset with the ability to order::
+Vous permet la création d'un formset avec possibilités de tri::
 
     >>> ArticleFormSet = formset_factory(ArticleForm, can_order=True)
     >>> formset = ArticleFormSet(initial=[
@@ -294,10 +247,7 @@ Lets you create a formset with the ability to order::
     <tr><th><label for="id_form-2-pub_date">Pub date:</label></th><td><input type="text" name="form-2-pub_date" id="id_form-2-pub_date" /></td></tr>
     <tr><th><label for="id_form-2-ORDER">Order:</label></th><td><input type="text" name="form-2-ORDER" id="id_form-2-ORDER" /></td></tr>
 
-This adds an additional field to each form. This new field is named ``ORDER``
-and is an ``forms.IntegerField``. For the forms that came from the initial
-data it automatically assigned them a numeric value. Let's look at what will
-happen when the user changes these values::
+Il ajoute un champ additionnel à chaque formulaire. Ce nouveau champ est nommé ``ORDER`` et c'est un ``forms.IntegerField``. Pour les formulaires qui viennent des données initiales, il assigne automatiquement une valeur numérique. Voyons ce qui se passe lorsqu'un utilisateur modifie ces valeurs::
 
     >>> data = {
     ...     'form-TOTAL_FORMS': u'3',
@@ -331,7 +281,7 @@ happen when the user changes these values::
 
 Default: ``False``
 
-Lets you create a formset with the ability to delete::
+Vous permet la création d'un formset avec possibilités de suppression::
 
     >>> ArticleFormSet = formset_factory(ArticleForm, can_delete=True)
     >>> formset = ArticleFormSet(initial=[
@@ -351,8 +301,7 @@ Lets you create a formset with the ability to delete::
     <tr><th><label for="id_form-2-pub_date">Pub date:</label></th><td><input type="text" name="form-2-pub_date" id="id_form-2-pub_date" /></td></tr>
     <tr><th><label for="id_form-2-DELETE">Delete:</label></th><td><input type="checkbox" name="form-2-DELETE" id="id_form-2-DELETE" /></td></tr>
 
-Similar to ``can_order`` this adds a new field to each form named ``DELETE``
-and is a ``forms.BooleanField``. When data comes through marking any of the
+Semblable à ``can_order``, ajoute un nouveau champ à chaque formulaire nommé ``DELETE`` et c'est un ``forms.BooleanField``. When data comes through marking any of the
 delete fields you can access them with ``deleted_forms``::
 
     >>> data = {
