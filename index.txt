@@ -161,7 +161,7 @@ Django fournit un framework abondant pour faciliter la création des formulaires
 * **Advanced:**
   :doc:`Forms for models <topics/forms/modelforms>` |
   :doc:`Integrating media <topics/forms/media>` |
-  :doc:`Formsets <topics/forms/formsets>` |
+  :doc:`Les Formsets (*liasses* de formulaires) <topics/forms/formsets>` |
   :doc:`Customizing validation <ref/forms/validation>`
 
 * **Extras:**
