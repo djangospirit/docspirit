@@ -83,7 +83,7 @@ Le paramètre ``max_num`` de ``formset_factory`` vous permet d'indiquer le nombr
 
 .. versionchanged:: 1.2
 
-Si la valeur de ``max_num`` est supérieur au nombre d'objets existant, des formulaires vierges seront ajoutés au formset à concurrence de la valeur ``extra``, sans que le nombre total de formulaires excède ``max_num``.
+Si la valeur de ``max_num`` est supérieur au nombre d'objets existant, des formulaires vierges seront ajoutés au formset, à concurrence de la valeur ``extra``, sans que le nombre total de formulaires excède ``max_num``.
 
 Une valeur ``max_num`` à ``None`` (la valeur par défaut) enlève toute limite au nombre de formulaires affichés. Notez que la valeur par défaut de ``max_num`` a été changé de ``0`` à ``None`` dans la version 1.2 pour permettre ``0`` comme valeur valide.
 
@@ -101,6 +101,7 @@ La validation d'un formset est pratiquement identique à celle d'un ``Form`` ord
     >>> formset = ArticleFormSet(data)
     >>> formset.is_valid()
     True
+
 
 *We passed in no data to the formset which is resulting in a valid form. The
 formset is smart enough to ignore extra forms that were not changed. If we
@@ -147,7 +148,7 @@ Comprendre ManagementForm
 
 Vous aurez remarqué les données additionnelles (``form-TOTAL_FORMS``,
 ``form-INITIAL_FORMS`` et ``form-MAX_NUM_FORMS``) requises dans les données des formsets précédent. Ces données sont requises pour le 
-``ManagementForm``. Ce formulaire est utilisé par le formset pour gérer la collection de formulaires contenus dans le formset. Si vous ne fournissez pas ces données de gestionnaire, une exception sera levée::
+``ManagementForm``. Ce formulaire ``ManagementForm`` est utilisé par le formset pour gérer la collection de formulaires contenus dans le formset. Si vous ne fournissez pas ces données de gestionnaire, une exception sera levée::
 
     >>> data = {
     ...     'form-0-title': u'Test',
@@ -180,7 +181,7 @@ Le formulaire *management* est disponible en tant qu'attribut du formset lui-mê
 Validation de formset personnalisé
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Un formset a une méthode ``clean`` semblable à celle de la classe ``Form``. C'est là que vous définissez votre propre validation qui travaille au niveau du formset::
+Un formset a une méthode ``clean`` semblable à celle de la classe ``Form``. C'est là que vous définissez votre propre validation, qui travaille au niveau du formset::
 
     >>> from django.forms.formsets import BaseFormSet
 
@@ -216,7 +217,7 @@ Un formset a une méthode ``clean`` semblable à celle de la classe ``Form``. C'
     >>> formset.non_form_errors()
     [u'Articles in a set must have distinct titles.']
 
-La méthode de formset ``clean`` est appelée après que toutes les méthodes ``Form.clean`` aient été appelées. Les erreurs peuvent être trouvées en utilisant ma méthode  ``non_form_errors()`` du formset.
+La méthode de formset ``clean`` est appelée après que toutes les méthodes ``Form.clean`` aient été appelées. Les erreurs peuvent être trouvées en utilisant la méthode  ``non_form_errors()`` du formset.
 
 Traiter le tri et la suppression de formulaires
 -----------------------------------------------
@@ -301,8 +302,7 @@ Vous permet la création d'un formset avec possibilités de suppression::
     <tr><th><label for="id_form-2-pub_date">Pub date:</label></th><td><input type="text" name="form-2-pub_date" id="id_form-2-pub_date" /></td></tr>
     <tr><th><label for="id_form-2-DELETE">Delete:</label></th><td><input type="checkbox" name="form-2-DELETE" id="id_form-2-DELETE" /></td></tr>
 
-Semblable à ``can_order``, ajoute un nouveau champ à chaque formulaire nommé ``DELETE`` et c'est un ``forms.BooleanField``. When data comes through marking any of the
-delete fields you can access them with ``deleted_forms``::
+Semblable à ``can_order``, ajoute un nouveau champ à chaque formulaire nommé ``DELETE`` et c'est un ``forms.BooleanField``. --> !!! When data comes through marking any of the delete fields you can access them with ``deleted_forms`` !!! <-- *Phrase non traduite au risque de contresens...*::
 
     >>> data = {
     ...     'form-TOTAL_FORMS': u'3',
@@ -326,13 +326,10 @@ delete fields you can access them with ``deleted_forms``::
     >>> [form.cleaned_data for form in formset.deleted_forms]
     [{'DELETE': True, 'pub_date': datetime.date(2008, 5, 10), 'title': u'Article #1'}]
 
-Adding additional fields to a formset
--------------------------------------
+Ajouter des champs additionnels à un formset
+--------------------------------------------
 
-If you need to add additional fields to the formset this can be easily
-accomplished. The formset base class provides an ``add_fields`` method. You
-can simply override this method to add your own fields or even redefine the
-default fields/attributes of the order and deletion fields::
+Si vous avez besoin d'ajouter des champs additionnels au formset, cela se fait facilement. La classe de base formset fournit une méthode ``add_fields``. Il vous suffit de surcharger cette méthode pour ajouter vos propres champs ou même redéfinir les champs/attributs par défaut des champs tri et suppression::
 
     >>> class BaseArticleFormSet(BaseFormSet):
     ...     def add_fields(self, form, index):
@@ -347,12 +344,11 @@ default fields/attributes of the order and deletion fields::
     <tr><th><label for="id_form-0-pub_date">Pub date:</label></th><td><input type="text" name="form-0-pub_date" id="id_form-0-pub_date" /></td></tr>
     <tr><th><label for="id_form-0-my_field">My field:</label></th><td><input type="text" name="form-0-my_field" id="id_form-0-my_field" /></td></tr>
 
-Using a formset in views and templates
---------------------------------------
+Utiliser un formset dans les vues et les templates
+--------------------------------------------------
 
-Using a formset inside a view is as easy as using a regular ``Form`` class.
-The only thing you will want to be aware of is making sure to use the
-management form inside the template. Let's look at a sample view:
+Utiliser un formset dans une vue est aussi facile qu'utiliser une class ``Form`` ordinaire.
+La seule chose à laquelle vous devrez être attentif est d'utiliser le formulaire management dans le template. Regardons une vue:
 
 .. code-block:: python
 
@@ -367,7 +363,7 @@ management form inside the template. Let's look at a sample view:
             formset = ArticleFormSet()
         return render_to_response('manage_articles.html', {'formset': formset})
 
-The ``manage_articles.html`` template might look like this:
+Le template ``manage_articles.html`` ressemblera à ceci:
 
 .. code-block:: html+django
 
@@ -380,8 +376,7 @@ The ``manage_articles.html`` template might look like this:
         </table>
     </form>
 
-However the above can be slightly shortcutted and let the formset itself deal
-with the management form:
+Mais on peut raccourcir ce qui précède et laisser le formset lui-même se débrouiller avec le formulaire management:
 
 .. code-block:: html+django
 
@@ -391,15 +386,15 @@ with the management form:
         </table>
     </form>
 
-The above ends up calling the ``as_table`` method on the formset class.
+Cet exemple finit par appeler la méthode ``as_table`` de la classe formset.
 
 .. _manually-rendered-can-delete-and-can-order:
 
-Manually rendered ``can_delete`` and ``can_order``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``can_delete`` et ``can_order`` fournis manuellement
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you manually render fields in the template, you can render
-``can_delete`` parameter with ``{{ form.DELETE }}``:
+Si vous fournissez manuellement les champs dans le template, vous pouvez utiliser ``{{ form.DELETE }}`` pour fournir le paramètre
+``can_delete``:
 
 .. code-block:: html+django
 
@@ -417,17 +412,13 @@ If you manually render fields in the template, you can render
     </form>
 
 
-Similarly, if the formset has the ability to order (``can_order=True``), it is possible to render it
-with ``{{ form.ORDER }}``.
+De même, si le formset a la capacité de trier (``can_order=True``), il est possible de le produire avec ``{{ form.ORDER }}``.
 
-Using more than one formset in a view
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Utiliser plus d'un formset dans une vue
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You are able to use more than one formset in a view if you like. Formsets
-borrow much of its behavior from forms. With that said you are able to use
-``prefix`` to prefix formset form field names with a given value to allow
-more than one formset to be sent to a view without name clashing. Lets take
-a look at how this might be accomplished:
+Si vous le souhaitez, vous pouvez utiliser plus d'un formset dans une vue. les formsets
+empruntent beaucoup de leurs comportements aux formulaires. Cela étant dit, vous pouvez utiliser un ``prefix`` pour préfixer les noms des champs du formulaire du formset avec une valeur donnée, pour envoyer plusieurs formsets à une vue sans provoquer de conflits. Voyons comment on peut faire ça:
 
 .. code-block:: python
 
@@ -448,6 +439,4 @@ a look at how this might be accomplished:
             'book_formset': book_formset,
         })
 
-You would then render the formsets as normal. It is important to point out
-that you need to pass ``prefix`` on both the POST and non-POST cases so that
-it is rendered and processed correctly.
+Vous produirez les formsets comme d'habitude. Il est important de souligner que vous devez passer le ``prefix`` dans les cas POST comme pour les cas non-POST, pour qu'il soit rendu et traité correctement.
