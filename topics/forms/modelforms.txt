@@ -1,6 +1,6 @@
-==========================
-Creating forms from models
-==========================
+==========================================
+Créer des formulaires à partir des modèles
+==========================================
 
 .. module:: django.forms.models
    :synopsis: ModelForm and ModelFormset.
@@ -11,53 +11,46 @@ Creating forms from models
 =============
 .. class:: ModelForm
 
-If you're building a database-driven app, chances are you'll have forms that
-map closely to Django models. For instance, you might have a ``BlogComment``
-model, and you want to create a form that lets people submit comments. In this
-case, it would be redundant to define the field types in your form, because
-you've already defined the fields in your model.
+Si vous construisez une application orientée base de données, il y a des chances pour que vos formulaires correspondent étroitement à vos modèles Django. Par exemple, vous pouvez avoir un modèle ``BlogComment``, et vous voudrez créer un formulaire qui permette aux internautes de laisser des commentaires. Dans ce cas, il serait redondant de définir les champs de votre formulaire, puisque vous les avez déjà définis dans votre modèle.
 
-For this reason, Django provides a helper class that let you create a ``Form``
-class from a Django model.
+Pour cette raison, Django fournit une classe qui vous permet de créer une classe ``Form`` à partir d'un modèle Django.
 
-For example::
+Par exemple::
 
     >>> from django.forms import ModelForm
 
-    # Create the form class.
+    # Créer la classe form.
     >>> class ArticleForm(ModelForm):
     ...     class Meta:
     ...         model = Article
 
-    # Creating a form to add an article.
+    # Créer un formulaire pour ajouter un article.
     >>> form = ArticleForm()
 
-    # Creating a form to change an existing article.
+    # Créer un formulaire pour modifier un article existant.
     >>> article = Article.objects.get(pk=1)
     >>> form = ArticleForm(instance=article)
 
-Field types
------------
+Types de champs
+---------------
 
-The generated ``Form`` class will have a form field for every model field. Each
-model field has a corresponding default form field. For example, a
-``CharField`` on a model is represented as a ``CharField`` on a form. A
-model ``ManyToManyField`` is represented as a ``MultipleChoiceField``. Here is
-the full list of conversions:
+La classé ``Form`` générée aura un champ de formulaire pour chaque champ du modèle. Chaque champ de modèle a son champ de formulaire correspondant. Par exemple, un ``CharField`` dans un modèle est représenté par un ``CharField`` dans le formulaire. Un champ ``ManyToManyField`` d'un modèle est représenté par un ``MultipleChoiceField``. Voici la liste complète des conversions:
 
 ===============================  ========================================
-Model field                      Form field
+Champ de Modèle                  Champ de formulaire
 ===============================  ========================================
-``AutoField``                    Not represented in the form
+``AutoField``                    Non représenté dans le formulaire
 
-``BigIntegerField``              ``IntegerField`` with ``min_value`` set
-                                 to -9223372036854775808 and ``max_value``
-                                 set to 9223372036854775807.
+``BigIntegerField``              ``IntegerField`` avec ``min_value`` 
+                                 paramétré à -9223372036854775808 
+                                 et ``max_value`` paramétré à
+                                 9223372036854775807.
 
 ``BooleanField``                 ``BooleanField``
 
-``CharField``                    ``CharField`` with ``max_length`` set to
-                                 the model field's ``max_length``
+``CharField``                    ``CharField`` avec ``max_length``
+                                 paramétré sur le champ de modèle
+                                 ``max_length``
 
 ``CommaSeparatedIntegerField``   ``CharField``
 
@@ -75,7 +68,7 @@ Model field                      Form field
 
 ``FloatField``                   ``FloatField``
 
-``ForeignKey``                   ``ModelChoiceField`` (see below)
+``ForeignKey``                   ``ModelChoiceField`` (voir ci-dessous)
 
 ``ImageField``                   ``ImageField``
 
@@ -85,13 +78,13 @@ Model field                      Form field
 
 ``GenericIPAddressField``        ``GenericIPAddressField``
 
-``ManyToManyField``              ``ModelMultipleChoiceField`` (see
-                                 below)
+``ManyToManyField``              ``ModelMultipleChoiceField`` (voir 
+                                 ci-dessous)
 
 ``NullBooleanField``             ``CharField``
 
 ``PhoneNumberField``             ``USPhoneNumberField``
-                                 (from ``django.contrib.localflavor.us``)
+                                 (de ``django.contrib.localflavor.us``)
 
 ``PositiveIntegerField``         ``IntegerField``
 
@@ -101,55 +94,52 @@ Model field                      Form field
 
 ``SmallIntegerField``            ``IntegerField``
 
-``TextField``                    ``CharField`` with
+``TextField``                    ``CharField`` avec
                                  ``widget=forms.Textarea``
 
 ``TimeField``                    ``TimeField``
 
-``URLField``                     ``URLField`` with ``verify_exists`` set
-                                 to the model field's ``verify_exists``
+``URLField``                     ``URLField`` avec ``verify_exists`` 
+                                 paramétré sur le champ de modèle
+                                 ``verify_exists``
 ===============================  ========================================
 
 .. versionadded:: 1.2
-    The ``BigIntegerField`` is new in Django 1.2.
+    ``BigIntegerField`` est nouveau dans Django 1.2.
 
 
-As you might expect, the ``ForeignKey`` and ``ManyToManyField`` model field
-types are special cases:
+Comme vous pouvez vous y attendre, les types de champs de modèle ``ForeignKey`` et ``ManyToManyField`` sont des cas particuliers:
 
-* ``ForeignKey`` is represented by ``django.forms.ModelChoiceField``,
-  which is a ``ChoiceField`` whose choices are a model ``QuerySet``.
+* ``ForeignKey`` est représenté par ``django.forms.ModelChoiceField``,
+  qui est un ``ChoiceField`` dont les choix sont un modèle ``QuerySet``.
 
-* ``ManyToManyField`` is represented by
-  ``django.forms.ModelMultipleChoiceField``, which is a
-  ``MultipleChoiceField`` whose choices are a model ``QuerySet``.
+* ``ManyToManyField`` est représenté par 
+  ``django.forms.ModelMultipleChoiceField``, qui est un
+  ``MultipleChoiceField`` dont les choix sont un modèle ``QuerySet``.
 
-In addition, each generated form field has attributes set as follows:
+De plus, chaque champ de formulaire généré a des attributs paramétrés comme suit:
 
-* If the model field has ``blank=True``, then ``required`` is set to
-  ``False`` on the form field. Otherwise, ``required=True``.
+* Si le champ du modèle a ``blank=True``, alors le ``required`` du champ de formulaire est paramétré sur
+  ``False``. Sinon, ``required=True``.
 
-* The form field's ``label`` is set to the ``verbose_name`` of the model
-  field, with the first character capitalized.
+* Le champ de formulaire ``label`` est paramétré sur le ``verbose_name`` du champ du modèle, avec le premier caractère en majuscule.
 
-* The form field's ``help_text`` is set to the ``help_text`` of the model
-  field.
+* Le champ de formulaire ``help_text`` est paramétré sur le ``help_text`` du champ du modèle.
 
-* If the model field has ``choices`` set, then the form field's ``widget``
-  will be set to ``Select``, with choices coming from the model field's
-  ``choices``. The choices will normally include the blank choice which is
-  selected by default. If the field is required, this forces the user to
-  make a selection. The blank choice will not be included if the model
-  field has ``blank=False`` and an explicit ``default`` value (the
-  ``default`` value will be initially selected instead).
+* Si le champ du modèle a ``choices`` paramétré, le ``widget`` du champ du formulaire
+  sera paramétré sur ``Select``, avec les choices fournis par le champ de modèle 
+  ``choices``. Les choix comporteront normalement un choix vierge sélectionné par défaut. 
+  Si le champ est requis, cela oblige l'utilisateur à faire une sélection.
+  Le choix vierge ne sera pas inclus si le champ de modèle a 
+  ``blank=False`` et une valeur ``default`` explicite (à la place, la valeur 
+  ``default`` sera initialement sélectionnée).
 
-Finally, note that you can override the form field used for a given model
-field. See `Overriding the default field types or widgets`_ below.
+Enfin, notez que vous pouvez surcharger le champ de formulaire d'un champ de modèle donné. Voir `Overriding the default field types or widgets`_ ci-dessous.
 
-A full example
---------------
+Un exemple complet
+------------------
 
-Consider this set of models::
+Etudions ces modèles::
 
     from django.db import models
     from django.forms import ModelForm
@@ -180,9 +170,7 @@ Consider this set of models::
         class Meta:
             model = Book
 
-With these models, the ``ModelForm`` subclasses above would be roughly
-equivalent to this (the only difference being the ``save()`` method, which
-we'll discuss in a moment.)::
+Avec ces modèles, la sous-classe ``ModelForm`` sera grosso modo équivalente à ceci (la seule différence étant la méthode ``save()``, dont nous parlerons plus tard)::
 
     from django import forms
 
@@ -196,25 +184,19 @@ we'll discuss in a moment.)::
         name = forms.CharField(max_length=100)
         authors = forms.ModelMultipleChoiceField(queryset=Author.objects.all())
 
-The ``is_valid()`` method and ``errors``
-----------------------------------------
+La méthode ``is_valid()`` et les ``errors``
+-------------------------------------------
 
-The first time you call ``is_valid()`` or access the ``errors`` attribute of a
-``ModelForm`` triggers form validation as well as :ref:`model validation
-<validating-objects>`. This has the side-effect of cleaning the model you pass
-to the ``ModelForm`` constructor. For instance, calling ``is_valid()`` on your
-form will convert any date fields on your model to actual date objects.
+La première fois que vous appelez ``is_valid()`` ou accèdez à l'attribut ``errors`` d'un 
+``ModelForm`` cela déclenche la validation du formulaire  validation tout comme celle du modèle :ref:`model validation
+<validating-objects>`. Ce qui a comme effet de bord de nettoyer le modèle passé au constructeur ``ModelForm``. Par exemple, appeler ``is_valid()`` sur votre formulaire convertira tout champ date de votre modèle en objets Date réels.
 
 
-The ``save()`` method
+La méthode ``save()`` 
 ---------------------
 
-Every form produced by ``ModelForm`` also has a ``save()``
-method. This method creates and saves a database object from the data
-bound to the form. A subclass of ``ModelForm`` can accept an existing
-model instance as the keyword argument ``instance``; if this is
-supplied, ``save()`` will update that instance. If it's not supplied,
-``save()`` will create a new instance of the specified model::
+Chaque formulaire produit par ``ModelForm`` a aussi une méthode ``save()``. Cette méthodé crée et sauvegarde un objet base de données avec les données liées au formulaire. Une sous-classe de ``ModelForm`` peut prendre une instance de modèle existante en tant qu'argument mot-clé ``instance``; s'il est fourni, ``save()`` sauvegardera cette instance. S'il ne l'est pas ,
+``save()`` créera une nouvelle instance du modèle spécifique::
 
     # Create a form instance from POST data.
     >>> f = ArticleForm(request.POST)
@@ -233,29 +215,20 @@ supplied, ``save()`` will update that instance. If it's not supplied,
     >>> f = ArticleForm(request.POST, instance=a)
     >>> f.save()
 
-Note that ``save()`` will raise a ``ValueError`` if the data in the form
-doesn't validate -- i.e., if form.errors evaluates to True.
+Notez que ``save()`` lèvera un ``ValueError`` si les données du formulaire ne valident pas -- par exemple, si form.errors évalue à True.
 
-This ``save()`` method accepts an optional ``commit`` keyword argument, which
-accepts either ``True`` or ``False``. If you call ``save()`` with
-``commit=False``, then it will return an object that hasn't yet been saved to
-the database. In this case, it's up to you to call ``save()`` on the resulting
-model instance. This is useful if you want to do custom processing on the
-object before saving it, or if you want to use one of the specialized
-:ref:`model saving options <ref-models-force-insert>`. ``commit`` is ``True``
-by default.
+Cette méthode ``save()`` accepte un argument mot-clé ``commit`` facultatif , qui prend
+soit ``True`` soit ``False``. Si vous appelez ``save()`` avec
+``commit=False``, elle renverra un objet qui n'aura pas encore été sauvegardé dans la base de données.
+Il vous appartient dans ce cas d'appeler le ``save()`` de l'instance de modèle résultante.
+C'est utile si vous voulez appliquer un traitement personnalisé sur l'objet avant de le sauvegarder, ou si vous voulez utiliser l'une 
+:ref:`options de sauvegarde de modèle <ref-models-force-insert>` spécialisée. ``commit`` est ``True``
+par défaut.
 
-Another side effect of using ``commit=False`` is seen when your model has
-a many-to-many relation with another model. If your model has a many-to-many
-relation and you specify ``commit=False`` when you save a form, Django cannot
-immediately save the form data for the many-to-many relation. This is because
-it isn't possible to save many-to-many data for an instance until the instance
-exists in the database.
+Un autre effet de bord de l'utilisation de ``commit=False`` est visible lorsque votre modèle a une relation Plusieurs-à-Plusieurs avec un autre modèle. Si votre modèle a une relation Plusieurs-à-Plusieurs et que vous spécifiez``commit=False`` lors de la sauvegarde d'un formulaire, Django ne sauvegarde pas immédiatement les données du formulaire pour la relation Plusieurs-à-Plusieurs. Parce qu'il est impossible de sauvegarder les données Plusieurs-à-Plusieurs d'une instance tant qu'elle n'existe pas dans la base de données .
 
-To work around this problem, every time you save a form using ``commit=False``,
-Django adds a ``save_m2m()`` method to your ``ModelForm`` subclass. After
-you've manually saved the instance produced by the form, you can invoke
-``save_m2m()`` to save the many-to-many form data. For example::
+Pour contourner ce problème, chaque fois que vous sauvegardez un formulaire en utilisant ``commit=False``,
+Django ajoute une méthode ``save_m2m()`` à votre sous-classe ``ModelForm``. Après avoir manuellement sauvegardé l'instance produite par le formulaire, vous pouvez invoquer ``save_m2m()`` pour sauvegarder les données Plusieurs-à-Plusieurs du formulaire. Par exemple::
 
     # Create a form instance with POST data.
     >>> f = AuthorForm(request.POST)
@@ -272,10 +245,9 @@ you've manually saved the instance produced by the form, you can invoke
     # Now, save the many-to-many data for the form.
     >>> f.save_m2m()
 
-Calling ``save_m2m()`` is only required if you use ``save(commit=False)``.
-When you use a simple ``save()`` on a form, all data -- including
-many-to-many data -- is saved without the need for any additional method calls.
-For example::
+Appeler ``save_m2m()`` n'est obligatoire que si vous utilisez ``save(commit=False)``.
+Lorsque vous utilisez un simple ``save()`` sur un formulaire, toutes les données -- y compris les Plusieurs-à-Plusieurs -- sont sauvegardées sans avoir besoin d'appels de méthodes supplémentaies.
+Par exemple::
 
     # Create a form instance with POST data.
     >>> a = Author()
@@ -284,12 +256,8 @@ For example::
     # Create and save the new author instance. There's no need to do anything else.
     >>> new_author = f.save()
 
-Other than the ``save()`` and ``save_m2m()`` methods, a ``ModelForm`` works
-exactly the same way as any other ``forms`` form. For example, the
-``is_valid()`` method is used to check for validity, the ``is_multipart()``
-method is used to determine whether a form requires multipart file upload (and
-hence whether ``request.FILES`` must be passed to the form), etc. See
-:ref:`binding-uploaded-files` for more information.
+À part les méthodes ``save()`` et ``save_m2m()``, un ``ModelForm`` fonctionne exactement de la même façon que tout autre formulaire ``forms``. Par exemple, la méthode ``is_valid()`` est utilisée pour vérifier la validité, la méthode ``is_multipart()`` est utilisée pour déterminer si un formulaire demande un téléchargement de fichier en plusieurs parties (et donc si ``request.FILES`` doit être passé au formulaire), etc. Voir
+:ref:`binding-uploaded-files` pour plus d'informations.
 
 Using a subset of fields on the form
 ------------------------------------
