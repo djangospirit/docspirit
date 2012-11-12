@@ -11,9 +11,9 @@ Créer des formulaires à partir des modèles
 =============
 .. class:: ModelForm
 
-Si vous construisez une application orientée base de données, il y a des chances pour que vos formulaires correspondent étroitement à vos modèles Django. Par exemple, vous pouvez avoir un modèle ``BlogComment``, et vous voudrez créer un formulaire qui permette aux internautes de laisser des commentaires. Dans ce cas, il serait redondant de définir les champs de votre formulaire, puisque vous les avez déjà définis dans votre modèle.
+Si vous construisez une application orientée base de données, il y a des chances pour que vos formulaires soient très proches de vos modèles Django. Par exemple, vous pouvez avoir un modèle ``BlogComment``, et vous voudrez créer un formulaire qui permette aux internautes de laisser des commentaires. Il serait alors redondant de déclarer les champs de votre formulaire, puisque vous les avez déjà déclarés dans votre modèle.
 
-Pour cette raison, Django fournit une classe qui vous permet de créer une classe ``Form`` à partir d'un modèle Django.
+Pour cette raison, Django fournit une classe d'assistance qui vous permet de créer une classe ``Form`` à partir d'un modèle Django.
 
 Par exemple::
 
@@ -108,33 +108,33 @@ Champ de Modèle                  Champ de formulaire
     ``BigIntegerField`` est nouveau dans Django 1.2.
 
 
-Comme vous pouvez vous y attendre, les types de champs de modèle ``ForeignKey`` et ``ManyToManyField`` sont des cas particuliers:
+Comme vous vous en doutez, les types de champs de modèle ``ForeignKey`` et ``ManyToManyField`` sont des cas particuliers:
 
 * ``ForeignKey`` est représenté par ``django.forms.ModelChoiceField``,
-  qui est un ``ChoiceField`` dont les choix sont un modèle ``QuerySet``.
+  qui est un ``ChoiceField`` dont les choix est un modèle ``QuerySet``.
 
 * ``ManyToManyField`` est représenté par 
   ``django.forms.ModelMultipleChoiceField``, qui est un
-  ``MultipleChoiceField`` dont les choix sont un modèle ``QuerySet``.
+  ``MultipleChoiceField`` dont les choix est un modèle ``QuerySet``.
 
-De plus, chaque champ de formulaire généré a des attributs paramétrés comme suit:
+De plus, chaque champ du formulaire généré a des attributs paramétrés comme suit:
 
-* Si le champ du modèle a ``blank=True``, alors le ``required`` du champ de formulaire est paramétré sur
+* Si le champ du modèle a ``blank=True``, alors le paramètre ``required`` du champ de formulaire est initialisé à
   ``False``. Sinon, ``required=True``.
 
-* Le champ de formulaire ``label`` est paramétré sur le ``verbose_name`` du champ du modèle, avec le premier caractère en majuscule.
+* Le champ de formulaire ``label`` est initialisé avec le ``verbose_name`` du champ du modèle, son premier caractère en majuscule.
 
-* Le champ de formulaire ``help_text`` est paramétré sur le ``help_text`` du champ du modèle.
+* Le champ de formulaire ``help_text`` est initialisé sur le ``help_text`` du champ du modèle.
 
 * Si le champ du modèle a ``choices`` paramétré, le ``widget`` du champ du formulaire
-  sera paramétré sur ``Select``, avec les choices fournis par le champ de modèle 
+  sera paramétré sur ``Select``, avec les choix fournis par le champ de modèle 
   ``choices``. Les choix comporteront normalement un choix vierge sélectionné par défaut. 
-  Si le champ est requis, cela oblige l'utilisateur à faire une sélection.
+  Si le champ est requis, l'utilisateur devra faire une sélection.
   Le choix vierge ne sera pas inclus si le champ de modèle a 
   ``blank=False`` et une valeur ``default`` explicite (à la place, la valeur 
   ``default`` sera initialement sélectionnée).
 
-Enfin, notez que vous pouvez surcharger le champ de formulaire d'un champ de modèle donné. Voir `Overriding the default field types or widgets`_ ci-dessous.
+Enfin, notez que vous pouvez surcharger le champ de formulaire d'un champ de modèle donné. Voir `Surcharger les types de champs ou les widgets par défaut`_ ci-dessous.
 
 Un exemple complet
 ------------------
@@ -187,15 +187,15 @@ Avec ces modèles, la sous-classe ``ModelForm`` sera grosso modo équivalente à
 La méthode ``is_valid()`` et les ``errors``
 -------------------------------------------
 
-La première fois que vous appelez ``is_valid()`` ou accèdez à l'attribut ``errors`` d'un 
+La première fois que vous appelez ``is_valid()`` ou que vous accèdez à l'attribut ``errors`` d'un 
 ``ModelForm`` cela déclenche la validation du formulaire  validation tout comme celle du modèle :ref:`model validation
 <validating-objects>`. Ce qui a comme effet de bord de nettoyer le modèle passé au constructeur ``ModelForm``. Par exemple, appeler ``is_valid()`` sur votre formulaire convertira tout champ date de votre modèle en objets Date réels.
 
 
-La méthode ``save()`` 
+La méthode ``save()``
 ---------------------
 
-Chaque formulaire produit par ``ModelForm`` a aussi une méthode ``save()``. Cette méthodé crée et sauvegarde un objet base de données avec les données liées au formulaire. Une sous-classe de ``ModelForm`` peut prendre une instance de modèle existante en tant qu'argument mot-clé ``instance``; s'il est fourni, ``save()`` sauvegardera cette instance. S'il ne l'est pas ,
+Chaque formulaire produit par ``ModelForm`` a aussi une méthode ``save()``. Cette méthode crée et sauvegarde un objet base de données avec les données liées au formulaire. Une sous-classe de ``ModelForm`` peut prendre une instance de modèle existante en tant qu'argument mot-clé ``instance``; s'il est fourni, ``save()`` sauvegardera cette instance. S'il ne l'est pas ,
 ``save()`` créera une nouvelle instance du modèle spécifique::
 
     # Create a form instance from POST data.
@@ -215,17 +215,17 @@ Chaque formulaire produit par ``ModelForm`` a aussi une méthode ``save()``. Cet
     >>> f = ArticleForm(request.POST, instance=a)
     >>> f.save()
 
-Notez que ``save()`` lèvera un ``ValueError`` si les données du formulaire ne valident pas -- par exemple, si form.errors évalue à True.
+Notez que ``save()`` lèvera un ``ValueError`` si les données du formulaire ne valident pas -- par exemple, si form.errors donne True.
 
 Cette méthode ``save()`` accepte un argument mot-clé ``commit`` facultatif , qui prend
 soit ``True`` soit ``False``. Si vous appelez ``save()`` avec
-``commit=False``, elle renverra un objet qui n'aura pas encore été sauvegardé dans la base de données.
-Il vous appartient dans ce cas d'appeler le ``save()`` de l'instance de modèle résultante.
-C'est utile si vous voulez appliquer un traitement personnalisé sur l'objet avant de le sauvegarder, ou si vous voulez utiliser l'une 
+``commit=False``, ``save()`` renverra un objet qui n'aura pas encore été sauvegardé dans la base de données.
+Il vous appartient dans ce cas d'appeler le ``save()`` de l'instance modèle résultante.
+Ce comportement est utile si vous voulez appliquer un traitement personnalisé sur l'objet avant de le sauvegarder, ou si vous voulez utiliser l'une 
 :ref:`options de sauvegarde de modèle <ref-models-force-insert>` spécialisée. ``commit`` est ``True``
 par défaut.
 
-Un autre effet de bord de l'utilisation de ``commit=False`` est visible lorsque votre modèle a une relation Plusieurs-à-Plusieurs avec un autre modèle. Si votre modèle a une relation Plusieurs-à-Plusieurs et que vous spécifiez``commit=False`` lors de la sauvegarde d'un formulaire, Django ne sauvegarde pas immédiatement les données du formulaire pour la relation Plusieurs-à-Plusieurs. Parce qu'il est impossible de sauvegarder les données Plusieurs-à-Plusieurs d'une instance tant qu'elle n'existe pas dans la base de données .
+Un autre effet de bord de l'utilisation de ``commit=False`` est visible lorsque votre modèle a une relation Plusieurs-à-Plusieurs avec un autre modèle. Si votre modèle a une relation Plusieurs-à-Plusieurs et que vous spécifiez``commit=False`` lors de la sauvegarde d'un formulaire, Django ne sauvegarde pas immédiatement les données du formulaire pour la relation Plusieurs-à-Plusieurs. Parce qu'il est impossible de sauvegarder les données Plusieurs-à-Plusieurs d'une instance tant qu'elle n'existe pas dans la base de données.
 
 Pour contourner ce problème, chaque fois que vous sauvegardez un formulaire en utilisant ``commit=False``,
 Django ajoute une méthode ``save_m2m()`` à votre sous-classe ``ModelForm``. Après avoir manuellement sauvegardé l'instance produite par le formulaire, vous pouvez invoquer ``save_m2m()`` pour sauvegarder les données Plusieurs-à-Plusieurs du formulaire. Par exemple::
@@ -256,32 +256,24 @@ Par exemple::
     # Create and save the new author instance. There's no need to do anything else.
     >>> new_author = f.save()
 
-À part les méthodes ``save()`` et ``save_m2m()``, un ``ModelForm`` fonctionne exactement de la même façon que tout autre formulaire ``forms``. Par exemple, la méthode ``is_valid()`` est utilisée pour vérifier la validité, la méthode ``is_multipart()`` est utilisée pour déterminer si un formulaire demande un téléchargement de fichier en plusieurs parties (et donc si ``request.FILES`` doit être passé au formulaire), etc. Voir
-:ref:`binding-uploaded-files` pour plus d'informations.
+À part les méthodes ``save()`` et ``save_m2m()``, un ``ModelForm`` fonctionne exactement de la même façon que tout autre formulaire ``forms``. Par exemple, la méthode ``is_valid()`` est utilisée pour vérifier la validité, la méthode ``is_multipart()`` est utilisée pour déterminer si un formulaire demande un téléchargement de fichier en plusieurs parties (et donc si ``request.FILES`` doit être passé au formulaire), etc. Voir :ref:`binding-uploaded-files` pour plus d'informations.
 
-Using a subset of fields on the form
-------------------------------------
+_`N'utiliser qu'une partie des champs dans un formulaire`
+---------------------------------------------------------
 
-In some cases, you may not want all the model fields to appear on the generated
-form. There are three ways of telling ``ModelForm`` to use only a subset of the
-model fields:
+Parfois, vous ne voudrez pas utiliser tous les champs du modèle dans le formulaire généré. Il y a trois façons de dire à  ``ModelForm`` de n'utiliser qu'une partie des champs du modèle:
 
-1. Set ``editable=False`` on the model field. As a result, *any* form
-   created from the model via ``ModelForm`` will not include that
-   field.
+1. Paramétrer ``editable=False`` sur le champ du modèle. Ainsi *n'importe quel* formulaire
+   créé à partir du modèle via ``ModelForm`` n'incluera pas ce champ.
 
-2. Use the ``fields`` attribute of the ``ModelForm``'s inner ``Meta``
-   class.  This attribute, if given, should be a list of field names
-   to include in the form. The order in which the fields names are specified
-   in that list is respected when the form renders them.
+2. Utiliser l'attribut ``fields`` de la class ``Meta`` du ``ModelForm``.
+   Cet attribut, s'il est utilisé, contiendra une liste des champs devant figurer dans le formulaire. L'ordre dans lequel   
+   apparaissent les noms des champs sera celui utilisé pour produire le formulaire.
 
-3. Use the ``exclude`` attribute of the ``ModelForm``'s inner ``Meta``
-   class.  This attribute, if given, should be a list of field names
-   to exclude from the form.
+3. Utiliser l'attribut ``exclude`` de la class ``Meta`` du ``ModelForm``.
+   Cet attribut, s'il est utilisé, contiendra une liste des champs à exclure du formulaire.
 
-For example, if you want a form for the ``Author`` model (defined
-above) that includes only the ``name`` and ``title`` fields, you would
-specify ``fields`` or ``exclude`` like this::
+Par exemple, si vous voulez un formulaire pour le modèle ``Author`` (décrit plus haut) qui ne contient que les champs ``name`` et ``title``, vous renseignerez ``fields`` ou ``exclude`` comme ceci::
 
     class PartialAuthorForm(ModelForm):
         class Meta:
@@ -293,61 +285,52 @@ specify ``fields`` or ``exclude`` like this::
             model = Author
             exclude = ('birth_date',)
 
-Since the Author model has only 3 fields, 'name', 'title', and
-'birth_date', the forms above will contain exactly the same fields.
+Puisque le modèle Author n'a que 3 champs, 'name', 'title', et
+'birth_date', les formulaires de cet exemple contiendront exactement les mêmes champs.
 
 .. note::
 
-    If you specify ``fields`` or ``exclude`` when creating a form with
-    ``ModelForm``, then the fields that are not in the resulting form
-    will not be set by the form's ``save()`` method. Also, if you
-    manually add the excluded fields back to the form, they will not
-    be initialized from the model instance.
+    Si vous renseignez ``fields`` ou ``exclude`` lors de la création du 
+    formulaire avec ``ModelForm``, les champs qui ne figureront pas dans
+    le formulaire ne seront pas initialisés par la méthode ``save()`` du
+    formulaire. De même, si vous ajoutez ensuite les champs exlcus au formulaire, 
+    ils ne seront pas initialisés à partir de l'instance du modèle..
 
-    Django will prevent any attempt to save an incomplete model, so if
-    the model does not allow the missing fields to be empty, and does
-    not provide a default value for the missing fields, any attempt to
-    ``save()`` a ``ModelForm`` with missing fields will fail.  To
-    avoid this failure, you must instantiate your model with initial
-    values for the missing, but required fields::
+    Django empêchera toute tentative de sauvegarde d'un modèle incomplet,
+    ainsi, si le modèle ne permet pas que les champs manquants soient vides, 
+    et s'il ne fournit pas une valeur par défaut pour les champs manquants, 
+    toute tentative de ``save()`` pour un ``ModelForm`` avec des champs manquants échouera. 
+    Pour éviter cela, vous devez instancier votre modèle avec des valeurs initiales pour les
+    champs manquants requis::
 
         author = Author(title='Mr')
         form = PartialAuthorForm(request.POST, instance=author)
         form.save()
 
-    Alternatively, you can use ``save(commit=False)`` and manually set
-    any extra required fields::
+    Sinon, vous pouvez utiliser ``save(commit=False)`` et renseigner à la main
+    les champs requis::
 
         form = PartialAuthorForm(request.POST)
         author = form.save(commit=False)
         author.title = 'Mr'
         author.save()
 
-    See the `section on saving forms`_ for more details on using
-    ``save(commit=False)``.
+    Voir la `section sur la sauvegarde des formulaires`_ pour plus de détails sur l'utilisation de ``save(commit=False)``.
 
-.. _section on saving forms: `The save() method`_
+.. _section sur la sauvegarde des formulaires: `La méthode save()`_
 
-Overriding the default field types or widgets
----------------------------------------------
+Surcharger les types de champs ou les widgets par défaut
+--------------------------------------------------------
 
 .. versionadded:: 1.2
-    The ``widgets`` attribute is new in Django 1.2.
+    L'attribut ``widgets`` est nouveau dans Django 1.2.
 
-The default field types, as described in the `Field types`_ table above, are
-sensible defaults. If you have a ``DateField`` in your model, chances are you'd
-want that to be represented as a ``DateField`` in your form. But
-``ModelForm`` gives you the flexibility of changing the form field type and
-widget for a given model field.
+Les types de champs par défaut, décrits dans le tableau `Types de champs`_ précédent, sont 
+pratiques par défaut. Si vous avez un ``DateField`` dans votre modèle, il y a des chances que vous vouliez le représenter par un ``DateField`` dans votre formulaire. Mais ``ModelForm`` vous apporte la souplesse de pouvoir modifier le type de champ et le widget d'un champ de modèle donné.
 
-To specify a custom widget for a field, use the ``widgets`` attribute of the
-inner ``Meta`` class. This should be a dictionary mapping field names to widget
-classes or instances.
+Pour spécifier un widget personnalisé pour un champ, utilisez l'attribut ``widgets`` de la classe ``Meta`` interne. C'est un dictionnaire cartographiant les noms de champs et les classes ou instances de widget.
 
-For example, if you want the a ``CharField`` for the ``name``
-attribute of ``Author`` to be represented by a ``<textarea>`` instead
-of its default ``<input type="text">``, you can override the field's
-widget::
+Par exemple, si vous voulez que le ``CharField`` de l'attribut ``name`` de ``Author`` soit représenté par un ``<textarea>`` à la place du ``<input type="text">`` par défaut, vous pouvez surcharger le widget du champ::
 
     from django.forms import ModelForm, Textarea
 
@@ -359,16 +342,13 @@ widget::
                 'name': Textarea(attrs={'cols': 80, 'rows': 20}),
             }
 
-The ``widgets`` dictionary accepts either widget instances (e.g.,
-``Textarea(...)``) or classes (e.g., ``Textarea``).
+Le dictionnaire ``widgets`` accepte soit des instances widget (par exemeple,
+``Textarea(...)``) ou des classes (par exemeple, ``Textarea``).
 
-If you want to further customize a field -- including its type, label, etc. --
-you can do this by declaratively specifying fields like you would in a regular
-``Form``. Declared fields will override the default ones generated by using the
-``model`` attribute.
+Si vous voulez personnaliser davantage le champ -- en ajoutant son type, son label, etc. --
+vous pouvez le faire en déclarant les champs comme vous le feriez dans un ``Form`` ordinaire. Les champs déclarés surchargeront ceux générés par défaut en utilisant l'attribut ``model``.
 
-For example, if you wanted to use ``MyDateFormField`` for the ``pub_date``
-field, you could do the following::
+Par exemple, si vous voulez utiliser ``MyDateFormField`` pour le champ ``pub_date``, vous pouvez faire ceci::
 
     class ArticleForm(ModelForm):
         pub_date = MyDateFormField()
@@ -376,8 +356,8 @@ field, you could do the following::
         class Meta:
             model = Article
 
-If you want to override a field's default label, then specify the ``label``
-parameter when declaring the form field::
+Si vous voulez surcharger le label par défaut, spécifiez le paramètre ``label``
+lors de la déclaration du champ de formulaire::
 
    >>> class ArticleForm(ModelForm):
    ...     pub_date = DateField(label='Publication date')
@@ -387,22 +367,23 @@ parameter when declaring the form field::
 
 .. note::
 
-    If you explicitly instantiate a form field like this, Django assumes that you
-    want to completely define its behavior; therefore, default attributes (such as
-    ``max_length`` or ``required``) are not drawn from the corresponding model. If
-    you want to maintain the behavior specified in the model, you must set the
-    relevant arguments explicitly when declaring the form field.
+    Si vous instanciez explicitement un champ de formulaire de cette façon, 
+    Django suppose que vous vous voulez complètement définir son comportement; 
+    les attributs par défaut (comme
+    ``max_length`` ou ``required``) ne sont donc pas dessinés à partir du modèle
+    correspondant. Si vous voulez conserver le comportement spécifié dans le modèle, 
+    vous devez paramétrer les arguments pertinents lors de la déclaration du champ 
+    de formulaire.
 
-    For example, if the ``Article`` model looks like this::
+    Par exemple, si le modèle ``Article`` ressemble à ça::
 
         class Article(models.Model):
             headline = models.CharField(max_length=200, null=True, blank=True,
                                         help_text="Use puns liberally")
             content = models.TextField()
 
-    and you want to do some custom validation for ``headline``, while keeping
-    the ``blank`` and ``help_text`` values as specified, you might define
-    ``ArticleForm`` like this::
+    et que vous voulez une validation personnalisée pour ``headline``, tout en conservant 
+    les valeurs ``blank`` et ``help_text`` spécifiées, vous définirez ``ArticleForm`` comme ça::
 
         class ArticleForm(ModelForm):
             headline = MyFormField(max_length=200, required=False,
@@ -411,27 +392,25 @@ parameter when declaring the form field::
             class Meta:
                 model = Article
 
-    See the :doc:`form field documentation </ref/forms/fields>` for more information
-    on fields and their arguments.
+    Vous devez vous assurer que le type du champ du formulaire peut être utilisé pour 
+    paramétrer les contenus du champ modèle correspondant. S'ils ne sont pas compatibles,
+    vous aurez une ``ValueError`` car il n'y a pas de conversion implicite.
 
-Changing the order of fields
-----------------------------
+    Voir la :doc:`documentation Champs de formulaire</ref/forms/fields>` pour plus d'informations
+    sur les champs et leurs arguments.
 
-By default, a ``ModelForm`` will render fields in the same order that they are
-defined on the model, with ``ManyToManyField`` instances appearing last. If
-you want to change the order in which fields are rendered, you can use the
-``fields`` attribute on the ``Meta`` class.
+Modifier l'ordre des champs
+---------------------------
 
-The ``fields`` attribute defines the subset of model fields that will be
-rendered, and the order in which they will be rendered. For example given this
-model::
+Par défaut, un ``ModelForm`` affichera les champs dans l'ordre dans lequel ils sont déclarés dans votre modèle, avec les instances ``ManyToManyField`` apparaissant en dernier. Si vous voulez modifier cet ordre, vous utiliserez l'attribut ``fields`` de la classe ``Meta``.
+
+Les attributs ``fields`` définissent les sous-ensembles de champs modèles affichés et l'ordre dans lequel il seront affichés. Par exemple, avec ce modèle::
 
     class Book(models.Model):
         author = models.ForeignKey(Author)
         title = models.CharField(max_length=100)
 
-the ``author`` field would be rendered first. If we wanted the title field
-to be rendered first, we could specify the following ``ModelForm``::
+le champ ``author`` sera affiché en premier. Pour que le champ ``title`` apparaisse en premier, vous spécifierez ce ``ModelForm``::
 
     >>> class BookForm(ModelForm):
     ...     class Meta:
@@ -440,89 +419,70 @@ to be rendered first, we could specify the following ``ModelForm``::
 
 .. _overriding-modelform-clean-method:
 
-Overriding the clean() method
+Surcharger la méthode clean()
 -----------------------------
 
-You can override the ``clean()`` method on a model form to provide additional
-validation in the same way you can on a normal form.
+Vous pouvez surcharger la méthode ``clean()`` d'un model form pour ajouter des validation, de la même façon que vous le feriez pour un formulaire normal.
 
-In this regard, model forms have two specific characteristics when compared to
-forms:
+Pour cela, comparées aux formulaires, les model forms ont deux caractéristiques spécifiques:
 
-By default the ``clean()`` method validates the uniqueness of fields that are
-marked as ``unique``, ``unique_together`` or ``unique_for_date|month|year`` on
-the model.  Therefore, if you would like to override the ``clean()`` method and
-maintain the default validation, you must call the parent class's ``clean()``
-method.
+Par défaut, la méthode ``clean()`` valide l'unicité des champs marqués comme ``unique``, ``unique_together`` ou ``unique_for_date|month|year`` dans le modèle. Donc, si vous voulez surcharger la méthode ``clean()`` et conserver la validation par défaut, vous devez appeler la méthode ``clean()`` de la classe parent.
 
-Also, a model form instance bound to a model object will contain a
-``self.instance`` attribute that gives model form methods access to that
-specific model instance.
+De même, une instance model form liée à un objet modèle contiendra un attribut ``self.instance`` qui donne des méthodes d'accès model form à cette instance de modèle spécifique.
 
-Form inheritance
+Héritage de Form
 ----------------
 
-As with basic forms, you can extend and reuse ``ModelForms`` by inheriting
-them. This is useful if you need to declare extra fields or extra methods on a
-parent class for use in a number of forms derived from models. For example,
-using the previous ``ArticleForm`` class::
+Comme avec les modèles basiques, vous pouvez étendre et réutiliser ``ModelForms`` en en héritant. C'est utile si vous déclarez des champs ou des méthodes supplémentaies sur une classe parent pour utilisation dans plusieurs formulaires dérivés des modèles. Par exemple, en utilsant la classe ``ArticleForm`` vue plus haut::
 
     >>> class EnhancedArticleForm(ArticleForm):
     ...     def clean_pub_date(self):
     ...         ...
 
-This creates a form that behaves identically to ``ArticleForm``, except there's
-some extra validation and cleaning for the ``pub_date`` field.
+Cela crée un formulaire qui se comporte exactement comme ``ArticleForm``, sauf qu'il y a en plus de la validation et du nettoyage pour le champ ``pub_date``.
 
-You can also subclass the parent's ``Meta`` inner class if you want to change
-the ``Meta.fields`` or ``Meta.excludes`` lists::
+Vous pouvez aussi subclasser la classe ``Meta`` interne du parent si vous voulez modifier les listes ``Meta.fields`` ou ``Meta.excludes``::
 
     >>> class RestrictedArticleForm(EnhancedArticleForm):
     ...     class Meta(ArticleForm.Meta):
     ...         exclude = ('body',)
 
-This adds the extra method from the ``EnhancedArticleForm`` and modifies
-the original ``ArticleForm.Meta`` to remove one field.
+Là, on ajoute une méthode sur ``EnhancedArticleForm`` et on modifie l'``ArticleForm.Meta`` original pour enlever un champ.
 
-There are a couple of things to note, however.
+Il y a cependant quelques points à noter:
 
-* Normal Python name resolution rules apply. If you have multiple base
-  classes that declare a ``Meta`` inner class, only the first one will be
-  used. This means the child's ``Meta``, if it exists, otherwise the
-  ``Meta`` of the first parent, etc.
+* Les règles normales de résolution de nom Python s'appliquent. Si vous avez
+  plusieurs classes de base qui déclarent une classe interne ``Meta``, 
+  seule la première sera utilisée. C'est à dire le ``Meta`` enfant 
+  s'il existe, sinon le ``Meta`` du premier parent, etc.
 
-* For technical reasons, a subclass cannot inherit from both a ``ModelForm``
-  and a ``Form`` simultaneously.
+* Pour des raisons techniques, une sous-classe n'hérite pas à la fois d'un ``ModelForm``
+  et d'un ``Form``.
 
-Chances are these notes won't affect you unless you're trying to do something
-tricky with subclassing.
+Il y a des chances que ces remarques ne vous concernent pas, à moins que vous ne fassiez quelque chose de délicat avec le subclassing.
 
-Interaction with model validation
----------------------------------
+Intéraction avec la validation modèle
+-------------------------------------
 
-As part of its validation process, ``ModelForm`` will call the ``clean()``
-method of each field on your model that has a corresponding field on your form.
-If you have excluded any model fields, validation will not be run on those
-fields. See the :doc:`form validation </ref/forms/validation>` documentation
-for more on how field cleaning and validation work. Also, your model's
-``clean()`` method will be called before any uniqueness checks are made. See
-:ref:`Validating objects <validating-objects>` for more information on the
-model's ``clean()`` hook.
+Comme étape de son traitement de validation, ``ModelForm`` appellera la méthode ``clean()``
+pour chaque champ de votre *modèle* qui a un champ correspondant dans votre *formulaire*.
+Si vous avez exclu des champs du modèle, la validation ne sera pas exécutée sur ces champs.
+Voir la doc :doc:`validation de formulaire </ref/forms/validation>` 
+pour plus d'infos sur le fonctionnenemt de la validation et le nettoyage de champs.
+De même, votre méthode ``clean()`` du modèle ne sera pas appelée avant que les contrôles d'unicité ne soient faits. Voir
+:ref:`Valider des objets <validating-objects>` pour plus d'informations sur le hook ``clean()`` du modèle.
 
 .. _model-formsets:
 
-Model formsets
-==============
+Formsets de Modèle
+==================
 
-Like :doc:`regular formsets </topics/forms/formsets>`, Django provides a couple
-of enhanced formset classes that make it easy to work with Django models. Let's
-reuse the ``Author`` model from above::
+Comme pour les :doc:`formsets ordinaires </topics/forms/formsets>`, Django fournit quelques classes de formset amélioré qui facilitent le travail avec les modèles Django. Réutilisons le modèle ``Author``::
 
     >>> from django.forms.models import modelformset_factory
     >>> AuthorFormSet = modelformset_factory(Author)
 
-This will create a formset that is capable of working with the data associated
-with the ``Author`` model. It works just like a regular formset::
+Cela créera un formset capable de travailler avec les données associées au modèle ``Author``. Ça marche comme un formset habituel::
 
     >>> formset = AuthorFormSet()
     >>> print formset
@@ -537,22 +497,20 @@ with the ``Author`` model. It works just like a regular formset::
     <tr><th><label for="id_form-0-birth_date">Birth date:</label></th><td><input type="text" name="form-0-birth_date" id="id_form-0-birth_date" /><input type="hidden" name="form-0-id" id="id_form-0-id" /></td></tr>
 
 .. note::
-    ``modelformset_factory`` uses ``formset_factory`` to generate formsets.
-    This means that a model formset is just an extension of a basic formset
-    that knows how to interact with a particular model.
+    ``modelformset_factory`` utilise ``formset_factory`` pour générer les formsets.
+    Cela veut dire qu'un formset de modèle est juste une extension d'un formset basique
+    qui sait comment intéragir avec un modèle en particulier.
 
-Changing the queryset
----------------------
+Modifier le queryset
+--------------------
 
-By default, when you create a formset from a model, the formset will use a
-queryset that includes all objects in the model (e.g.,
-``Author.objects.all()``). You can override this behavior by using the
-``queryset`` argument::
+Par défaut, lorsque vous créez un formset à partir d'un modèle, le formset utilisera un
+queryset qui comporte tous les objets du modèle (par exemple,
+``Author.objects.all()``). Vous pouvez surcharger ce comportement en utilsant l'argument ``queryset``::
 
     >>> formset = AuthorFormSet(queryset=Author.objects.filter(name__startswith='O'))
 
-Alternatively, you can create a subclass that sets ``self.queryset`` in
-``__init__``::
+Alternativement, vous pouvez créer une sous-classe qui paramètre ``self.queryset`` dans ``__init__``::
 
     from django.forms.models import BaseModelFormSet
 
@@ -561,48 +519,42 @@ Alternatively, you can create a subclass that sets ``self.queryset`` in
             super(BaseAuthorFormSet, self).__init__(*args, **kwargs)
             self.queryset = Author.objects.filter(name__startswith='O')
 
-Then, pass your ``BaseAuthorFormSet`` class to the factory function::
+Ensuite, vous passez votre classe ``BaseAuthorFormSet`` à la fonction factory::
 
     >>> AuthorFormSet = modelformset_factory(Author, formset=BaseAuthorFormSet)
 
-If you want to return a formset that doesn't include *any* pre-existing
-instances of the model, you can specify an empty QuerySet::
+Si vous voulez renvoyer une formset qui n'inclut aucune instance du modèle pré-existante, spécifiez un QuerySet vide::
 
    >>> AuthorFormSet(queryset=Author.objects.none())
 
 
-Controlling which fields are used with ``fields`` and ``exclude``
------------------------------------------------------------------
+Contrôler quels champs sont utilisés avec ``fields`` et ``exclude``
+-------------------------------------------------------------------
 
-By default, a model formset uses all fields in the model that are not marked
-with ``editable=False``. However, this can be overridden at the formset level::
+Par défaut, un formset de modèle utilise tous les champs du modèle qui ne sont pas marqués avec ``editable=False``. Cependant, cela peut être surchargé au niveau du formset::
 
     >>> AuthorFormSet = modelformset_factory(Author, fields=('name', 'title'))
 
-Using ``fields`` restricts the formset to use only the given fields.
-Alternatively, you can take an "opt-out" approach, specifying which fields to
-exclude::
+Utiliser ``fields`` limite le formset à n'utiliser que les champs indiqués. Alternativement, vous pouvez employer une approche "opt-out", en spécifiant les champs à exclure::
 
     >>> AuthorFormSet = modelformset_factory(Author, exclude=('birth_date',))
 
-Providing initial values
-------------------------
+Fournir des données initiales
+-----------------------------
 
 .. versionadded:: 1.4
 
-As with regular formsets, it's possible to :ref:`specify initial data
-<formsets-initial-data>` for forms in the formset by specifying an ``initial``
-parameter when instantiating the model formset class returned by
-``modelformset_factory``. However, with model formsets, the initial values only
-apply to extra forms, those that aren't bound to an existing object instance.
+Comme avec les formsets normaux, il est possible :ref:`d'indiquer les données initiales
+<formsets-initial-data>` pour les formulaires du formset en spécifiant un paramètre ``initial``
+lors de l'instanciation du formset modèle renvoyé par
+``modelformset_factory``. Cependant, avec les formsets modèle, les valeurs initiales ne s'appliquent qu'aux formulaires supplémentaires, ceux qui ne sont pas liés à une instance objet existante.
 
 .. _saving-objects-in-the-formset:
 
-Saving objects in the formset
------------------------------
+Sauvegarder les objets du formset
+---------------------------------
 
-As with a ``ModelForm``, you can save the data as a model object. This is done
-with the formset's ``save()`` method::
+Comme avec un ``ModelForm``, vous pouvez sauvegarder les données en tant qu'objet modèle. Cela se fait avec la méthode ``save()`` du formset::
 
     # Create a formset instance with POST data.
     >>> formset = AuthorFormSet(request.POST)
@@ -610,18 +562,11 @@ with the formset's ``save()`` method::
     # Assuming all is valid, save the data.
     >>> instances = formset.save()
 
-The ``save()`` method returns the instances that have been saved to the
-database. If a given instance's data didn't change in the bound data, the
-instance won't be saved to the database and won't be included in the return
-value (``instances``, in the above example).
+La méthode ``save()`` renvoie les instances qui ont été sauvegardées dans la base de données. Si les données d'une instance ne sont pas modifiées dans les données liées (celles du formulaire), l'instance ne sera pas sauvegardée dans la base de données et ne sera pas incluse dans la valeur renvoyée (``instances``, dans l'exemple ci-dessus).
 
-When fields are missing from the form (for example because they have
-been excluded), these fields will not be set by the ``save()``
-method. You can find more information about this restriction, which
-also holds for regular ``ModelForms``, in `Using a subset of fields on
-the form`_.
+Lorsqu'il y a des champs manquants dans le formulaire (parce qu'ils ont été exclus, par exemple), ces champs ne seront pas touchés par la méthode ``save()``. Vous trouverez plus d'information sur cette restriction, qui joue aussi pour les ``ModelForms`` ordinaires, dans `N'utiliser qu'une partie des champs dans un formulaire`_.
 
-Pass ``commit=False`` to return the unsaved model instances::
+Passez ``commit=False`` pour retourner les instances de modèles non sauvegardées::
 
     # don't save to the database
     >>> instances = formset.save(commit=False)
@@ -629,22 +574,19 @@ Pass ``commit=False`` to return the unsaved model instances::
     ...     # do something with instance
     ...     instance.save()
 
-This gives you the ability to attach data to the instances before saving them
-to the database. If your formset contains a ``ManyToManyField``, you'll also
-need to call ``formset.save_m2m()`` to ensure the many-to-many relationships
-are saved properly.
+Cela vous permet d'attacher des données aux instances avant de les sauvegarder dans la base de données. Si votre formset contient un ``ManyToManyField``, vous devrez aussi appeler ``formset.save_m2m()`` pour vous assurer que les relations Plusieurs-à-Plusieurs sont sauvegardées correctement.
 
 .. _model-formsets-max-num:
 
-Limiting the number of editable objects
----------------------------------------
+Limiter le nombre d'objets éditables
+------------------------------------
 
-.. versionchanged:: 1.2
+.. versionchanged:: 1.2 
 
-As with regular formsets, you can use the ``max_num`` and ``extra`` parameters
-to ``modelformset_factory`` to limit the number of extra forms displayed.
+Comme avec les formsets ordinaires, vous pouvez utiliser les paramètres ``max_num`` et ``extra`` avec
+``modelformset_factory`` pour limiter le nombre de formulaires supplémentaires affichés.
 
-``max_num`` does not prevent existing objects from being displayed::
+``max_num`` n'empêche pas l'affichage des objets existants::
 
     >>> Author.objects.order_by('name')
     [<Author: Charles Baudelaire>, <Author: Paul Verlaine>, <Author: Walt Whitman>]
@@ -654,9 +596,7 @@ to ``modelformset_factory`` to limit the number of extra forms displayed.
     >>> [x.name for x in formset.get_queryset()]
     [u'Charles Baudelaire', u'Paul Verlaine', u'Walt Whitman']
 
-If the value of ``max_num`` is greater than the number of existing related
-objects, up to ``extra`` additional blank forms will be added to the formset,
-so long as the total number of forms does not exceed ``max_num``::
+Si la valeur de ``max_num`` est supérieure au nombre d'objets liés existants, des formulaires vierges supplémentaires seront ajoutés au formset, à concurrence de ``max_num`` et tant que le nombre de formulaires n'excède pas ``max_num``::
 
     >>> AuthorFormSet = modelformset_factory(Author, max_num=4, extra=2)
     >>> formset = AuthorFormSet(queryset=Author.objects.order_by('name'))
@@ -669,14 +609,12 @@ so long as the total number of forms does not exceed ``max_num``::
 
 .. versionchanged:: 1.2
 
-A ``max_num`` value of ``None`` (the default) puts no limit on the number of
-forms displayed.
+Une valeur de ``max_num`` égale à ``None`` (par défaut) enlève toute limite au nombre de formulaires affichés.
 
-Using a model formset in a view
--------------------------------
+Utiliser un formset de modèle dans une vue
+------------------------------------------
 
-Model formsets are very similar to formsets. Let's say we want to present a
-formset to edit ``Author`` model instances::
+Les formsets de modèles sont très semblables aux formsets. Supposons que nous voulons un formset pour éditer les instances de modèle ``Author``::
 
     def manage_authors(request):
         AuthorFormSet = modelformset_factory(Author)
@@ -691,20 +629,13 @@ formset to edit ``Author`` model instances::
             "formset": formset,
         })
 
-As you can see, the view logic of a model formset isn't drastically different
-than that of a "normal" formset. The only difference is that we call
-``formset.save()`` to save the data into the database. (This was described
-above, in :ref:`saving-objects-in-the-formset`.)
+Comme vous pouvez le voir, la logique de la vue d'un formset de modèle n'est pas si différente de celle d'un formset "normal". La seule différence est que nous appelons ``formset.save()`` pour sauvegarder les données dans le base de données. (Comme décrit précédemment dans :ref:`saving-objects-in-the-formset`.)
 
-Overiding ``clean()`` on a ``model_formset``
+Surcharger ``clean()`` d'un ``model_formset``
 --------------------------------------------
 
-Just like with ``ModelForms``, by default the ``clean()`` method of a
-``model_formset`` will validate that none of the items in the formset violate
-the unique constraints on your model (either ``unique``, ``unique_together`` or
-``unique_for_date|month|year``).  If you want to override the ``clean()`` method
-on a ``model_formset`` and maintain this validation, you must call the parent
-class's ``clean`` method::
+Comme avec ``ModelForms``, la méthode ``clean()`` d'un ``model_formset``, par défaut, validera qu'aucun des éléments du formset ne viole la contrainte d'unicité de votre modèle (soit ``unique``, ``unique_together`` ou
+``unique_for_date|month|year``).  Si vous voulez surcharger la méthode ``clean()`` d'un ``model_formset`` et conserver cette validation, vous devez appelr la méthode ``clean`` de la classe parent::
 
     class MyModelFormSet(BaseModelFormSet):
         def clean(self):
@@ -713,11 +644,10 @@ class's ``clean`` method::
             for form in self.forms:
                 # your custom formset validation
 
-Using a custom queryset
------------------------
+Utiliser un queryset personnalisé
+---------------------------------
 
-As stated earlier, you can override the default queryset used by the model
-formset::
+Comme indiqué précédemment, vous pouvez surcharger le queryset par défaut utilisé dans le formset model::
 
     def manage_authors(request):
         AuthorFormSet = modelformset_factory(Author)
@@ -733,24 +663,22 @@ formset::
             "formset": formset,
         })
 
-Note that we pass the ``queryset`` argument in both the ``POST`` and ``GET``
-cases in this example.
+Notez que nous passons l'argument ``queryset`` dans les deux ``POST`` et ``GET`` de cet exemple.
 
-Using the formset in the template
----------------------------------
+Utiliser le formset dans le template
+------------------------------------
 
 .. highlight:: html+django
 
-There are three ways to render a formset in a Django template.
+Il y a trois façons de mettre en forme un formset dans un template Django.
 
-First, you can let the formset do most of the work::
+Première façon, vous pouvez laisser le formset faire le gros du travail::
 
     <form method="post" action="">
         {{ formset }}
     </form>
 
-Second, you can manually render the formset, but let the form deal with
-itself::
+Deuxième façon, vous pouvez mettre en forme le formset manuellement, mais laisser le formulaire se charger de lui-même::
 
     <form method="post" action="">
         {{ formset.management_form }}
@@ -759,11 +687,10 @@ itself::
         {% endfor %}
     </form>
 
-When you manually render the forms yourself, be sure to render the management
-form as shown above. See the :ref:`management form documentation
-<understanding-the-managementform>`.
+Lorsque vous mettez le formset en forme manuellement, soyez sûr de mettre en forme le formulaire de management
+comme indiqué ci-dessus. Voir :ref:`management form documentation <understanding-the-managementform>`.
 
-Third, you can manually render each field::
+Troisième facçon, vous pouvez mettre en forme chaque champ manuellement::
 
     <form method="post" action="">
         {{ formset.management_form }}
@@ -774,9 +701,7 @@ Third, you can manually render each field::
         {% endfor %}
     </form>
 
-If you opt to use this third method and you don't iterate over the fields with
-a ``{% for %}`` loop, you'll need to render the primary key field. For example,
-if you were rendering the ``name`` and ``age`` fields of a model::
+Si vous optez pour cette troisième méthode et que vous ne parcourez pas chaque champ avec une boucle ``{% for %}``, vous devrez mettre en forme le champ clé primaire. Par exemple, si vous mettiez en forme les champs ``name`` et ``age`` d'un modèle::
 
     <form method="post" action="">
         {{ formset.management_form }}
@@ -789,19 +714,15 @@ if you were rendering the ``name`` and ``age`` fields of a model::
         {% endfor %}
     </form>
 
-Notice how we need to explicitly render ``{{ form.id }}``. This ensures that
-the model formset, in the ``POST`` case, will work correctly. (This example
-assumes a primary key named ``id``. If you've explicitly defined your own
-primary key that isn't called ``id``, make sure it gets rendered.)
+Notez comment nous devons mettre ``{{ form.id }}`` explicitement en forme. Cela assure que le formset model, dans le cas d'un ``POST``, travaillera correctement.  (Cet exemple suppose une clé primaire nommée ``id``. Si vous avez explictement déclaré votre propre clé primaire, qui n'est pas nommée ``id``, soyez sûr de l'avoir mise en forme.)
 
 .. highlight:: python
 
-Inline formsets
+Formsets Inline
 ===============
 
-Inline formsets is a small abstraction layer on top of model formsets. These
-simplify the case of working with related objects via a foreign key. Suppose
-you have these two models::
+Formsets Inline est une petite couche d'abstraction au-dessus des formsets model. Ils simplifient 
+le travail avec des objets liés par une clé étrangère. Supposons que vous avez ces deux modèles::
 
     class Author(models.Model):
         name = models.CharField(max_length=100)
@@ -810,8 +731,7 @@ you have these two models::
         author = models.ForeignKey(Author)
         title = models.CharField(max_length=100)
 
-If you want to create a formset that allows you to edit books belonging to
-a particular author, you could do this::
+Si vous voulez créer un formset qui vous permet l'édition de livres appartennant à un auteur en particulier, vous pouvez faire ceci::
 
     >>> from django.forms.models import inlineformset_factory
     >>> BookFormSet = inlineformset_factory(Author, Book)
@@ -819,34 +739,31 @@ a particular author, you could do this::
     >>> formset = BookFormSet(instance=author)
 
 .. note::
-    ``inlineformset_factory`` uses ``modelformset_factory`` and marks
+    ``inlineformset_factory`` utilise ``modelformset_factory`` et marque
     ``can_delete=True``.
 
 .. seealso::
 
-    :ref:`Manually rendered can_delete and can_order <manually-rendered-can-delete-and-can-order>`.
+    :ref:`can_delete et can_order fournis manuellement <manually-rendered-can-delete-and-can-order>`.
 
-More than one foreign key to the same model
--------------------------------------------
+Plus d'une clé étrangère dans le même modèle
+--------------------------------------------
 
-If your model contains more than one foreign key to the same model, you'll
-need to resolve the ambiguity manually using ``fk_name``. For example, consider
-the following model::
+Si votre modèle contient plus d'une clé étrangère vers le même modèle, vous devrez résoudre l'ambiguïté manuellement en utilisant ``fk_name``. Par exemple, prenons le modèle suivant::
 
     class Friendship(models.Model):
         from_friend = models.ForeignKey(Friend)
         to_friend = models.ForeignKey(Friend)
         length_in_months = models.IntegerField()
 
-To resolve this, you can use ``fk_name`` to ``inlineformset_factory``::
+Pour résoudre cela, vous pouvez utiliser ``fk_name`` vers ``inlineformset_factory``::
 
     >>> FriendshipFormSet = inlineformset_factory(Friend, Friendship, fk_name="from_friend")
 
-Using an inline formset in a view
----------------------------------
+Utiliser un formset inline dans une vue
+---------------------------------------
 
-You may want to provide a view that allows a user to edit the related objects
-of a model. Here's how you can do that::
+Vous voudrez pouvoir fournir une vue permettant à l'utilisateur de modifier les objets liés d'un modèle. Voici comment faire::
 
     def manage_books(request, author_id):
         author = Author.objects.get(pk=author_id)
@@ -862,4 +779,4 @@ of a model. Here's how you can do that::
             "formset": formset,
         })
 
-Notice how we pass ``instance`` in both the ``POST`` and ``GET`` cases.
+Notez comment on passe ``instance`` dans les deux situations ``POST`` et ``GET``.
