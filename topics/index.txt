@@ -28,8 +28,8 @@ Introductions à toutes les parties essentielles de Django que vous avez besoin 
    settings
    signals
 
-Deprecated features
--------------------
+Fonctionnalités obsolètes
+-------------------------
 
 .. toctree::
    :maxdepth: 1
