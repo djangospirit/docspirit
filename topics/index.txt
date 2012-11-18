@@ -1,7 +1,7 @@
-Using Django
-============
+Utiliser Django
+===============
 
-Introductions to all the key parts of Django you'll need to know:
+Introductions à toutes les parties essentielles de Django que vous avez besoin de connaître :
 
 .. toctree::
    :maxdepth: 1
