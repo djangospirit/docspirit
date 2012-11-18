@@ -1,37 +1,39 @@
-Form Media
-==========
+Média Formulaire
+================
 
-Pour produire un formulaire Web attrayant et simple à utiliser, il faut quelque chose de plus que du simple HTML - il faut aussi des feuilles de style CSS, et si vous voulez utiliser les widgets "Web2.0" élaborés, vous devrez aussi incorporer du JavaScript dans chaque page. Le dosage de CSS et de JavaScript requis pour chacune de vos pages dépendra des widgets qui vous y mettrez.
+Pour produire un formulaire Web attrayant et simple à utiliser, il faut un peu plus que du simple HTML - il faut aussi des feuilles de style CSS, et si vous voulez utiliser les widgets "Web 2.0" élaborés, vous devrez aussi incorporer du JavaScript dans chaque page. Le CSS et le JavaScript requis pour chacune de vos pages dépendra des widgets qui vous y placerez.
 
-C'est là qu'interviennent les définitions média  de Django. Django vous permet d'associer différents fichiers de médias aux formulaires et widgets qui nécessitent ce média. Par exemple, si vous utilisez un calendrier pour mettre en forme les DateFields,
-vous pouvez définier un widget Calendar personnalisé. Ce widget peut alors être associé
-au CSS et JavaScript requis pour mettre en forme le calendrier. Lorsque le widget Calendrier est utilisé dans un formulaire, Django est capable d'identifier les fichiers CSS et JavaScript requis, et fournit la liste de noms de fichiers adéquats pour une inclusion facile dans votre page Web.
+C'est là qu'interviennent les définitions média  de Django. Django vous permet d'associer différents fichiers média aux formulaires et widgets qui en ont besoin. 
+
+Par exemple, si vous utilisez un calendrier pour mettre en forme les DateFields,
+vous pouvez définir un widget Calendar personnalisé. Ce widget peut alors être associé
+au CSS et au JavaScript nécessaire pour mettre en forme le calendrier. Lorsque le widget Calendrier est utilisé dans un formulaire, Django est capable d'identifier les fichiers CSS et JavaScript nécessaires, et fournit la liste de noms de fichiers adéquats pour une inclusion facile dans votre page Web.
 
 .. admonition:: Media et Django Admin
 
     L'application Django Admin définit un nombre de widgets personnalisés
-    pour des calendriers, des sélections filtrées, et ainsi de suite. Ces widgets définissent
-    des besoins de médias, et Django Admin utilise les widgets personnalisés
-    à la place de ceux par défaut de Django. Les templates Admin n'inclueront que ces
-    fichiers média requis pour produire les widgets sur les pages.
+    pour des calendriers, des sélections filtrées, etc. Ces widgets définissent
+    des besoins de médias, et Django Admin utilise ces widgets personnalisés
+    à la place de ceux livrés par défaut par Django. Les templates Admin n'incluront que les
+    fichiers média nécessaires pour mettre en forme les widgets sur les pages.
 
     Si vous appréciez les widgets de l'application Django Admin,
     n'hésitez pas à les utiliser dans votre propre application! Ils sont tous stockés dans
     in ``django.contrib.admin.widgets``.
 
-.. admonition:: Which JavaScript toolkit?
+.. admonition:: Quelle boite à outils JavaScript ?
 
     Il existe beaucoup de boites à outils JavaScript, et la plupart contiennent des widgets (comme
-    des widgets calendrier) pouvant être utilisés pour améliorer votre application.
-    Django a délibérement décidé de n'en privilégier aucun.
+    des widgets calendrier) utilisables pour améliorer votre application.
+    Django a délibérément décidé de n'en privilégier aucune.
     Chaque boite à outils JavaScript a ses propres forces et faiblesses - utilisez celle qui correspond
     le mieux à vos besoins. Django est capable d'intégrer n'importe quelle boite à outils JavaScript.
 
-Media comme définition statique
--------------------------------
+Media comme déclaration statique
+--------------------------------
 
-La façon la plus simple de déclarer un médi& est dans une déclaration statique. Avec cette méthode,
-la déclaration média est dans une classe interne. Les propriétés de la classe interne définissent les besions du média.
+La façon la plus simple de déclarer un média est de le faire dans une déclaration statique. Avec cette méthode,
+la déclaration média est dans une classe interne. Les propriétés de la classe interne définissent les besoins du média.
 
 Voici un exemple simple::
 
@@ -43,9 +45,9 @@ Voici un exemple simple::
             js = ('animations.js', 'actions.js')
 
 Ce code déclare un ``CalendarWidget``, qui se basera sur un ``TextInput``.
-Chaque fois que le CalendarWidget est utilisé dans un formulaire, ce formulaire recevra l'ordre d'inclure le fichier  CSS file ``pretty.css``, et les fichiers JavaScript ``animations.js`` et ``actions.js``.
+Chaque fois que le CalendarWidget est utilisé dans un formulaire, ce formulaire recevra l'ordre d'inclure le fichier  CSS  ``pretty.css``, et les fichiers JavaScript ``animations.js`` et ``actions.js``.
 
-Cette déclaration statique de média est convertie à l'éxecution en propriété widget nommée ``media``. Le média d'une instance CalendarWidget peut être récupérée à travers cette propriété::
+À l'exécution, cette déclaration statique de média est convertie en propriété widget nommée ``media``. Le média d'une instance CalendarWidget peut être récupérée à travers cette propriété::
 
     >>> w = CalendarWidget()
     >>> print w.media
@@ -58,12 +60,12 @@ Voici la liste de toutes les options ``Media`` possibles. Il n'y en a aucune d'o
 ``css``
 ~~~~~~~
 
-Un dictionnaire décrivant les fichiers CSS requis différents types de sorties média.
+Un dictionnaire décrivant les fichiers CSS requis pour les différents types de sorties média.
 
 Les valeurs de ce dictionnaire doivent être un tuple/liste de noms de fichiers. Voir
-`the section on media paths`_ pour les détails sur la façon de spécifier les chemins vers les fichiers média.
+`la section sur les chemins media`_ pour les détails sur la façon de spécifier les chemins vers les fichiers média.
 
-.. _the section on media paths: `Chemins dans les déclarations Média`_
+.. _la section sur les chemins media: `Chemins dans les déclarations Média`_
 
 Les clés du dictionnaire sont les types de sorties média. Ce sont les mêmes types que ceux acceptés par les fichiers CSS dans les déclarations media: 'all', 'aural', 'braille',
 'embossed', 'handheld', 'print', 'projection', 'screen', 'tty' et 'tv'. Si vous avez besoin des feuilles de styles différentes pour différents types de média, fournissez une liste de fichiers CSS pour chaque type de médium de sortie. L'exemple suivant fournit deux options CSS -- une pour les sorties écran, une autre pour l'impression::
@@ -74,9 +76,9 @@ Les clés du dictionnaire sont les types de sorties média. Ce sont les mêmes t
             'print': ('newspaper.css',)
         }
 
-Si un groupe de fichiers CSS sont adéquats pour de multiples types de sorties média,
-le dictionnaire peut être une liste à virgule de types de sorties de médias.
-Dans l'exempel suivant, les TV et les projecteurs ont les mêmes besoins média::
+Si un groupe de fichiers CSS sont utilisables pour différents types de sorties média,
+le dictionnaire peut être une liste à virgule des types de sorties de médias.
+Dans l'exemple suivant, les TV et les projecteurs ont les mêmes besoins média::
 
     class Media:
         css = {
@@ -95,14 +97,14 @@ Si cette dernière définition CSS était mise en forme, elle deviendrait ce cod
 ~~~~~~
 
 Un tuple décrivant les fichiers JavaScript requis. Voir 
-`the section on media paths`_ pour les détails sur la façons de spécifier les chemins des fichiers média.
+`la section sur les chemins media`_ pour les détails sur la façons de spécifier les chemins des fichiers média.
 
 ``extend``
 ~~~~~~~~~~
 
 Un booléen définissant le comportement d'héritage des déclarations média.
 
-Par défaut, tout obket utilisant une déclaration statique de média héritera de tous les médias associés au widget parent. Cela se produit indépendamment de la façon dont le parent déclare ses besoins média. Par exemple, si nous étendons notre widget Calendar de base de l'exemple précédent::
+Par défaut, tout objet utilisant une déclaration statique de média héritera de tous les médias associés au widget parent. Cela se produit indépendamment de la façon dont le parent déclare ses besoins média. Par exemple, si nous étendons notre widget Calendar de base de l'exemple précédent::
 
     >>> class FancyCalendarWidget(CalendarWidget):
     ...     class Media:
@@ -119,7 +121,7 @@ Par défaut, tout obket utilisant une déclaration statique de média héritera 
     <script type="text/javascript" src="http://media.example.com/actions.js"></script>
     <script type="text/javascript" src="http://media.example.com/whizbang.js"></script>
 
-Les widget FancyCalendar hérite de tous les média de son widget parent. Si vous ne voulez pas  que le média hérite de cette façon, ajoutez une déclaration ``extend=False`` à la déclaration du media::
+Le widget FancyCalendar hérite de tous les média de son widget parent. Si vous ne voulez pas cela, ajoutez une déclaration ``extend=False`` à la déclaration du media::
 
     >>> class FancyCalendarWidget(CalendarWidget):
     ...     class Media:
@@ -134,23 +136,17 @@ Les widget FancyCalendar hérite de tous les média de son widget parent. Si vou
     <link href="http://media.example.com/fancy.css" type="text/css" media="all" rel="stylesheet" />
     <script type="text/javascript" src="http://media.example.com/whizbang.js"></script>
 
-If you require even more control over media inheritance, define your media
-using a `dynamic property`_. Dynamic properties give you complete control over
-which media files are inherited, and which are not.
+Si vous avez besoin de davantage de contrôle sur l'héritage de média, définissez votre média en utilisant une `propriété dynamique`_. Les propriétés dynamiques vous donnent un contrôle complet sur les fichiers média qui sont hérités et sur ceux qui ne le sont pas.
 
-.. _dynamic property: `Media as a dynamic property`_
+.. _propriété dynamique: `Media en tant que propriété dynamique`_
 
-Media as a dynamic property
----------------------------
+Media en tant que propriété dynamique
+-------------------------------------
 
-If you need to perform some more sophisticated manipulation of media
-requirements, you can define the media property directly. This is done
-by defining a widget property that returns an instance of ``forms.Media``.
-The constructor for ``forms.Media`` accepts ``css`` and ``js`` keyword
-arguments in the same format as that used in a static media definition.
+Si vous avez besoin de faire des manipulations plus complexes sur les media, vous pouvez définir la propriété média directement. Définissez pour cela une propriété de widget qui renvoie une instance de ``forms.Media``.
+Le constructeur de ``forms.Media`` accepte des arguments mot-clé ``css`` et ``js`` dans le même format qui est utilisé dans la déclaration statique de media.
 
-For example, the static media definition for our Calendar Widget could
-also be defined in a dynamic fashion::
+Par exemple, la déclaration statique de media de notre Widget Calendar Widget peut aussi être faite de façon dynamique::
 
     class CalendarWidget(forms.TextInput):
         def _media(self):
@@ -158,31 +154,21 @@ also be defined in a dynamic fashion::
                                js=('animations.js', 'actions.js'))
         media = property(_media)
 
-See the section on `Media objects`_ for more details on how to construct
-return values for dynamic media properties.
+Voir la section `Objets Media`_ pour plus de détails sur la façon de construire des valeurs retour pour les propriétés media dynamiques.
 
 .. _form-media-paths:
 
-Chemins dans les déclaration Média
-----------------------------------
+Chemins dans les déclarations Média
+-----------------------------------
 
 .. versionchanged:: 1.3
 
-Paths used to specify media can be either relative or absolute. If a path
-starts with '/', 'http://' or 'https://', it will be interpreted as an absolute
-path, and left as-is. All other paths will be prepended with the value of
-the appropriate prefix.
+Les chemins utilisés pour spécifier les média peuvent être absolus ou relatifs. Si le chemin débute par '/', 'http://' ou 'https://', il sera interprété comme chemin absolu et laissé tel quel. Tous les autres chemins seront préfixés avec la valeur du préfixe approprié.
 
-As part of the introduction of the
-:doc:`staticfiles app </ref/contrib/staticfiles>` two new settings were added
-to refer to "static files" (images, CSS, Javascript, etc.) that are needed
-to render a complete web page: :setting:`STATIC_URL` and :setting:`STATIC_ROOT`.
+Dans le cadre de la mise en place des :doc:`staticfiles app </ref/contrib/staticfiles>` deux nouveaux paramètres ont été ajoutés pour faire référence aux "fichiers statiques" (images, CSS, Javascript, etc.) nécessaires pour produire une page web complète: :setting:`STATIC_URL` et :setting:`STATIC_ROOT`.
 
-To find the appropriate prefix to use, Django will check if the
-:setting:`STATIC_URL` setting is not ``None`` and automatically fall back
-to using :setting:`MEDIA_URL`. For example, if the :setting:`MEDIA_URL` for
-your site was ``'http://uploads.example.com/'`` and :setting:`STATIC_URL`
-was ``None``::
+Pour trouver le préfixe adéquat, Django contrôlera si le paramètre 
+:setting:`STATIC_URL` n'est pas à ``None`` et se rabattra automatiquement sur l'utilisation de :setting:`MEDIA_URL`. Par exemple, si le :setting:`MEDIA_URL` de votre site est ``'http://uploads.example.com/'`` et :setting:`STATIC_URL` est ``None``::
 
     >>> class CalendarWidget(forms.TextInput):
     ...     class Media:
@@ -197,7 +183,7 @@ was ``None``::
     <script type="text/javascript" src="http://uploads.example.com/animations.js"></script>
     <script type="text/javascript" src="http://othersite.com/actions.js"></script>
 
-But if :setting:`STATIC_URL` is ``'http://static.example.com/'``::
+Mais si :setting:`STATIC_URL` est ``'http://static.example.com/'``::
 
     >>> w = CalendarWidget()
     >>> print w.media
@@ -206,21 +192,17 @@ But if :setting:`STATIC_URL` is ``'http://static.example.com/'``::
     <script type="text/javascript" src="http://othersite.com/actions.js"></script>
 
 
-Media objects
--------------
+Objets Media
+------------
 
-When you interrogate the media attribute of a widget or form, the value that
-is returned is a ``forms.Media`` object. As we have already seen, the string
-representation of a Media object is the HTML required to include media
-in the ``<head>`` block of your HTML page.
+Lorsque vous interrogez l'attribut média d'un widget ou d'un formulaire, la valeur retournée est un objet ``forms.Media``. Comme nous l'avons déjà vu, la représentation chaîne d'un objet Media est le code HTML nécessaire pour inclure le média dans le bloc ``<head>`` de votre page HTML.
 
-However, Media objects have some other interesting properties.
+Cependant, les objets Media ont quelques autres propriétés intéressantes.
 
-Media subsets
-~~~~~~~~~~~~~
+Sous-ensembles Media
+~~~~~~~~~~~~~~~~~~~~
 
-If you only want media of a particular type, you can use the subscript operator
-to filter out a medium of interest. For example::
+Si vous ne voulez qu'un type particulier de média, vous pouvez utiliser l'opérateur indice pour filtrer celui qui vous intéresse. Par exemple::
 
     >>> w = CalendarWidget()
     >>> print w.media
@@ -231,14 +213,12 @@ to filter out a medium of interest. For example::
     >>> print w.media['css']
     <link href="http://media.example.com/pretty.css" type="text/css" media="all" rel="stylesheet" />
 
-When you use the subscript operator, the value that is returned is a new
-Media object -- but one that only contains the media of interest.
+Lorsque vous utilisez l'opérateur indice, la valeur renvoyée est un nouvel objet Média -- mais qui ne contient que le média qui vous intéresse.
 
-Combining media objects
-~~~~~~~~~~~~~~~~~~~~~~~
+Combinaison d'objets média
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Media objects can also be added together. When two media objects are added,
-the resulting Media object contains the union of the media from both files::
+Les objets Média peuvent aussi être additionnés. Lorsque deux objets médias sont additionnés, l'objet Média résultant contient l'union de médias des deux fichiers::
 
     >>> class CalendarWidget(forms.TextInput):
     ...     class Media:
@@ -259,17 +239,12 @@ the resulting Media object contains the union of the media from both files::
     <script type="text/javascript" src="http://media.example.com/actions.js"></script>
     <script type="text/javascript" src="http://media.example.com/whizbang.js"></script>
 
-Media on Forms
---------------
+Média et formulaires
+--------------------
 
-Widgets aren't the only objects that can have media definitions -- forms
-can also define media. The rules for media definitions on forms are the
-same as the rules for widgets: declarations can be static or dynamic;
-path and inheritance rules for those declarations are exactly the same.
+Les widgets ne sont pas les seuls objets qui ont des déclarations média -- les formulaires peuvent aussi déclarer des médias. Les règles des déclarations média des formulaires sont les mêmes que celles des widgets: les déclarations peuvent être statiques ou dynamiques; les chemins et les règles d'héritage de ces déclarations sont exactement les mêmes.
 
-Regardless of whether you define a media declaration, *all* Form objects
-have a media property. The default value for this property is the result
-of adding the media definitions for all widgets that are part of the form::
+Que vous déclariez ou pas des médias, *tous* les objets Formulaire ont une propriété média. La valeur par défaut de cette propriété est la somme des déclarations média de tous les widgets du formulaire::
 
     >>> class ContactForm(forms.Form):
     ...     date = DateField(widget=CalendarWidget)
@@ -282,8 +257,7 @@ of adding the media definitions for all widgets that are part of the form::
     <script type="text/javascript" src="http://media.example.com/actions.js"></script>
     <script type="text/javascript" src="http://media.example.com/whizbang.js"></script>
 
-If you want to associate additional media with a form -- for example, CSS for form
-layout -- simply add a media declaration to the form::
+Si vous voulez associer des médias supplémentaires à un formulaire -- par exemple, du CSS pour la couche formulaire -- ajoutez simplement une déclaration de media au formulaire::
 
     >>> class ContactForm(forms.Form):
     ...     date = DateField(widget=CalendarWidget)
